@@ -1,0 +1,5 @@
+tpng.py==0.2.5
+playsoundsimple.py
+mutagen
+textual
+rich
