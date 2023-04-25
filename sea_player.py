@@ -3,7 +3,6 @@ import os
 from io import BytesIO
 # > Sound Works
 from playsoundsimple import Sound
-from mutagen import File, FileType
 # > Image Works
 from PIL import Image
 from tpng import TPNG
@@ -11,13 +10,13 @@ from tpng import TPNG
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, ListItem, ListView, Input, Button
-from rich.progress import Progress, BarColumn
+from rich.progress import Progress, BarColumn, TextColumn
 # > Typing
 from typing import Optional, Literal, Dict, Tuple
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.0-beta"
+__version__ = "0.2.1"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 
@@ -30,13 +29,15 @@ def check_status(sound: Sound) -> Literal["Stoped", "Playing", "Paused"]:
 
 def _get_status() -> Tuple[str, Optional[float], Optional[float]]: return "", None, None
 
-def image_from_file(filepath: str) -> Optional[Image.Image]:
-    try:
-        file: FileType = File(filepath)
-        try: img_data: bytes = file["APIC:"].data
-        except: img_data: bytes = file["APIC"].data
-        return Image.open(BytesIO(img_data))
-    except: pass
+def image_from_bytes(data: Optional[bytes]) -> Optional[Image.Image]:
+    if data is not None: return Image.open(BytesIO(data))
+
+def get_sound_basename(sound: Sound) -> str:
+    if sound.title is not None:
+        if sound.artist is not None:
+            return f"{sound.artist} - {sound.title}"
+        return f"{sound.title}"
+    return f"{os.path.basename(sound.name)}"
 
 # ! Classes
 class MusicList:
@@ -95,12 +96,12 @@ class MusicListView(ListView):
         sound_uuid = self.music_list.add(sound)
         self.append(
             MusicListViewItem(
-                f"{os.path.basename(sound.name)}",
+                f"{get_sound_basename(sound)}",
                 "{duration} sec, {channel_mode}, {samplerate} Hz, {bitrate} kbps".format(
                     duration=round(sound.duration),
                     channel_mode="Mono" if sound.channels <= 1 else "Stereo",
                     samplerate=round(sound.samplerate),
-                    bitrate=round(sound.bitrate / 1024)
+                    bitrate=round(sound.bitrate / 1000)
                 ),
                 os.path.abspath(sound.name),
                 sound_uuid
@@ -114,7 +115,7 @@ class MusicListView(ListView):
 class IndeterminateProgress(Static):
     def __init__(self, getfunc=_get_status, fps: int=30):
         super().__init__("", classes="indeterminate-progress-bar")
-        self._bar = Progress(BarColumn())
+        self._bar = Progress(BarColumn(), TextColumn("{task.description}"))
         self._task_id = self._bar.add_task("", total=None)
         self._fps = fps
         self._getfunc = getfunc
@@ -126,9 +127,9 @@ class IndeterminateProgress(Static):
         self._bar.update(self._task_id, total=total, completed=completed, description=description)
     
     def update_progress_bar(self) -> None:
-        if self._bar.columns[0].bar_width != self.size[0]:
-            self._bar.columns[0].bar_width = self.size[0]
         d, c, t = self._getfunc()
+        if self._bar.columns[0].bar_width != (self.size[0]-len(d)-1):
+            self._bar.columns[0].bar_width = self.size[0]-len(d)-1
         self.upgrade_task(completed=c, total=t, description=d)
         self.update(self._bar)
 
@@ -162,6 +163,8 @@ class ImageLabel(Label):
             self.tpng_image.reset()
             self.tpng_image.resize((self.size[0]-4, self.size[1]))
             self.image_text = self.tpng_image.to_rich_image()
+        else:
+            self.image_text = "<image not found>"
 
 # ! Main
 class SeaPlayer(App):
@@ -174,14 +177,14 @@ class SeaPlayer(App):
         if self.currect_sound_uuid is not None:
             if (sound:=self.music_list_view.music_list.get(self.currect_sound_uuid)) is not None:
                 pos = sound.get_pos()
-                minutes, seconds = pos // 60, pos % 60
-                return f"{minutes}:{seconds}", pos, sound.duration
-        return "", None, None
+                minutes, seconds = round(pos // 60), round(pos % 60)
+                return f"{minutes}:{str(seconds).rjust(2,'0')}", pos, sound.duration
+        return "0:00", None, None
     
     def get_sound_selected_label_text(self) -> str:
         if self.currect_sound_uuid is not None:
             if (sound:=self.music_list_view.music_list.get(self.currect_sound_uuid)) is not None:
-                return f"({check_status(sound)}): {os.path.basename(sound.name)}"
+                return f"({check_status(sound)}): {get_sound_basename(sound)}"
             return "<sound not found>"
         return "<sound not selected>"
     
@@ -208,7 +211,7 @@ class SeaPlayer(App):
                     yield self.music_image
                 with Static(classes="player-contol-panel"):
                     yield self.music_selected_label
-                    yield IndeterminateProgress(self.get_sound_seek)
+                    yield IndeterminateProgress(getfunc=self.get_sound_seek)
                     with Horizontal(classes="box-buttons-sound-control"):
                         yield Button("Play/Stop", id="button-play-stop", classes="button-sound-control")
                         yield Static(classes="pass-one-width")
@@ -246,8 +249,8 @@ class SeaPlayer(App):
                 if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
                     sound.stop()
             self.currect_sound_uuid = sound_uuid
-            if sound:=self.music_list_view.get_sound(self.currect_sound_uuid):
-                self.music_image.update_image(image_from_file(os.path.abspath(sound.name)))
+            if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
+                self.music_image.update_image(image_from_bytes(sound.icon_data))
             self.music_selected_label.update(self.get_sound_selected_label_text())
 
 # ! Start
