@@ -16,7 +16,7 @@ from typing import Optional, Literal, Dict, Tuple
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 
@@ -38,6 +38,10 @@ def get_sound_basename(sound: Sound) -> str:
             return f"{sound.artist} - {sound.title}"
         return f"{sound.title}"
     return f"{os.path.basename(sound.name)}"
+
+def is_midi_file(filepath: str) -> bool:
+    with open(filepath, 'rb') as file:
+        return file.read(4) == b"MThd"
 
 # ! Classes
 class MusicList:
@@ -228,8 +232,11 @@ class SeaPlayer(App):
             path = self.music_list_add_input.value
             self.music_list_add_input.value = ""
             if path.replace(" ", "") != "":
-                try: self.music_list_view.add_sound(Sound(path))
-                except: pass
+                try:
+                    if is_midi_file(path): sound = Sound.from_midi(path)
+                    else: sound = Sound(path)
+                except: sound = None
+                if sound is not None: self.music_list_view.add_sound(sound)
         elif (event.button.id == "button-play-stop") or (event.button.id == "button-pause-unpause"):
             if self.currect_sound_uuid is not None:
                 if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
