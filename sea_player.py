@@ -1,8 +1,12 @@
-import uuid
 import os
+import sys
+import json
+import uuid
 from io import BytesIO
+from pathlib import Path
 # > Sound Works
 from playsoundsimple import Sound
+from playsoundsimple.Units import SOUND_FONTS_PATH
 # > Image Works
 from PIL import Image
 from tpng import TPNG
@@ -10,15 +14,21 @@ from tpng import TPNG
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, ListItem, ListView, Input, Button
+from textual.binding import Binding
 from rich.progress import Progress, BarColumn, TextColumn
 # > Typing
-from typing import Optional, Literal, Dict, Tuple
+from typing import Optional, Literal, Dict, Tuple, Any
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
+
+# ! Contains
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): LOCALDIR = os.path.dirname(sys.executable)
+else: LOCALDIR = os.path.dirname(__file__)
+CONFIG_PATH = os.path.join(LOCALDIR, "config.json")
 
 # ! Functions
 def check_status(sound: Sound) -> Literal["Stoped", "Playing", "Paused"]:
@@ -42,6 +52,42 @@ def get_sound_basename(sound: Sound) -> str:
 def is_midi_file(filepath: str) -> bool:
     with open(filepath, 'rb') as file:
         return file.read(4) == b"MThd"
+
+# ! Config Class
+class SeaPlayerConfig:
+    @staticmethod
+    def load(filepath: Path, default: Dict[str, Any]) -> Dict[str, Any]:
+        with open(filepath) as file:
+            try: return json.load(file)
+            except: return default
+    
+    @staticmethod
+    def dump(filepath: Path, data: Dict[str, Any]) -> None:
+        with open(filepath, "w") as file:
+            json.dump(data, file)
+    
+    def __init__(
+        self,
+        filepath: str,
+        default: Dict[str, Any]={
+            "sound_font_path": None
+        }
+    ) -> bool:
+        self.filepath = Path(filepath)
+        self.default = default
+        
+        try:
+            self.config = self.load(self.filepath, self.default)
+        except:
+            self.dump(self.filepath, self.default)
+            self.config = self.default
+    
+    def __str__(self) -> str: return f"{self.__class__.__name__}({self.config})"
+    def __repr__(self) -> str: return self.__str__()
+    def refresh(self) -> None: self.dump(self.filepath, self.config)
+    
+    @property
+    def sound_font_path(self) -> Optional[str]: return self.config.get("sound_font_path")
 
 # ! Classes
 class MusicList:
@@ -174,16 +220,25 @@ class ImageLabel(Label):
 class SeaPlayer(App):
     TITLE = f"{__title__} v{__version__}"
     CSS_PATH = "ui.css"
+    BINDINGS = [
+        Binding(key="/", action="minus_rewind", description="Rewind -1 sec"),
+        Binding(key="*", action="plus_rewind", description="Rewind +1 sec"),
+        Binding(key="-", action="minus_volume", description="Volume -1%"),
+        Binding(key="+", action="plus_volume", description="Volume +1%")
+    ]
+    
+    SEA_PLAYER_CONFIG = SeaPlayerConfig(CONFIG_PATH)
     
     currect_sound_uuid: Optional[str] = None
+    currect_volume = 1.0
     
     def get_sound_seek(self) -> Tuple[str, Optional[float], Optional[float]]:
         if self.currect_sound_uuid is not None:
             if (sound:=self.music_list_view.music_list.get(self.currect_sound_uuid)) is not None:
                 pos = sound.get_pos()
                 minutes, seconds = round(pos // 60), round(pos % 60)
-                return f"{minutes}:{str(seconds).rjust(2,'0')}", pos, sound.duration
-        return "0:00", None, None
+                return f"{minutes}:{str(seconds).rjust(2,'0')} | {str(round(sound.get_volume()*100)).rjust(3)}%", pos, sound.duration
+        return "0:00 |   0%", None, None
     
     def get_sound_selected_label_text(self) -> str:
         if self.currect_sound_uuid is not None:
@@ -233,7 +288,10 @@ class SeaPlayer(App):
             self.music_list_add_input.value = ""
             if path.replace(" ", "") != "":
                 try:
-                    if is_midi_file(path): sound = Sound.from_midi(path)
+                    if is_midi_file(path):
+                        if self.SEA_PLAYER_CONFIG.sound_font_path is not None: sfp = self.SEA_PLAYER_CONFIG.sound_font_path
+                        else: sfp = SOUND_FONTS_PATH
+                        sound = Sound.from_midi(path, path_sound_fonts=sfp)
                     else: sound = Sound(path)
                 except: sound = None
                 if sound is not None: self.music_list_view.add_sound(sound)
@@ -257,8 +315,33 @@ class SeaPlayer(App):
                     sound.stop()
             self.currect_sound_uuid = sound_uuid
             if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
+                sound.set_volume(self.currect_volume)
                 self.music_image.update_image(image_from_bytes(sound.icon_data))
             self.music_selected_label.update(self.get_sound_selected_label_text())
+    
+    def action_plus_rewind(self):
+        if self.currect_sound_uuid is not None:
+            if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
+                sound.set_pos(sound.get_pos()+1)
+    
+    def action_minus_rewind(self):
+        if self.currect_sound_uuid is not None:
+            if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
+                sound.set_pos(sound.get_pos()-1)
+    
+    def action_plus_volume(self) -> None:
+        if self.currect_sound_uuid is not None:
+            if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
+                if (vol:=round(sound.get_volume()+0.01, 2)) <= 2:
+                    self.currect_volume = vol
+                    sound.set_volume(vol)
+    
+    def action_minus_volume(self) -> None:
+        if self.currect_sound_uuid is not None:
+            if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
+                if (vol:=round(sound.get_volume()-0.01, 2)) >= 0:
+                    self.currect_volume = vol
+                    sound.set_volume(vol)
 
 # ! Start
 if __name__ == "__main__":
