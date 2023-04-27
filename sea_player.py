@@ -23,7 +23,7 @@ from typing import Optional, Literal, Dict, Tuple, Any
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.5"
+__version__ = "0.2.5.5"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 
@@ -115,10 +115,7 @@ class MusicList:
     
     async def aio_exists(self, sound_uuid: str): return sound_uuid in self.sounds.keys()
     async def aio_get(self, sound_uuid: str): return self.sounds.get(sound_uuid)
-    async def aio_add(self, sound: Sound):
-        self.sounds[(sound_uuid:=str(uuid.uuid4()))] = sound
-        return sound_uuid
-
+    async def aio_add(self, sound: Sound): self.sounds[(sound_uuid:=str(uuid.uuid4()))] = sound ; return sound_uuid
 
 # ! Types
 class MusicListViewItem(ListItem):
@@ -189,6 +186,13 @@ class MusicListView(ListView):
             )
         )
         return sound_uuid
+    
+    def get_items_count(self) -> int: return len(self.children)
+    def exists_item_index(self, index: int) -> bool: return 0 >= index < self.get_items_count()
+    def get_next_sound_uuid(self, sound_uuid: str) -> str: ...
+    
+    def __len__(self):
+        return super().__len__()
 
 class IndeterminateProgress(Static):
     def __init__(self, getfunc=_get_status, fps: int=30):
@@ -259,7 +263,8 @@ class SeaPlayer(App):
     
     currect_sound_uuid: Optional[str] = None
     currect_volume = 1.0
-    last_playback_status: Optional[str] = None
+    last_playback_status: Optional[Literal["Stoped", "Playing", "Paused"]] = None
+    playback_mode: int = 0
     started: bool = True
     
     def gcs(self) -> Optional[Sound]:
@@ -293,12 +298,22 @@ class SeaPlayer(App):
             return "<sound not found>"
         return "<sound not selected>"
     
+    def gpms(self, modes: Tuple[str, str, str]=("(PLAY)", "(REPLAY SOUND)", "(REPLAY LIST)")) -> str: return modes[self.playback_mode]
+    def switch_playback_mode(self) -> None:
+        if self.playback_mode == 1: self.playback_mode = 0
+        else: self.playback_mode += 1
+    
     async def update_selected_label_text(self) -> None:
         while self.started:
             if (sound:=await self.aio_gcs()) is not None:
                 status = check_status(sound)
                 if (self.last_playback_status is not None) and (self.last_playback_status != status):
                     self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
+                
+                if (status == "Stoped") and (self.last_playback_status == "Playing"):
+                    if self.playback_mode == 1: sound.play()
+                    elif self.playback_mode == 2: pass
+                
                 self.last_playback_status = status
             await asyncio.sleep(0.5)
     
@@ -330,6 +345,8 @@ class SeaPlayer(App):
                         yield Button("Play/Stop", id="button-play-stop", classes="button-sound-control")
                         yield Static(classes="pass-one-width")
                         yield Button("Pause/Unpause", id="button-pause-unpause", classes="button-sound-control")
+                        yield Static(classes="pass-one-width")
+                        yield Button(self.gpms(), id="switch-playback-mode", classes="button-sound-control")
         with self.music_list_screen:
             yield self.music_list_view
             with Horizontal(classes="music-list-screen-add-box"):
@@ -358,14 +375,18 @@ class SeaPlayer(App):
         
         elif (event.button.id == "button-play-stop") or (event.button.id == "button-pause-unpause"):
             if (sound:=await self.aio_gcs()) is not None:
+                
                 if event.button.id == "button-play-stop":
-                    if sound.playing: sound.stop()
-                    else: sound.play()
+                    if sound.playing: self.last_playback_status = "Stoped" ; sound.stop()
+                    else: self.last_playback_status = "Playing" ; sound.play()
                 elif event.button.id == "button-pause-unpause":
                     if sound.playing:
                         if sound.paused: sound.unpause()
                         else: sound.pause()
                 self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
+        elif event.button.id == "switch-playback-mode":
+            self.switch_playback_mode()
+            event.button.label = self.gpms()
     
     async def on_list_view_selected(self, selected: MusicListView.Selected):
         sound_uuid = getattr(selected.item, "sound_uuid", None)
