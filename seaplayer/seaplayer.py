@@ -1,5 +1,6 @@
 import os
 import sys
+import glob
 import json
 import asyncio
 from pathlib import Path
@@ -12,13 +13,13 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, Input, Button
 from textual.binding import Binding
 # > Typing
-from typing import Optional, Literal, Dict, Tuple, Any
+from typing import Optional, Literal, Dict, Tuple, Any, List
 # > Local Imports
 from .objects import *
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 
@@ -82,6 +83,7 @@ class SeaPlayer(App):
     last_playback_status: Optional[Literal["Stoped", "Playing", "Paused"]] = None
     playback_mode: int = 0
     playback_mode_blocked: bool = False
+    last_paths_globalized: List[str] = []
     
     started: bool = True
     
@@ -176,7 +178,20 @@ class SeaPlayer(App):
                 yield Button("+", id="plus-sound", classes="music-list-screen-add-button")
         yield Footer()
         
-        self.run_worker(self.update_selected_label_text, name="UPDATE_SELECTED_LABEL")
+        self.run_worker(self.update_selected_label_text, name="UPDATE_SELECTED_LABEL", group="UPDATE")
+    
+    async def add_sounds_to_list(self) -> None:
+        for path in self.last_paths_globalized:
+            try:
+                if await aio_is_midi_file(path):
+                    if self.SEA_PLAYER_CONFIG.sound_font_path is not None:
+                        sfp = self.SEA_PLAYER_CONFIG.sound_font_path
+                    else:
+                        sfp = SOUND_FONTS_PATH
+                    sound = Sound.from_midi(path, path_sound_fonts=sfp)
+                else: sound = Sound(path)
+            except: sound = None
+            if sound is not None: await self.music_list_view.aio_add_sound(sound)
     
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "plus-sound":
@@ -184,16 +199,10 @@ class SeaPlayer(App):
             self.music_list_add_input.value = ""
             
             if path.replace(" ", "") != "":
-                try:
-                    if await aio_is_midi_file(path):
-                        if self.SEA_PLAYER_CONFIG.sound_font_path is not None:
-                            sfp = self.SEA_PLAYER_CONFIG.sound_font_path
-                        else:
-                            sfp = SOUND_FONTS_PATH
-                        sound = Sound.from_midi(path, path_sound_fonts=sfp)
-                    else: sound = Sound(path)
-                except: sound = None
-                if sound is not None: await self.music_list_view.aio_add_sound(sound)
+                try: self.last_paths_globalized = glob.glob(path)
+                except: self.last_paths_globalized = []
+                if len(self.last_paths_globalized) > 0:
+                    self.run_worker(self.add_sounds_to_list, name="ADD_MUSIC", group="ADD")
         
         elif (event.button.id == "button-play-stop") or (event.button.id == "button-pause-unpause"):
             if (sound:=await self.aio_gcs()) is not None:
