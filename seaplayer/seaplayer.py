@@ -19,7 +19,7 @@ from .objects import *
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.8"
+__version__ = "0.2.9"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 
@@ -243,7 +243,7 @@ class SeaPlayer(App):
             self.currect_sound_uuid = sound_uuid
             if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
                 sound.set_volume(self.currect_volume)
-                self.music_image.update_image(image_from_bytes(sound.icon_data))
+                await self.music_image.update_image(image_from_bytes(sound.icon_data))
             self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
             return sound
     

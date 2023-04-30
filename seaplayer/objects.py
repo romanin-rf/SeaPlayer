@@ -1,5 +1,4 @@
 from PIL import Image
-from tpng import TPNG
 from playsoundsimple import Sound
 from textual.widgets import Static, Label, ListItem, ListView
 from rich.progress import Progress, BarColumn, TextColumn
@@ -8,6 +7,7 @@ from typing import Optional
 # > Local Import's
 from .functions import *
 from .types import *
+from .asynctpng import AsyncTPNG
 
 # ! Objects
 class MusicListViewItem(ListItem):
@@ -132,12 +132,11 @@ class IndeterminateProgress(Static):
         self.upgrade_task(completed=c, total=t, description=d)
         self.update(self._bar)
 
-
 class ImageLabel(Label):
     def __init__(self, image: Optional[Image.Image]=None, fps: int=2):
         super().__init__("<image not found>", classes="image-label")
         self.image: Optional[Image.Image] = image
-        self.tpng_image: Optional[TPNG] = TPNG(self.image) if self.image is not None else None
+        self.tpng_image: Optional[AsyncTPNG] = AsyncTPNG(self.image) if self.image is not None else None
         self.last_image_size: Optional[Tuple[int, int]] = None
         self.image_text = "<image not found>"
         self._fps = fps
@@ -145,24 +144,24 @@ class ImageLabel(Label):
     def on_mount(self) -> None:
         self.update_render = self.set_interval(1/self._fps, self.update_image_label)
     
-    def update_image_label(self):
+    async def update_image_label(self):
         if self.tpng_image is not None:
             new_size = (self.size[0]-4, self.size[1])
             if self.last_image_size != new_size:
-                self.tpng_image.reset()
-                self.tpng_image.resize(new_size)
-                self.image_text = self.tpng_image.to_rich_image()
+                await self.tpng_image.reset()
+                await self.tpng_image.resize(new_size)
+                self.image_text = await self.tpng_image.to_rich_image()
                 self.last_image_size = new_size
         else:
             self.image_text = "<image not found>"
         
         self.update(self.image_text)
     
-    def update_image(self, image: Optional[Image.Image]=None) -> None:
+    async def update_image(self, image: Optional[Image.Image]=None) -> None:
         self.image = image
-        self.tpng_image = TPNG(self.image) if (self.image is not None) else None
+        self.tpng_image = await AsyncTPNG.async_init(self.image) if (self.image is not None) else None
         
         if self.tpng_image is not None:
-            self.tpng_image.reset()
-            self.tpng_image.resize((self.size[0]-4, self.size[1]))
-            self.image_text = self.tpng_image.to_rich_image()
+            await self.tpng_image.reset()
+            await self.tpng_image.resize((self.size[0]-4, self.size[1]))
+            self.image_text = await self.tpng_image.to_rich_image()
