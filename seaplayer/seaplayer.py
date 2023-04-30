@@ -19,7 +19,7 @@ from .objects import *
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.7"
+__version__ = "0.2.8"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 
@@ -191,7 +191,10 @@ class SeaPlayer(App):
                     sound = Sound.from_midi(path, path_sound_fonts=sfp)
                 else: sound = Sound(path)
             except: sound = None
-            if sound is not None: await self.music_list_view.aio_add_sound(sound)
+            
+            if sound is not None:
+                if not await self.music_list_view.music_list.aio_exists_sha1(sound):
+                    await self.music_list_view.aio_add_sound(sound)
     
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "plus-sound":
