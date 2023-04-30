@@ -4,3 +4,5 @@ mutagen==1.45.1
 textual==0.20.1
 rich==13.3.4
 aiofiles
+pillow
+numpy
