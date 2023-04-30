@@ -160,8 +160,9 @@ class ImageLabel(Label):
     
     def update_image(self, image: Optional[Image.Image]=None) -> None:
         self.image = image
-        self.tpng_image = TPNG(self.image) if self.image is not None else None
+        self.tpng_image = TPNG(self.image) if (self.image is not None) else None
         
-        self.tpng_image.reset()
-        self.tpng_image.resize((self.size[0]-4, self.size[1]))
-        self.image_text = self.tpng_image.to_rich_image()
+        if self.tpng_image is not None:
+            self.tpng_image.reset()
+            self.tpng_image.resize((self.size[0]-4, self.size[1]))
+            self.image_text = self.tpng_image.to_rich_image()
