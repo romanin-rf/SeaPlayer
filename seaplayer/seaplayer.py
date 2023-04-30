@@ -6,7 +6,7 @@ import asyncio
 from pathlib import Path
 # > Sound Works
 from playsoundsimple import Sound
-from playsoundsimple.Units import SOUND_FONTS_PATH
+from playsoundsimple.units import SOUND_FONTS_PATH
 # > Graphics
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
@@ -67,7 +67,7 @@ class SeaPlayerConfig:
 # ! Main
 class SeaPlayer(App):
     TITLE = f"{__title__} v{__version__}"
-    CSS_PATH = "ui.css"
+    CSS_PATH = os.path.join(os.path.dirname(__file__), "ui.css")
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit"),
         Binding(key="/", action="minus_rewind", description="Rewind -1 sec"),

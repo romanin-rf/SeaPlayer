@@ -1,8 +1,7 @@
 tpng.py==0.2.5
-playsoundsimple.py==0.6.1
+playsoundsimple.py==0.6.3
 mutagen==1.45.1
-textual==0.20.1
+textual>=0.20.1
 rich==13.3.4
 aiofiles
 pillow
-numpy
