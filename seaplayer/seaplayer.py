@@ -36,6 +36,7 @@ class SeaPlayer(App):
     # ! SeaPlayer Configuration
     config = SeaPlayerConfig(CONFIG_PATH)
     
+    
     # ! Textual Keys Configuration
     BINDINGS = [
         Binding(key=config.key_quit, action="quit", description="Quit"),
@@ -224,13 +225,13 @@ class SeaPlayer(App):
         if (sound:=await self.aio_gcs()) is not None:
             sound.set_pos(sound.get_pos()-self.config.rewind_count_seconds)
     
-    async def action_plus_volume(self) -> None:
+    async def action_plus_volume(self, max_volume_percent: float=config.max_volume_percent) -> None:
         if (sound:=await self.aio_gcs()) is not None:
-            if (vol:=round(sound.get_volume()+self.config.volume_change_percent, 2)) <= 2:
+            if (vol:=round(sound.get_volume()+self.config.volume_change_percent, 2)) <= max_volume_percent:
                 self.currect_volume = vol
                 sound.set_volume(vol)
     
-    async def action_minus_volume(self) -> None:
+    async def action_minus_volume(self, ) -> None:
         if (sound:=await self.aio_gcs()) is not None:
             if (vol:=round(sound.get_volume()-self.config.volume_change_percent, 2)) >= 0:
                 self.currect_volume = vol
