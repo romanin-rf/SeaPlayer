@@ -18,7 +18,7 @@ from .config import *
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.10"
+__version__ = "0.2.11"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 
@@ -38,12 +38,11 @@ class SeaPlayer(App):
     
     # ! Textual Keys Configuration
     BINDINGS = [
-        Binding(key="q", action="quit", description="Quit"),
-        Binding(key="й", action="quit", description="Quit", show=False),
-        Binding(key="/", action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
-        Binding(key="*", action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),
-        Binding(key="-", action="minus_volume", description=f"Volume -{round(config.volume_change_percent*100)}%"),
-        Binding(key="+", action="plus_volume", description=f"Volume +{round(config.volume_change_percent*100)}%")
+        Binding(key=config.key_quit, action="quit", description="Quit"),
+        Binding(key=config.key_rewind_back, action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
+        Binding(key=config.key_rewind_forward, action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),
+        Binding(key=config.key_volume_down, action="minus_volume", description=f"Volume -{round(config.volume_change_percent*100)}%"),
+        Binding(key=config.key_volume_up, action="plus_volume", description=f"Volume +{round(config.volume_change_percent*100)}%")
     ]
     
     # ! Template Configuration
@@ -240,5 +239,6 @@ class SeaPlayer(App):
     async def action_quit(self):
         self.started = False
         if (sound:=await self.aio_gcs()) is not None:
+            sound.unpause()
             sound.stop()
         return await super().action_quit()
