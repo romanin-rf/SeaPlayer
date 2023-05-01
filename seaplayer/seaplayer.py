@@ -87,7 +87,7 @@ class SeaPlayer(App):
             return "<sound not found>"
         return "<sound not selected>"
     
-    def gpms(self, modes: Tuple[str, str, str]=("(PLAY)", "(REPLAY SOUND)", "(REPLAY LIST)")) -> str: return modes[self.playback_mode]
+    def gpms(self, modes: Tuple[str, str, str]=("(MODE): PLAY", "(MODE): REPLAY SOUND", "(MODE): REPLAY LIST")) -> str: return modes[self.playback_mode]
     def switch_playback_mode(self) -> None:
         if self.playback_mode == 2: self.playback_mode = 0
         else: self.playback_mode += 1
@@ -123,7 +123,7 @@ class SeaPlayer(App):
         self.music_list_screen.border_title = "Playlist"
         
         self.music_list_view = MusicListView(classes="music-list-view")
-        self.music_list_add_input = Input(placeholder="Media filepath", classes="music-list-screen-add-input")
+        self.music_list_add_input = Input(placeholder="FilePath", classes="music-list-screen-add-input")
         
         # * Adding
         yield Header()
@@ -135,16 +135,16 @@ class SeaPlayer(App):
                     yield self.music_selected_label
                     yield IndeterminateProgress(getfunc=self.get_sound_seek)
                     with Horizontal(classes="box-buttons-sound-control"):
-                        yield Button("Play/Stop", id="button-play-stop", classes="button-sound-control")
+                        yield Button("Play/Stop", id="button-play-stop", variant="warning", classes="button-sound-control")
                         yield Static(classes="pass-one-width")
-                        yield Button("Pause/Unpause", id="button-pause-unpause", classes="button-sound-control")
+                        yield Button("Pause/Unpause", id="button-pause-unpause", variant="success", classes="button-sound-control")
                         yield Static(classes="pass-one-width")
-                        yield Button(self.gpms(), id="switch-playback-mode", classes="button-sound-control")
+                        yield Button(self.gpms(), id="switch-playback-mode", variant="primary", classes="button-sound-control")
         with self.music_list_screen:
             yield self.music_list_view
             with Horizontal(classes="music-list-screen-add-box"):
                 yield self.music_list_add_input
-                yield Button("+", id="plus-sound", classes="music-list-screen-add-button")
+                yield Button("+", id="plus-sound", variant="error", classes="music-list-screen-add-button")
         yield Footer()
         
         self.run_worker(self.update_selected_label_text, name="UPDATE_SELECTED_LABEL", group="UPDATE")
