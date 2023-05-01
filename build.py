@@ -16,6 +16,7 @@ DATA = {
     "seaplayer/objects.py": "seaplayer/",
     "seaplayer/seaplayer.py": "seaplayer/",
     "seaplayer/types.py": "seaplayer/",
+    "seaplayer/config.py": "seaplayer/",
     "seaplayer/asynctpng": "seaplayer/asynctpng/",
     "seaplayer/asynctpng/__init__.py": "seaplayer/asynctpng/",
     "seaplayer/asynctpng/tpng.py": "seaplayer/asynctpng/",
