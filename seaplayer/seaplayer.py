@@ -1,9 +1,7 @@
 import os
 import sys
 import glob
-import json
 import asyncio
-from pathlib import Path
 # > Sound Works
 from playsoundsimple import Sound
 from playsoundsimple.units import SOUND_FONTS_PATH
@@ -13,80 +11,51 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, Input, Button
 from textual.binding import Binding
 # > Typing
-from typing import Optional, Literal, Dict, Tuple, Any, List
+from typing import Optional, Literal, Tuple, List
 # > Local Imports
 from .objects import *
+from .config import *
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.9"
+__version__ = "0.2.10"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 
 # ! Contains
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): LOCALDIR = os.path.dirname(sys.executable)
-else: LOCALDIR = os.path.dirname(__file__)
-CONFIG_PATH = os.path.join(LOCALDIR, "config.json")
-
-# ! Config Class
-class SeaPlayerConfig:
-    @staticmethod
-    def load(filepath: Path, default: Dict[str, Any]) -> Dict[str, Any]:
-        with open(filepath) as file:
-            try: return json.load(file)
-            except: return default
-    
-    @staticmethod
-    def dump(filepath: Path, data: Dict[str, Any]) -> None:
-        with open(filepath, "w") as file:
-            json.dump(data, file)
-    
-    def __init__(
-        self,
-        filepath: str,
-        default: Dict[str, Any]={
-            "sound_font_path": None
-        }
-    ) -> bool:
-        self.filepath = Path(filepath)
-        self.default = default
-        
-        try:
-            self.config = self.load(self.filepath, self.default)
-        except:
-            self.dump(self.filepath, self.default)
-            self.config = self.default
-    
-    def __str__(self) -> str: return f"{self.__class__.__name__}({self.config})"
-    def __repr__(self) -> str: return self.__str__()
-    def refresh(self) -> None: self.dump(self.filepath, self.config)
-    
-    @property
-    def sound_font_path(self) -> Optional[str]: return self.config.get("sound_font_path")
+else: LOCALDIR = os.path.dirname(os.path.dirname(__file__))
+CONFIG_PATH = os.path.join(LOCALDIR, "config.properties")
 
 # ! Main
 class SeaPlayer(App):
+    # ! Textual Configuration
     TITLE = f"{__title__} v{__version__}"
     CSS_PATH = os.path.join(os.path.dirname(__file__), "ui.css")
+    
+    # ! SeaPlayer Configuration
+    config = SeaPlayerConfig(CONFIG_PATH)
+    
+    # ! Textual Keys Configuration
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit"),
-        Binding(key="/", action="minus_rewind", description="Rewind -1 sec"),
-        Binding(key="*", action="plus_rewind", description="Rewind +1 sec"),
-        Binding(key="-", action="minus_volume", description="Volume -1%"),
-        Binding(key="+", action="plus_volume", description="Volume +1%")
+        Binding(key="й", action="quit", description="Quit", show=False),
+        Binding(key="/", action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
+        Binding(key="*", action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),
+        Binding(key="-", action="minus_volume", description=f"Volume -{config.volume_change_percent}%"),
+        Binding(key="+", action="plus_volume", description=f"Volume +{config.volume_change_percent}%")
     ]
     
-    SEA_PLAYER_CONFIG = SeaPlayerConfig(CONFIG_PATH)
-    
+    # ! Template Configuration
     currect_sound_uuid: Optional[str] = None
     currect_volume = 1.0
     last_playback_status: Optional[Literal["Stoped", "Playing", "Paused"]] = None
     playback_mode: int = 0
     playback_mode_blocked: bool = False
     last_paths_globalized: List[str] = []
-    
     started: bool = True
     
+    # ! Functions, Workers and other...
     def gcs(self) -> Optional[Sound]:
         if self.currect_sound_uuid is not None:
             if (sound:=self.music_list_view.music_list.get(self.currect_sound_uuid)) is not None:
@@ -151,7 +120,7 @@ class SeaPlayer(App):
         
         # * Compositions Screen
         self.music_list_screen = Static(classes="screen-box")
-        self.music_list_screen.border_title = "Music List"
+        self.music_list_screen.border_title = "Playlist"
         
         self.music_list_view = MusicListView(classes="music-list-view")
         self.music_list_add_input = Input(placeholder="Media filepath", classes="music-list-screen-add-input")
@@ -184,10 +153,8 @@ class SeaPlayer(App):
         for path in self.last_paths_globalized:
             try:
                 if await aio_is_midi_file(path):
-                    if self.SEA_PLAYER_CONFIG.sound_font_path is not None:
-                        sfp = self.SEA_PLAYER_CONFIG.sound_font_path
-                    else:
-                        sfp = SOUND_FONTS_PATH
+                    if self.config.sound_font_path is not None: sfp = self.config.sound_font_path
+                    else: sfp = SOUND_FONTS_PATH
                     sound = Sound.from_midi(path, path_sound_fonts=sfp)
                 else: sound = Sound(path)
             except: sound = None
@@ -202,7 +169,7 @@ class SeaPlayer(App):
             self.music_list_add_input.value = ""
             
             if path.replace(" ", "") != "":
-                try: self.last_paths_globalized = glob.glob(path)
+                try: self.last_paths_globalized = glob.glob(path, recursive=self.config.recursive_search)
                 except: self.last_paths_globalized = []
                 if len(self.last_paths_globalized) > 0:
                     self.run_worker(self.add_sounds_to_list, name="ADD_MUSIC", group="ADD")
@@ -252,21 +219,21 @@ class SeaPlayer(App):
     
     async def action_plus_rewind(self):
         if (sound:=await self.aio_gcs()) is not None:
-            sound.set_pos(sound.get_pos()+1)
+            sound.set_pos(sound.get_pos()+self.config.rewind_count_seconds)
     
     async def action_minus_rewind(self):
         if (sound:=await self.aio_gcs()) is not None:
-            sound.set_pos(sound.get_pos()-1)
+            sound.set_pos(sound.get_pos()-self.config.rewind_count_seconds)
     
     async def action_plus_volume(self) -> None:
         if (sound:=await self.aio_gcs()) is not None:
-            if (vol:=round(sound.get_volume()+0.01, 2)) <= 2:
+            if (vol:=round(sound.get_volume()+self.config.volume_change_percent, 2)) <= 2:
                 self.currect_volume = vol
                 sound.set_volume(vol)
     
     async def action_minus_volume(self) -> None:
         if (sound:=await self.aio_gcs()) is not None:
-            if (vol:=round(sound.get_volume()-0.01, 2)) >= 0:
+            if (vol:=round(sound.get_volume()-self.config.volume_change_percent, 2)) >= 0:
                 self.currect_volume = vol
                 sound.set_volume(vol)
     

@@ -4,3 +4,4 @@ rich==13.3.4
 mutagen==1.45.1
 textual>=0.20.1
 playsoundsimple.py==0.6.3
+properties.py==1.0.2
