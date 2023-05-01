@@ -42,8 +42,8 @@ class SeaPlayer(App):
         Binding(key="й", action="quit", description="Quit", show=False),
         Binding(key="/", action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
         Binding(key="*", action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),
-        Binding(key="-", action="minus_volume", description=f"Volume -{config.volume_change_percent}%"),
-        Binding(key="+", action="plus_volume", description=f"Volume +{config.volume_change_percent}%")
+        Binding(key="-", action="minus_volume", description=f"Volume -{round(config.volume_change_percent*100)}%"),
+        Binding(key="+", action="plus_volume", description=f"Volume +{round(config.volume_change_percent*100)}%")
     ]
     
     # ! Template Configuration
