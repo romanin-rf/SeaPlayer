@@ -2,7 +2,9 @@ import os
 import asyncio
 import aiofiles
 from io import BytesIO
+# > Image Works
 from PIL import Image
+# > Sound Works
 from playsoundsimple import Sound
 # > Typing
 from typing import Literal, Tuple, Optional, Iterable, TypeVar

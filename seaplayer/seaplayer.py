@@ -2,11 +2,8 @@ import os
 import sys
 import glob
 import asyncio
-import base64
-import platform
 # > Sound Works
 from playsoundsimple import Sound
-from textual.screen import Screen
 from playsoundsimple.units import SOUND_FONTS_PATH
 # > Graphics
 from textual.app import App, ComposeResult
@@ -18,37 +15,30 @@ from typing import Optional, Literal, Tuple, List
 # > Local Imports
 from .objects import *
 from .config import *
+from .screens import Unknown, UNKNOWN_OPEN_KEY
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.12"
+__version__ = "v0.3.0-unrelease.1"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
 
 # ! Contains
-TEXT = b'CkFuIGVycm9yIGhhcyBvY2N1cnJlZC4gVG8gY29udGludWU6CgpQcmVzcyBFbnRlciB0byByZXR1cm4gdG8ge3N5c3RlbX0sIG9yCgpQcmVzcyBDVFJMK0FMVCtERUwgdG8gcmVzdGFydCB5b3VyIGNvbXB1dGVyLiBJZiB5b3UgZG8gdGhpcywKeW91IHdpbGwgbG9zZSBhbnkgdW5zYXZlZCBpbmZvcm1hdGlvbiBpbiBhbGwgb3BlbiBhcHBsaWNhdGlvbnMuCgpFcnJvcjogMEUgOiAwMTZGIDogQkZGOUIzRDQK'
-TEXT = base64.b64decode(TEXT).decode(errors="ignore").format(system=platform.system())
-UNKNOWN_KEY = base64.b64decode(b"Yg==").decode(errors="ignore")
-
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): LOCALDIR = os.path.dirname(sys.executable)
 else: LOCALDIR = os.path.dirname(os.path.dirname(__file__))
 CONFIG_PATH = os.path.join(LOCALDIR, "config.properties")
-
-# ! Screens
-class Unknown(Screen):
-    BINDINGS = [("escape", "app.pop_screen", "Exit")]
-
-    def compose(self) -> ComposeResult:
-        yield Static(f" {platform.system()} ", id="unknown-title")
-        yield Static(TEXT)
-        yield Static("Press any key to continue [blink]_[/]", id="unknown-any-key")
+CSS_LOCALDIR = os.path.join(os.path.dirname(__file__), "css")
 
 # ! Main
 class SeaPlayer(App):
     # ! Textual Configuration
     TITLE = f"{__title__} v{__version__}"
-    CSS_PATH = os.path.join(os.path.dirname(__file__), "ui.css")
+    CSS_PATH = [
+        os.path.join(CSS_LOCALDIR, "seaplayer.css"),
+        os.path.join(CSS_LOCALDIR, "configurate.css"),
+        os.path.join(CSS_LOCALDIR, "unknown.css")
+    ]
     SCREENS = {"unknown": Unknown()}
     
     # ! SeaPlayer Configuration
@@ -58,7 +48,7 @@ class SeaPlayer(App):
     
     # ! Textual Keys Configuration
     BINDINGS = [
-        Binding(key=UNKNOWN_KEY, action="push_screen('unknown')", description="None", show=False),
+        Binding(key=UNKNOWN_OPEN_KEY, action="push_screen('unknown')", description="None", show=False),
         Binding(key=config.key_quit, action="quit", description="Quit"),
         Binding(key=config.key_rewind_back, action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
         Binding(key=config.key_rewind_forward, action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),

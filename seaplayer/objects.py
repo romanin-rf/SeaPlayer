@@ -5,9 +5,9 @@ from rich.progress import Progress, BarColumn, TextColumn
 # > Typing
 from typing import Optional
 # > Local Import's
-from .functions import *
 from .types import *
-from .asynctpng import AsyncTPNG
+from .functions import *
+from .modules.asynctpng import AsyncTPNG
 
 # ! Objects
 class MusicListViewItem(ListItem):
