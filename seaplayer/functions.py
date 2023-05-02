@@ -1,13 +1,28 @@
 import os
+import asyncio
 import aiofiles
 from io import BytesIO
 from PIL import Image
 from playsoundsimple import Sound
 # > Typing
-from typing import Literal, Tuple, Optional
+from typing import Literal, Tuple, Optional, Iterable, TypeVar
 
-def get_bar_status() -> Tuple[str, Optional[float], Optional[float]]: return "", None, None
+# ! Types
+T = TypeVar("T")
 
+# ! Async Functions
+async def aiter(it: Iterable[T]):
+    for i in it:
+        yield i
+        await asyncio.sleep(0)
+
+async def get_bar_status() -> Tuple[str, Optional[float], Optional[float]]: return "", None, None
+
+async def aio_is_midi_file(filepath: str):
+    async with aiofiles.open(filepath, 'rb') as file:
+        return await file.read(4) == b"MThd"
+
+# ! Functions
 def check_status(sound: Sound) -> Literal["Stoped", "Playing", "Paused"]:
     if sound.playing:
         if sound.paused: return "Paused"
@@ -28,6 +43,3 @@ def is_midi_file(filepath: str) -> bool:
     with open(filepath, 'rb') as file:
         return file.read(4) == b"MThd"
 
-async def aio_is_midi_file(filepath: str):
-    async with aiofiles.open(filepath, 'rb') as file:
-        return (await file.read(4)) == b"MThd"

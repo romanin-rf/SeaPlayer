@@ -2,8 +2,11 @@ import os
 import sys
 import glob
 import asyncio
+import base64
+import platform
 # > Sound Works
 from playsoundsimple import Sound
+from textual.screen import Screen
 from playsoundsimple.units import SOUND_FONTS_PATH
 # > Graphics
 from textual.app import App, ComposeResult
@@ -18,27 +21,44 @@ from .config import *
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.2.11"
+__version__ = "0.2.12"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
+__url__ = "https://github.com/romanin-rf/SeaPlayer"
 
 # ! Contains
+TEXT = b'CkFuIGVycm9yIGhhcyBvY2N1cnJlZC4gVG8gY29udGludWU6CgpQcmVzcyBFbnRlciB0byByZXR1cm4gdG8ge3N5c3RlbX0sIG9yCgpQcmVzcyBDVFJMK0FMVCtERUwgdG8gcmVzdGFydCB5b3VyIGNvbXB1dGVyLiBJZiB5b3UgZG8gdGhpcywKeW91IHdpbGwgbG9zZSBhbnkgdW5zYXZlZCBpbmZvcm1hdGlvbiBpbiBhbGwgb3BlbiBhcHBsaWNhdGlvbnMuCgpFcnJvcjogMEUgOiAwMTZGIDogQkZGOUIzRDQK'
+TEXT = base64.b64decode(TEXT).decode(errors="ignore").format(system=platform.system())
+UNKNOWN_KEY = base64.b64decode(b"Yg==").decode(errors="ignore")
+
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): LOCALDIR = os.path.dirname(sys.executable)
 else: LOCALDIR = os.path.dirname(os.path.dirname(__file__))
 CONFIG_PATH = os.path.join(LOCALDIR, "config.properties")
+
+# ! Screens
+class Unknown(Screen):
+    BINDINGS = [("escape", "app.pop_screen", "Exit")]
+
+    def compose(self) -> ComposeResult:
+        yield Static(f" {platform.system()} ", id="unknown-title")
+        yield Static(TEXT)
+        yield Static("Press any key to continue [blink]_[/]", id="unknown-any-key")
 
 # ! Main
 class SeaPlayer(App):
     # ! Textual Configuration
     TITLE = f"{__title__} v{__version__}"
     CSS_PATH = os.path.join(os.path.dirname(__file__), "ui.css")
+    SCREENS = {"unknown": Unknown()}
     
     # ! SeaPlayer Configuration
     config = SeaPlayerConfig(CONFIG_PATH)
     
+    max_volume_percent: float = config.max_volume_percent
     
     # ! Textual Keys Configuration
     BINDINGS = [
+        Binding(key=UNKNOWN_KEY, action="push_screen('unknown')", description="None", show=False),
         Binding(key=config.key_quit, action="quit", description="Quit"),
         Binding(key=config.key_rewind_back, action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
         Binding(key=config.key_rewind_forward, action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),
@@ -48,6 +68,7 @@ class SeaPlayer(App):
     
     # ! Template Configuration
     currect_sound_uuid: Optional[str] = None
+    currect_sound: Optional[Sound] = None
     currect_volume = 1.0
     last_playback_status: Optional[Literal["Stoped", "Playing", "Paused"]] = None
     playback_mode: int = 0
@@ -57,34 +78,30 @@ class SeaPlayer(App):
     
     # ! Functions, Workers and other...
     def gcs(self) -> Optional[Sound]:
-        if self.currect_sound_uuid is not None:
-            if (sound:=self.music_list_view.music_list.get(self.currect_sound_uuid)) is not None:
-                return sound
+        if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
+            self.currect_sound = self.music_list_view.music_list.get(self.currect_sound_uuid)
+        return self.currect_sound
     
     async def aio_gcs(self):
-        if self.currect_sound_uuid is not None:
-            if (sound:=await self.music_list_view.music_list.aio_get(self.currect_sound_uuid)) is not None:
-                return sound
-    
-    def get_sound_seek(self) -> Tuple[str, Optional[float], Optional[float]]:
-        if (sound:=self.gcs()) is not None:
+        if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
+            self.currect_sound = await self.music_list_view.music_list.aio_get(self.currect_sound_uuid)
+        return self.currect_sound
+
+    async def get_sound_seek(self) -> Tuple[str, Optional[float], Optional[float]]:
+        if (sound:=await self.aio_gcs()) is not None:
             pos = sound.get_pos()
             minutes, seconds = round(pos // 60), round(pos % 60)
             return f"{minutes}:{str(seconds).rjust(2,'0')} | {str(round(sound.get_volume()*100)).rjust(3)}%", pos, sound.duration
         return "0:00 |   0%", None, None
     
     def get_sound_selected_label_text(self) -> str:
-        if self.currect_sound_uuid is not None:
-            if (sound:=self.music_list_view.music_list.get(self.currect_sound_uuid)) is not None:
-                return f"({check_status(sound)}): {get_sound_basename(sound)}"
-            return "<sound not found>"
+        if (sound:=self.gcs()) is not None:
+            return f"({check_status(sound)}): {get_sound_basename(sound)}"
         return "<sound not selected>"
     
     async def aio_get_sound_selected_label_text(self) -> str:
-        if self.currect_sound_uuid is not None:
-            if (sound:=await self.music_list_view.music_list.aio_get(self.currect_sound_uuid)) is not None:
-                return f"({check_status(sound)}): {get_sound_basename(sound)}"
-            return "<sound not found>"
+        if (sound:=await self.aio_gcs()) is not None:
+            return f"({check_status(sound)}): {get_sound_basename(sound)}"
         return "<sound not selected>"
     
     def gpms(self, modes: Tuple[str, str, str]=("(MODE): PLAY", "(MODE): REPLAY SOUND", "(MODE): REPLAY LIST")) -> str: return modes[self.playback_mode]
@@ -102,9 +119,9 @@ class SeaPlayer(App):
                 if (status == "Stoped") and (self.last_playback_status == "Playing"):
                     if self.playback_mode == 1: sound.play()
                     elif self.playback_mode == 2:
-                        if (sound:=await self.set_sound_for_playback(sound_uuid:=self.music_list_view.get_next_sound_uuid(self.currect_sound_uuid), True)) is not None:
+                        if (sound:=await self.set_sound_for_playback(sound_uuid:=await self.music_list_view.aio_get_next_sound_uuid(self.currect_sound_uuid), True)) is not None:
                             self.playback_mode_blocked = True
-                            self.music_list_view.select_list_item_from_sound_uuid(sound_uuid)
+                            await self.music_list_view.aio_select_list_item_from_sound_uuid(sound_uuid)
                             sound.play()
                 
                 self.last_playback_status = status
@@ -150,7 +167,7 @@ class SeaPlayer(App):
         self.run_worker(self.update_selected_label_text, name="UPDATE_SELECTED_LABEL", group="UPDATE")
     
     async def add_sounds_to_list(self) -> None:
-        for path in self.last_paths_globalized:
+        async for path in aiter(self.last_paths_globalized):
             try:
                 if await aio_is_midi_file(path):
                     if self.config.sound_font_path is not None: sfp = self.config.sound_font_path
@@ -162,6 +179,30 @@ class SeaPlayer(App):
             if sound is not None:
                 if not await self.music_list_view.music_list.aio_exists_sha1(sound):
                     await self.music_list_view.aio_add_sound(sound)
+    
+    async def currect_sound_stop(self, sound: Optional[Sound]=None):
+        if sound is None: sound = await self.aio_gcs()
+        if sound is not None:
+            self.last_playback_status = "Stoped"
+            sound.stop()
+    
+    async def currect_sound_play(self, sound: Optional[Sound]=None):
+        if sound is None: sound = await self.aio_gcs()
+        if sound is not None:
+            self.last_playback_status = "Playing"
+            sound.play()
+    
+    async def currect_sound_pause(self, sound: Optional[Sound]=None):
+        if sound is None: sound = await self.aio_gcs()
+        if sound is not None:
+            self.last_playback_status = "Paused"
+            sound.pause()
+    
+    async def currect_sound_unpause(self, sound: Optional[Sound]=None):
+        if sound is None: sound = await self.aio_gcs()
+        if sound is not None:
+            self.last_playback_status = "Playing"
+            sound.unpause()
     
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "plus-sound":
@@ -176,29 +217,23 @@ class SeaPlayer(App):
         
         elif (event.button.id == "button-play-stop") or (event.button.id == "button-pause-unpause"):
             if (sound:=await self.aio_gcs()) is not None:
-                
                 if event.button.id == "button-play-stop":
-                    if sound.playing:
-                        self.last_playback_status = "Stoped"
-                        sound.stop()
-                    else:
-                        self.last_playback_status = "Playing"
-                        sound.play()
+                    if sound.playing: await self.currect_sound_stop(sound)
+                    else: await self.currect_sound_play(sound)
                 elif event.button.id == "button-pause-unpause":
                     if sound.playing:
-                        if sound.paused:
-                            self.last_playback_status = "Playing"
-                            sound.unpause()
-                        else:
-                            self.last_playback_status = "Paused"
-                            sound.pause()
-                
+                        if sound.paused: await self.currect_sound_unpause(sound)
+                        else: await self.currect_sound_pause(sound)
                 self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
         elif event.button.id == "switch-playback-mode":
             self.switch_playback_mode()
             event.button.label = self.gpms()
     
-    async def set_sound_for_playback(self, sound_uuid: Optional[str], playback_mode_blocked: Optional[bool]=None) -> Optional[Sound]:
+    async def set_sound_for_playback(
+        self,
+        sound_uuid: Optional[str],
+        playback_mode_blocked: Optional[bool]=None
+    ) -> Optional[Sound]:
         if playback_mode_blocked is not None: self.playback_mode_blocked = playback_mode_blocked
         if sound_uuid is not None:
             if not self.playback_mode_blocked:
@@ -211,6 +246,7 @@ class SeaPlayer(App):
             if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
                 sound.set_volume(self.currect_volume)
                 await self.music_image.update_image(image_from_bytes(sound.icon_data))
+            self.currect_sound = sound
             self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
             return sound
     
@@ -225,13 +261,13 @@ class SeaPlayer(App):
         if (sound:=await self.aio_gcs()) is not None:
             sound.set_pos(sound.get_pos()-self.config.rewind_count_seconds)
     
-    async def action_plus_volume(self, max_volume_percent: float=config.max_volume_percent) -> None:
+    async def action_plus_volume(self) -> None:
         if (sound:=await self.aio_gcs()) is not None:
-            if (vol:=round(sound.get_volume()+self.config.volume_change_percent, 2)) <= max_volume_percent:
+            if (vol:=round(sound.get_volume()+self.config.volume_change_percent, 2)) <= self.max_volume_percent:
                 self.currect_volume = vol
                 sound.set_volume(vol)
     
-    async def action_minus_volume(self, ) -> None:
+    async def action_minus_volume(self) -> None:
         if (sound:=await self.aio_gcs()) is not None:
             if (vol:=round(sound.get_volume()-self.config.volume_change_percent, 2)) >= 0:
                 self.currect_volume = vol

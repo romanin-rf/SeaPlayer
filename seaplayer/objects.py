@@ -28,7 +28,7 @@ class MusicListViewItem(ListItem):
         self.compose_add_child(self.first_subtitle_label)
         self.compose_add_child(self.second_subtitle_label)
     
-    def update_labels(
+    async def update_labels(
         self,
         title: Optional[str]=None,
         first_subtitle: Optional[str]=None,
@@ -87,11 +87,13 @@ class MusicListView(ListView):
         for idx, item in enumerate(self.children):
             if item.sound_uuid == sound_uuid:
                 return idx
+    
     def get_item_from_index(self, index: int) -> Optional[MusicListViewItem]:
         try: return self.children[index]
         except:
             try: return self.children[0]
             except: pass
+    
     def get_next_sound_uuid(self, sound_uuid: str) -> Optional[str]:
         if (index:=self.get_item_index_from_sound_uuid(sound_uuid)) is not None:
             if (mli:=self.get_item_from_index(index+1)) is not None:
@@ -109,6 +111,32 @@ class MusicListView(ListView):
                 )
             )
         except: pass
+    
+    async def aio_get_item_from_index(self, index: int) -> Optional[MusicListViewItem]:
+        try: return self.children[index]
+        except:
+            try: return self.children[0]
+            except: pass
+    
+    async def aio_get_item_index_from_sound_uuid(self, sound_uuid: str) -> Optional[int]:
+        item: MusicListViewItem
+        async for idx, item in aiter(enumerate(self.children)):
+            if item.sound_uuid == sound_uuid:
+                return idx
+    
+    async def aio_get_next_sound_uuid(self, sound_uuid: str) -> Optional[str]:
+        if (index:=await self.aio_get_item_index_from_sound_uuid(sound_uuid)) is not None:
+            if (mli:=await self.aio_get_item_from_index(index+1)) is not None:
+                return mli.sound_uuid
+    
+    async def aio_select_list_item_from_sound_uuid(self, sound_uuid: str) -> None:
+        try:
+            super().on_list_item__child_clicked(
+                ListItem._ChildClicked(
+                    self.children[await self.aio_get_item_index_from_sound_uuid(sound_uuid)]
+                )
+            )
+        except: pass
 
 
 class IndeterminateProgress(Static):
@@ -122,14 +150,15 @@ class IndeterminateProgress(Static):
     def on_mount(self) -> None:
         self.update_render = self.set_interval(1/self._fps, self.update_progress_bar)
     
-    def upgrade_task(self, description: str="", completed: Optional[float]=None, total: Optional[float]=None) -> None:
+    async def upgrade_task(self, description: str="", completed: Optional[float]=None, total: Optional[float]=None) -> None:
         self._bar.update(self._task_id, total=total, completed=completed, description=description)
     
-    def update_progress_bar(self) -> None:
-        d, c, t = self._getfunc()
+    async def update_progress_bar(self) -> None:
+        d, c, t = await self._getfunc()
         if self._bar.columns[0].bar_width != (self.size[0]-len(d)-1):
             self._bar.columns[0].bar_width = self.size[0]-len(d)-1
-        self.upgrade_task(completed=c, total=t, description=d)
+        
+        await self.upgrade_task(completed=c, total=t, description=d)
         self.update(self._bar)
 
 class ImageLabel(Label):
