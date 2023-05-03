@@ -19,7 +19,7 @@ from .screens import Unknown, UNKNOWN_OPEN_KEY, Configurate
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.3.0-unrelease.2"
+__version__ = "0.3.0-unrelease.3"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -40,7 +40,10 @@ class SeaPlayer(App):
         os.path.join(CSS_LOCALDIR, "unknown.css"),
         os.path.join(CSS_LOCALDIR, "objects.css")
     ]
-    SCREENS = {"unknown": Unknown(), "configurate": Configurate()}
+    SCREENS = {
+        "unknown": Unknown(id="screen_unknown"),
+        "configurate": Configurate(id="screen_configurate")
+    }
     
     # ! SeaPlayer Configuration
     config = SeaPlayerConfig(CONFIG_PATH)
@@ -67,6 +70,11 @@ class SeaPlayer(App):
     playback_mode_blocked: bool = False
     last_paths_globalized: List[str] = []
     started: bool = True
+    
+    # ! Inherited Functions
+    async def action_push_screen(self, screen: str) -> None:
+        if self.SCREENS[screen].id != self.screen.id:
+            await super().action_push_screen(screen)
     
     # ! Functions, Workers and other...
     def gcs(self) -> Optional[Sound]:

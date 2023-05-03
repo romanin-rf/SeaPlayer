@@ -43,7 +43,7 @@
 /* ! Configurate List */
 .configurate-list-view {
     border: solid cadetblue;
-    /*border: solid darkcyan;*/
+    border-title-align: center;
     height: 1fr;
     width: 1fr;
 }

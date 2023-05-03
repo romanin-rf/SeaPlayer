@@ -1,15 +1,16 @@
 from PIL import Image
 from playsoundsimple import Sound
-from textual.widgets import Static, Label, ListItem, ListView
+from textual.widgets import Static, Label, ListItem, ListView, Input
 from rich.progress import Progress, BarColumn, TextColumn
 # > Typing
-from typing import Optional
+from typing import Optional, Any, Tuple, TypeVar
 # > Local Import's
 from .types import *
 from .functions import *
 from .modules.asynctpng import AsyncTPNG
 
-# ! Objects
+# ! Types
+T = TypeVar('T')
 
 # ! Music List
 class MusicListViewItem(ListItem):
@@ -198,13 +199,43 @@ class ImageLabel(Label):
             await self.tpng_image.resize((self.size[0]-4, self.size[1]))
             self.image_text = await self.tpng_image.to_rich_image()
 
+# ! Input Field Functions
+async def _conv(value: str) -> Tuple[bool, Optional[T]]: return True, value
+async def _submit(input: Input, value: T) -> None: ...
+def _update_placeholder() -> str: return ""
+
+# ! Input Field
+class InputField(Input):
+    def __init__(
+        self,
+        conv=_conv,
+        submit=_submit,
+        update_placeholder=_update_placeholder,
+        **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+        self._conv = conv
+        self._submit = submit
+        self._update_placeholder = update_placeholder
+        self.placeholder = self._update_placeholder()
+    
+    async def action_submit(self):
+        value = self.value
+        self.value = ""
+        if value.replace(" ", "") != "":
+            ok, c_value = await self._conv(value)
+            if ok:
+                await self._submit(self, c_value)
+        self.placeholder = self._update_placeholder()
+
 # ! Configurate List
 class ConfigurateListItem(ListItem):
     def __init__(
         self,
+        *children,
         title: str="",
         desc: str="",
-        *children, **kwargs
+        **kwargs
     ):
         kwargs["classes"] = "configurate-list-view-item"
         super(ConfigurateListItem, self).__init__(*children, **kwargs)
