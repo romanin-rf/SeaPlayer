@@ -89,6 +89,7 @@ class Configurate(Screen):
             desc=desc+(" [red](restart required)[/]" if restart_required else "")
         )
     
+    # ! Convert Types
     @staticmethod
     def _conv_path(value: str) -> str:
         path = Path(value)
@@ -136,7 +137,7 @@ class Configurate(Screen):
             self.create_configurator_type(
                 "recursive_search",
                 "{Playlist}: Recursive Search ([green]bool[/])",
-                "Recursive file search.", self._conv_bool
+                "Recursive file search.", self._conv_bool, False
             ),
             self.create_configurator_keys("key_quit", "{Key}: QUIT ([green]str[/])", "Сlose the app."),
             self.create_configurator_keys("key_rewind_forward", "{Key}: Rewind Forward ([green]str[/])", "Forwards rewinding."),
