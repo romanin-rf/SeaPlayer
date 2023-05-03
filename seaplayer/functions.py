@@ -44,4 +44,3 @@ def get_sound_basename(sound: Sound) -> str:
 def is_midi_file(filepath: str) -> bool:
     with open(filepath, 'rb') as file:
         return file.read(4) == b"MThd"
-

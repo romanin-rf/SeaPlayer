@@ -1,6 +1,6 @@
 import properties
 from pathlib import Path
-from typing import Dict, Any, Optional, TypeVar, Union, Tuple
+from typing import Dict, Any, Optional, TypeVar, Union
 
 T = TypeVar("T")
 

@@ -1,10 +1,12 @@
-import os
 import base64
 import platform
+from pathlib import Path
 # > Graphics
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Static, ListView, ListItem, Header, Footer, Input, Label
+from textual.widgets import Static, Header, Footer
+# > Typing
+from typing import Optional, Any, Tuple
 # > Local Imports
 from .config import SeaPlayerConfig
 from .objects import ConfigurateListView, ConfigurateListItem, InputField
@@ -43,51 +45,103 @@ class Configurate(Screen):
         async def an_uac(input: InputField, value: str) -> None: await self._uac(attr_name, input, value)
         return an_uac
     
+    @staticmethod
+    async def _conv(tp: type, value: str) -> Tuple[bool, Optional[Any]]:
+        try: return True, eval("tp(value)")
+        except: return False, None
+    
+    def _generate_conv(self, tp: type):
+        async def _tp_conv(value: str): return await self._conv(tp, value)
+        return _tp_conv
+    
+    # ! Configurator Generators
+    def create_configurator_keys(
+        self,
+        attr_name: str,
+        title: str="",
+        desc: str="",
+        restart_required: bool=True
+    ) -> None:
+        return ConfigurateListItem(
+            InputField(
+                submit=self._generate_uac(attr_name),
+                update_placeholder=self._generate_upfif(attr_name)
+            ),
+            title=title,
+            desc=desc+(" [red](restart required)[/]" if restart_required else "")
+        )
+    
+    def create_configurator_type(
+        self,
+        attr_name: str,
+        title: str="",
+        desc: str="",
+        _type: type=str,
+        restart_required: bool=True
+    ) -> None:
+        return ConfigurateListItem(
+            InputField(
+                conv=self._generate_conv(_type),
+                submit=self._generate_uac(attr_name),
+                update_placeholder=self._generate_upfif(attr_name)
+            ),
+            title=title,
+            desc=desc+(" [red](restart required)[/]" if restart_required else "")
+        )
+    
+    @staticmethod
+    def _conv_path(value: str) -> str:
+        path = Path(value)
+        if not(path.exists() and path.is_file()): raise FileNotFoundError(value)
+        return value
+    
+    @staticmethod
+    def _conv_optional(tp: type):
+        def _m_conv_optional(value: str):
+            if value.lower() != "none": return tp(value)
+        return _m_conv_optional
+    
+    @staticmethod
+    def _conv_bool(value: str):
+        if value.lower() == "true": return True
+        elif value.lower() == "false": return False
+        else: raise TypeError(value, bool)
+    
     # ! Configurate Main Functions
     def compose(self) -> ComposeResult:
         self.app_config: SeaPlayerConfig = self.app.config
         
         yield Header()
         yield ConfigurateListView(
-            ConfigurateListItem(
-                InputField(
-                    submit=self._generate_uac("key_quit"),
-                    update_placeholder=self._generate_upfif("key_quit")
-                ),
-                title="(Key): QUIT",
-                desc="Сlose the app. [red](restart required)[/]"
+            self.create_configurator_type(
+                "sound_font_path",
+                "{Sound}: Sound Font Path ([green]Path[white][[/]str[white]][/][/] [white]|[/] [blue]None[/])",
+                "Path to SF2-file.", self._conv_optional(self._conv_path), False
             ),
-            ConfigurateListItem(
-                InputField(
-                    submit=self._generate_uac("key_rewind_forward"),
-                    update_placeholder=self._generate_upfif("key_rewind_forward")
-                ),
-                title="(Key): Rewind Forward",
-                desc="Forwards rewinding. [red](restart required)[/]"
+            self.create_configurator_type(
+                "volume_change_percent",
+                "{Playback}: Volume Change Percent ([green]float[/])",
+                "Percentage by which the volume changes when the special keys are pressed.", float
             ),
-            ConfigurateListItem(
-                InputField(
-                    submit=self._generate_uac("key_rewind_back"),
-                    update_placeholder=self._generate_upfif("key_rewind_back")
-                ),
-                title="(Key): Rewind Back",
-                desc="Backwards rewinding. [red](restart required)[/]"
+            self.create_configurator_type(
+                "rewind_count_seconds",
+                "{Playback}: Rewind Count Seconds ([green]int[/])",
+                "The value of the seconds by which the current sound will be rewound.", int
             ),
-            ConfigurateListItem(
-                InputField(
-                    submit=self._generate_uac("key_volume_up"),
-                    update_placeholder=self._generate_upfif("key_volume_up")
-                ),
-                title="(Key): Volume +",
-                desc="Turn up the volume. [red](restart required)[/]"
+            self.create_configurator_type(
+                "max_volume_percent",
+                "{Playback}: Max Volume Percent ([green]float[/])",
+                "Maximum volume value.", float
             ),
-            ConfigurateListItem(
-                InputField(
-                    submit=self._generate_uac("key_volume_down"),
-                    update_placeholder=self._generate_upfif("key_volume_down")
-                ),
-                title="(Key): Volume -",
-                desc="Turn down the volume. [red](restart required)[/]"
-            )
+            self.create_configurator_type(
+                "recursive_search",
+                "{Playlist}: Recursive Search ([green]bool[/])",
+                "Recursive file search.", self._conv_bool
+            ),
+            self.create_configurator_keys("key_quit", "{Key}: QUIT ([green]str[/])", "Сlose the app."),
+            self.create_configurator_keys("key_rewind_forward", "{Key}: Rewind Forward ([green]str[/])", "Forwards rewinding."),
+            self.create_configurator_keys("key_rewind_back", "{Key}: Rewind Back ([green]str[/])", "Backwards rewinding."),
+            self.create_configurator_keys("key_volume_up", "{Key}: Volume + ([green]str[/])", "Turn up the volume."),
+            self.create_configurator_keys("key_volume_down", "{Key}: Volume - ([green]str[/])", "Turn down the volume.")
         )
         yield Footer()

@@ -4,7 +4,7 @@ from playsoundsimple import Sound
 # > Typing
 from typing import Dict, Optional
 
-
+# ! Music List
 class MusicList:
     @staticmethod
     def get_file_sha1(path: str, buffer_size: int=65536) -> str:

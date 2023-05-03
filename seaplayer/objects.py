@@ -3,7 +3,7 @@ from playsoundsimple import Sound
 from textual.widgets import Static, Label, ListItem, ListView, Input
 from rich.progress import Progress, BarColumn, TextColumn
 # > Typing
-from typing import Optional, Any, Tuple, TypeVar
+from typing import Optional, Tuple, TypeVar
 # > Local Import's
 from .types import *
 from .functions import *
