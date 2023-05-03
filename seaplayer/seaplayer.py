@@ -15,11 +15,11 @@ from typing import Optional, Literal, Tuple, List
 # > Local Imports
 from .objects import *
 from .config import *
-from .screens import Unknown, UNKNOWN_OPEN_KEY
+from .screens import Unknown, UNKNOWN_OPEN_KEY, Configurate
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "v0.3.0-unrelease.1"
+__version__ = "0.3.0-unrelease.2"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -37,9 +37,10 @@ class SeaPlayer(App):
     CSS_PATH = [
         os.path.join(CSS_LOCALDIR, "seaplayer.css"),
         os.path.join(CSS_LOCALDIR, "configurate.css"),
-        os.path.join(CSS_LOCALDIR, "unknown.css")
+        os.path.join(CSS_LOCALDIR, "unknown.css"),
+        os.path.join(CSS_LOCALDIR, "objects.css")
     ]
-    SCREENS = {"unknown": Unknown()}
+    SCREENS = {"unknown": Unknown(), "configurate": Configurate()}
     
     # ! SeaPlayer Configuration
     config = SeaPlayerConfig(CONFIG_PATH)
@@ -48,8 +49,9 @@ class SeaPlayer(App):
     
     # ! Textual Keys Configuration
     BINDINGS = [
-        Binding(key=UNKNOWN_OPEN_KEY, action="push_screen('unknown')", description="None", show=False),
         Binding(key=config.key_quit, action="quit", description="Quit"),
+        Binding(key=UNKNOWN_OPEN_KEY, action="push_screen('unknown')", description="None", show=False),
+        Binding(key="c,с", action="push_screen('configurate')", description="Configurate"),
         Binding(key=config.key_rewind_back, action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
         Binding(key=config.key_rewind_forward, action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),
         Binding(key=config.key_volume_down, action="minus_volume", description=f"Volume -{round(config.volume_change_percent*100)}%"),
@@ -99,7 +101,7 @@ class SeaPlayer(App):
         if self.playback_mode == 2: self.playback_mode = 0
         else: self.playback_mode += 1
     
-    async def update_selected_label_text(self) -> None:
+    async def update_loop_playback(self) -> None:
         while self.started:
             if (sound:=await self.aio_gcs()) is not None:
                 status = check_status(sound)
@@ -115,7 +117,7 @@ class SeaPlayer(App):
                             sound.play()
                 
                 self.last_playback_status = status
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.33)
     
     def compose(self) -> ComposeResult:
         # * Play Screen
@@ -129,7 +131,7 @@ class SeaPlayer(App):
         self.music_list_screen = Static(classes="screen-box")
         self.music_list_screen.border_title = "Playlist"
         
-        self.music_list_view = MusicListView(classes="music-list-view")
+        self.music_list_view = MusicListView()
         self.music_list_add_input = Input(placeholder="FilePath", classes="music-list-screen-add-input")
         
         # * Adding
@@ -154,7 +156,12 @@ class SeaPlayer(App):
                 yield Button("+", id="plus-sound", variant="error", classes="music-list-screen-add-button")
         yield Footer()
         
-        self.run_worker(self.update_selected_label_text, name="UPDATE_SELECTED_LABEL", group="UPDATE")
+        self.run_worker(
+            self.update_loop_playback,
+            name="PLAYBACK_CONTROLLER",
+            group="CONTROL_UPDATER-LOOP",
+            description="Control of playback modes and status updates."
+        )
     
     async def add_sounds_to_list(self) -> None:
         async for path in aiter(self.last_paths_globalized):
@@ -203,7 +210,12 @@ class SeaPlayer(App):
                 try: self.last_paths_globalized = glob.glob(path, recursive=self.config.recursive_search)
                 except: self.last_paths_globalized = []
                 if len(self.last_paths_globalized) > 0:
-                    self.run_worker(self.add_sounds_to_list, name="ADD_MUSIC", group="ADD")
+                    self.run_worker(
+                        self.add_sounds_to_list,
+                        name="ADD_SOUND",
+                        group="PLAYLIST_UPDATE",
+                        description="The process of adding sounds to a playlist."
+                    )
         
         elif (event.button.id == "button-play-stop") or (event.button.id == "button-pause-unpause"):
             if (sound:=await self.aio_gcs()) is not None:
@@ -241,7 +253,8 @@ class SeaPlayer(App):
             return sound
     
     async def on_list_view_selected(self, selected: MusicListView.Selected):
-        await self.set_sound_for_playback(getattr(selected.item, "sound_uuid", None))
+        if selected.list_view.has_class("music-list-view"):
+            await self.set_sound_for_playback(getattr(selected.item, "sound_uuid", None))
     
     async def action_plus_rewind(self):
         if (sound:=await self.aio_gcs()) is not None:

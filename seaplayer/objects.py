@@ -10,6 +10,8 @@ from .functions import *
 from .modules.asynctpng import AsyncTPNG
 
 # ! Objects
+
+# ! Music List
 class MusicListViewItem(ListItem):
     def __init__(
         self,
@@ -38,11 +40,11 @@ class MusicListViewItem(ListItem):
         if first_subtitle is not None: self.first_subtitle_label.update(title)
         if second_subtitle is not None: self.second_subtitle_label.update(title)
 
-
 class MusicListView(ListView):
     def __init__(self, **kwargs) -> None:
+        kwargs["classes"] = "music-list-view"
         super().__init__(**kwargs)
-        self.music_list: MusicList = MusicList(classes="music-list-view")
+        self.music_list: MusicList = MusicList()
     
     def add_sound(self, sound: Sound) -> str:
         sound_uuid = self.music_list.add(sound)
@@ -138,7 +140,7 @@ class MusicListView(ListView):
             )
         except: pass
 
-
+# ! ProgressBar
 class IndeterminateProgress(Static):
     def __init__(self, getfunc=get_bar_status, fps: int=15):
         super().__init__("", classes="indeterminate-progress-bar")
@@ -161,6 +163,7 @@ class IndeterminateProgress(Static):
         await self.upgrade_task(completed=c, total=t, description=d)
         self.update(self._bar)
 
+# ! Image Label
 class ImageLabel(Label):
     def __init__(self, image: Optional[Image.Image]=None, fps: int=2):
         super().__init__("<image not found>", classes="image-label")
@@ -194,3 +197,26 @@ class ImageLabel(Label):
             await self.tpng_image.reset()
             await self.tpng_image.resize((self.size[0]-4, self.size[1]))
             self.image_text = await self.tpng_image.to_rich_image()
+
+# ! Configurate List
+class ConfigurateListItem(ListItem):
+    def __init__(
+        self,
+        title: str="",
+        desc: str="",
+        *children, **kwargs
+    ):
+        kwargs["classes"] = "configurate-list-view-item"
+        super(ConfigurateListItem, self).__init__(*children, **kwargs)
+        self.border_title = title
+        self.border_subtitle = desc
+    
+    async def updating(self, title: Optional[str]="", desc: Optional[str]="") -> None:
+        if title is not None: self.border_title = title
+        if desc is not None: self.border_subtitle = desc
+
+class ConfigurateListView(ListView):
+    def __init__(self, *children, **kwargs):
+        kwargs["classes"] = "configurate-list-view"
+        super().__init__(*children, **kwargs)
+        self.border_title = "Configurate"

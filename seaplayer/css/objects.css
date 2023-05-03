@@ -1,0 +1,60 @@
+/* ! Music List */
+.music-list-view {
+    height: 1fr;
+}
+
+.music-list-view-item {
+    height: 4;
+}
+
+.music-list-view-item-title-label {
+    height: 1;
+    color: #cacaca;
+}
+
+.music-list-view-item-subtitle-label {
+    height: 1;
+    color: #a9a9a9;
+}
+
+.music-list-screen-add-box {
+    height: 3;
+}
+
+.music-list-screen-add-input {
+    width: 3fr;
+}
+
+.music-list-screen-add-button {
+    width: 1fr;
+}
+
+/* ! IndeterminateProgress */
+.indeterminate-progress-bar { height: 1; }
+
+/* ! Image Label */
+.image-label {
+    height: 1fr;
+    width: 1fr;
+    align: center middle;
+    text-align: center;
+}
+
+/* ! Configurate List */
+.configurate-list-view {
+    border: solid cadetblue;
+    /*border: solid darkcyan;*/
+    height: 1fr;
+    width: 1fr;
+}
+
+.configurate-list-view-item {
+    border: solid dodgerblue;
+    background: #0000;
+    border-title-color: #aaaaaa;
+    border-subtitle-color: #6b6b6b;
+}
+
+/* ! Any Elements CSS */
+.pass-one-width { width: 1; }
+
