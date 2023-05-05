@@ -12,6 +12,7 @@ from typing_inspect import (
 # ! Vars
 REPLACE_TYPES = {
     "str": "[green]str[/]",
+    "bool": "[green]bool[/]",
     "int": "[green]int[/]",
     "float": "[green]float[/]",
     "bytes": "[green]bytes[/]",

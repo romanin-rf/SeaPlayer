@@ -8,7 +8,7 @@ from textual.widgets import Static, Header, Footer
 # > Typing
 from typing import Optional, Any, Tuple
 # > Local Imports
-from .config import SeaPlayerConfig
+from .modules.colorizer import richefication
 from .objects import ConfigurateListView, ConfigurateListItem, InputField
 
 # ! Constants
@@ -33,13 +33,13 @@ class Configurate(Screen):
     
     # ! Update Placeholder from InputField
     def _upfif(self, attr_name: str) -> str:
-        return "Currect: " + str(eval(f"self.app_config.{attr_name}"))
+        return "Currect: " + str(eval(f"self.{attr_name}"))
     def _generate_upfif(self, attr_name: str):
         return lambda: self._upfif(attr_name)
     
     # ! Update App Config
     async def _uac(self, attr_name: str, input: InputField, value: str) -> None:
-        exec(f"self.app_config.{attr_name} = value")
+        exec(f"self.{attr_name} = value")
     
     def _generate_uac(self, attr_name: str):
         async def an_uac(input: InputField, value: str) -> None: await self._uac(attr_name, input, value)
@@ -53,41 +53,6 @@ class Configurate(Screen):
     def _generate_conv(self, tp: type):
         async def _tp_conv(value: str): return await self._conv(tp, value)
         return _tp_conv
-    
-    # ! Configurator Generators
-    def create_configurator_keys(
-        self,
-        attr_name: str,
-        title: str="",
-        desc: str="",
-        restart_required: bool=True
-    ) -> None:
-        return ConfigurateListItem(
-            InputField(
-                submit=self._generate_uac(attr_name),
-                update_placeholder=self._generate_upfif(attr_name)
-            ),
-            title=title,
-            desc=desc+(" [red](restart required)[/]" if restart_required else "")
-        )
-    
-    def create_configurator_type(
-        self,
-        attr_name: str,
-        title: str="",
-        desc: str="",
-        _type: type=str,
-        restart_required: bool=True
-    ) -> None:
-        return ConfigurateListItem(
-            InputField(
-                conv=self._generate_conv(_type),
-                submit=self._generate_uac(attr_name),
-                update_placeholder=self._generate_upfif(attr_name)
-            ),
-            title=title,
-            desc=desc+(" [red](restart required)[/]" if restart_required else "")
-        )
     
     # ! Convert Types
     @staticmethod
@@ -108,41 +73,80 @@ class Configurate(Screen):
         elif value.lower() == "false": return False
         else: raise TypeError(value, bool)
     
+    # ! Configurator Generators
+    def create_configurator_type(
+        self,
+        attr_name: str,
+        title: str="",
+        desc: str="",
+        _type: type=str,
+        type_alias: type=str,
+        restart_required: bool=True
+    ) -> ConfigurateListItem:
+        return ConfigurateListItem(
+            InputField(
+                conv=self._generate_conv(_type),
+                submit=self._generate_uac(attr_name),
+                update_placeholder=self._generate_upfif(attr_name)
+            ),
+            title=title+f" ({richefication(type_alias)})",
+            desc=desc+(" [red](restart required)[/]" if restart_required else "")
+        )
+    
+    def create_configurator_keys(
+        self,
+        attr_name: str,
+        title: str="",
+        desc: str="",
+        restart_required: bool=True
+    ) -> ConfigurateListItem:
+        return ConfigurateListItem(
+            InputField(
+                submit=self._generate_uac(attr_name),
+                update_placeholder=self._generate_upfif(attr_name)
+            ),
+            title=title+f" ({richefication(str)})",
+            desc=desc+(" [red](restart required)[/]" if restart_required else "")
+        )
+    
     # ! Configurate Main Functions
     def compose(self) -> ComposeResult:
-        self.app_config: SeaPlayerConfig = self.app.config
-        
         yield Header()
         yield ConfigurateListView(
             self.create_configurator_type(
-                "sound_font_path",
-                "{Sound}: Sound Font Path ([green]Path[white][[/]str[white]][/][/] [white]|[/] [blue]None[/])",
-                "Path to SF2-file.", self._conv_optional(self._conv_path), False
+                "app.config.sound_font_path",
+                "[red]{Sound}[/]: Sound Font Path",
+                "Path to SF2-file.",
+                self._conv_optional(self._conv_path), Optional[str], False
             ),
             self.create_configurator_type(
-                "volume_change_percent",
-                "{Playback}: Volume Change Percent ([green]float[/])",
-                "Percentage by which the volume changes when the special keys are pressed.", float
+                "app.config.volume_change_percent",
+                "[red]{Playback}[/]: Volume Change Percent",
+                "Percentage by which the volume changes when the special keys are pressed.",
+                float, float
             ),
             self.create_configurator_type(
-                "rewind_count_seconds",
-                "{Playback}: Rewind Count Seconds ([green]int[/])",
-                "The value of the seconds by which the current sound will be rewound.", int
+                "app.config.rewind_count_seconds",
+                "[red]{Playback}[/]: Rewind Count Seconds",
+                "The value of the seconds by which the current sound will be rewound.",
+                int, int
             ),
             self.create_configurator_type(
-                "max_volume_percent",
-                "{Playback}: Max Volume Percent ([green]float[/])",
-                "Maximum volume value.", float
+                "app.config.max_volume_percent",
+                "[red]{Playback}[/]: Max Volume Percent",
+                "Maximum volume value.",
+                float, float
             ),
             self.create_configurator_type(
-                "recursive_search",
-                "{Playlist}: Recursive Search ([green]bool[/])",
-                "Recursive file search.", self._conv_bool, False
+                "app.config.recursive_search",
+                "[red]{Playlist}[/]: Recursive Search",
+                "Recursive file search.",
+                self._conv_bool, bool, False
             ),
-            self.create_configurator_keys("key_quit", "{Key}: QUIT ([green]str[/])", "Сlose the app."),
-            self.create_configurator_keys("key_rewind_forward", "{Key}: Rewind Forward ([green]str[/])", "Forwards rewinding."),
-            self.create_configurator_keys("key_rewind_back", "{Key}: Rewind Back ([green]str[/])", "Backwards rewinding."),
-            self.create_configurator_keys("key_volume_up", "{Key}: Volume + ([green]str[/])", "Turn up the volume."),
-            self.create_configurator_keys("key_volume_down", "{Key}: Volume - ([green]str[/])", "Turn down the volume.")
+            self.create_configurator_keys("app.config.key_quit", "[red]{KEY}[/]: Quit", "Сlose the app."),
+            self.create_configurator_keys("app.config.key_rewind_forward", "[red]{KEY}[/]: Rewind Forward", "Forwards rewinding."),
+            self.create_configurator_keys("app.config.key_rewind_back", "[red]{KEY}[/]: Rewind Back", "Backwards rewinding."),
+            self.create_configurator_keys("app.config.key_volume_up", "[red]{KEY}[/]: Volume +", "Turn up the volume."),
+            self.create_configurator_keys("app.config.key_volume_down", "[red]{KEY}[/]: Volume -", "Turn down the volume.")
         )
         yield Footer()

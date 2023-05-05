@@ -43,8 +43,13 @@
 /* ! Configurate List */
 .configurate-list-view {
     border: solid cadetblue;
-    border-title-align: center;
     height: 1fr;
+    width: 1fr;
+}
+
+.configurate-list-view-header {
+    background: #0000;
+    height: 1;
     width: 1fr;
 }
 

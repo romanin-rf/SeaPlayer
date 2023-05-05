@@ -9,5 +9,4 @@ if __name__ == "__main__":
         app = SeaPlayer()
         app.run()
         app.started = False
-        #console.print(app.styles.background)
     except: console.print_exception(word_wrap=True, show_locals=True)

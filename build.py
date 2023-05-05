@@ -1,5 +1,7 @@
 import os
 import platform
+import glob
+from pathlib import Path
 from typing import Dict, List
 
 if platform.system() == "Windows": ds = ";"
@@ -24,6 +26,7 @@ DATA = {
     # * 2) Modules Files
     "seaplayer/modules": "seaplayer/modules/",
     "seaplayer/modules/__init__.py": "seaplayer/modules/",
+    "seaplayer/modules/colorizer.py": "seaplayer/modules/",
     # * 2.1) AsyncTPNG
     "seaplayer/modules/asynctpng": "seaplayer/modules/asynctpng/",
     "seaplayer/modules/asynctpng/__init__.py": "seaplayer/modules/asynctpng/",
@@ -51,5 +54,14 @@ print(COMMAND, end="\n\n")
 os.system(COMMAND)
 
 for path in TRASH_FILES:
-    try: os.remove(localize(path))
+    try:
+        path = Path(localize(path))
+        if path.is_file(): os.remove(path.name)
+        elif path.is_dir():
+            files = glob.glob(os.path.join(path.name, "**", "*"))
+            for filepath in files:
+                try: os.remove(filepath)
+                except: pass
+            try: os.removedirs(path.name)
+            except: pass
     except: pass

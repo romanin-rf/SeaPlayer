@@ -19,7 +19,7 @@ from .screens import Unknown, UNKNOWN_OPEN_KEY, Configurate
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -27,6 +27,7 @@ __url__ = "https://github.com/romanin-rf/SeaPlayer"
 # ! Contains
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): LOCALDIR = os.path.dirname(sys.executable)
 else: LOCALDIR = os.path.dirname(os.path.dirname(__file__))
+
 CONFIG_PATH = os.path.join(LOCALDIR, "config.properties")
 CSS_LOCALDIR = os.path.join(os.path.dirname(__file__), "css")
 
