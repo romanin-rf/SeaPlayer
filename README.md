@@ -14,4 +14,5 @@ You can use [Release](https://github.com/romanin-rf/sea-player/releases) or ***d
 You need to [install the FluidSynth](https://github.com/FluidSynth/fluidsynth/wiki/Download) package in order to playback `MIDI`.
 
 ## Using
-![MAIN_SCREEN-v0.2.12](https://user-images.githubusercontent.com/60302782/235537250-9cdd37e9-c3fd-435c-ab0e-3b8a7914b9dc.png)
+![MAIN_SCREEN-v0.3.1](https://user-images.githubusercontent.com/60302782/236575349-f1569ff6-e9f5-42d6-ab00-904cd4d0db79.png)
+![CONFIG_SCREEN-v0.3.1](https://user-images.githubusercontent.com/60302782/236575421-b7117b60-9705-4f47-982b-b0f082ccff96.png)
