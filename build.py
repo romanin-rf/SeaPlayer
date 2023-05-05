@@ -23,6 +23,7 @@ DATA = {
     "seaplayer/types.py": "seaplayer/",
     "seaplayer/config.py": "seaplayer/",
     "seaplayer/screens.py": "seaplayer/",
+    "seaplayer/exceptions.py": "seaplayer/",
     # * 2) Modules Files
     "seaplayer/modules": "seaplayer/modules/",
     "seaplayer/modules/__init__.py": "seaplayer/modules/",

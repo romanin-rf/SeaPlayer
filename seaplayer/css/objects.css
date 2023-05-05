@@ -47,12 +47,6 @@
     width: 1fr;
 }
 
-.configurate-list-view-header {
-    background: #0000;
-    height: 1;
-    width: 1fr;
-}
-
 .configurate-list-view-item {
     border: solid dodgerblue;
     background: #0000;

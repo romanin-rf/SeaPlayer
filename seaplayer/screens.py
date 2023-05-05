@@ -1,13 +1,13 @@
 import base64
 import platform
-from pathlib import Path
 # > Graphics
 from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Static, Header, Footer
 # > Typing
-from typing import Optional, Any, Tuple
+from typing import Optional
 # > Local Imports
+from .types import Converter
 from .modules.colorizer import richefication
 from .objects import ConfigurateListView, ConfigurateListItem, InputField
 
@@ -15,6 +15,9 @@ from .objects import ConfigurateListView, ConfigurateListItem, InputField
 TEXT = b'CkFuIGVycm9yIGhhcyBvY2N1cnJlZC4gVG8gY29udGludWU6CgpQcmVzcyBFbnRlciB0byByZXR1cm4gdG8ge3N5c3RlbX0sIG9yCgpQcmVzcyBDVFJMK0FMVCtERUwgdG8gcmVzdGFydCB5b3VyIGNvbXB1dGVyLiBJZiB5b3UgZG8gdGhpcywKeW91IHdpbGwgbG9zZSBhbnkgdW5zYXZlZCBpbmZvcm1hdGlvbiBpbiBhbGwgb3BlbiBhcHBsaWNhdGlvbnMuCgpFcnJvcjogMEUgOiAwMTZGIDogQkZGOUIzRDQK'
 TEXT = base64.b64decode(TEXT).decode(errors="ignore").format(system=platform.system())
 UNKNOWN_OPEN_KEY = base64.b64decode(b"Yg==").decode(errors="ignore")
+
+# ! Initializing
+conv = Converter()
 
 # ! Screens
 class Unknown(Screen):
@@ -34,44 +37,16 @@ class Configurate(Screen):
     # ! Update Placeholder from InputField
     def _upfif(self, attr_name: str) -> str:
         return "Currect: " + str(eval(f"self.{attr_name}"))
-    def _generate_upfif(self, attr_name: str):
+    def gupfif(self, attr_name: str):
         return lambda: self._upfif(attr_name)
     
     # ! Update App Config
     async def _uac(self, attr_name: str, input: InputField, value: str) -> None:
         exec(f"self.{attr_name} = value")
     
-    def _generate_uac(self, attr_name: str):
+    def guac(self, attr_name: str):
         async def an_uac(input: InputField, value: str) -> None: await self._uac(attr_name, input, value)
         return an_uac
-    
-    @staticmethod
-    async def _conv(tp: type, value: str) -> Tuple[bool, Optional[Any]]:
-        try: return True, eval("tp(value)")
-        except: return False, None
-    
-    def _generate_conv(self, tp: type):
-        async def _tp_conv(value: str): return await self._conv(tp, value)
-        return _tp_conv
-    
-    # ! Convert Types
-    @staticmethod
-    def _conv_path(value: str) -> str:
-        path = Path(value)
-        if not(path.exists() and path.is_file()): raise FileNotFoundError(value)
-        return value
-    
-    @staticmethod
-    def _conv_optional(tp: type):
-        def _m_conv_optional(value: str):
-            if value.lower() != "none": return tp(value)
-        return _m_conv_optional
-    
-    @staticmethod
-    def _conv_bool(value: str):
-        if value.lower() == "true": return True
-        elif value.lower() == "false": return False
-        else: raise TypeError(value, bool)
     
     # ! Configurator Generators
     def create_configurator_type(
@@ -85,9 +60,9 @@ class Configurate(Screen):
     ) -> ConfigurateListItem:
         return ConfigurateListItem(
             InputField(
-                conv=self._generate_conv(_type),
-                submit=self._generate_uac(attr_name),
-                update_placeholder=self._generate_upfif(attr_name)
+                conv=conv.gen_aio_conv(_type),
+                submit=self.guac(attr_name),
+                update_placeholder=self.gupfif(attr_name)
             ),
             title=title+f" ({richefication(type_alias)})",
             desc=desc+(" [red](restart required)[/]" if restart_required else "")
@@ -102,8 +77,8 @@ class Configurate(Screen):
     ) -> ConfigurateListItem:
         return ConfigurateListItem(
             InputField(
-                submit=self._generate_uac(attr_name),
-                update_placeholder=self._generate_upfif(attr_name)
+                submit=self.guac(attr_name),
+                update_placeholder=self.gupfif(attr_name)
             ),
             title=title+f" ({richefication(str)})",
             desc=desc+(" [red](restart required)[/]" if restart_required else "")
@@ -117,7 +92,7 @@ class Configurate(Screen):
                 "app.config.sound_font_path",
                 "[red]{Sound}[/]: Sound Font Path",
                 "Path to SF2-file.",
-                self._conv_optional(self._conv_path), Optional[str], False
+                conv.optional(conv.filepath), Optional[str], False
             ),
             self.create_configurator_type(
                 "app.config.volume_change_percent",
@@ -141,7 +116,7 @@ class Configurate(Screen):
                 "app.config.recursive_search",
                 "[red]{Playlist}[/]: Recursive Search",
                 "Recursive file search.",
-                self._conv_bool, bool, False
+                conv.boolean, bool, False
             ),
             self.create_configurator_keys("app.config.key_quit", "[red]{KEY}[/]: Quit", "Сlose the app."),
             self.create_configurator_keys("app.config.key_rewind_forward", "[red]{KEY}[/]: Rewind Forward", "Forwards rewinding."),

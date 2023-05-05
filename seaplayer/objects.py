@@ -1,5 +1,6 @@
 from PIL import Image
 from playsoundsimple import Sound
+# > Graphics
 from textual.widgets import Static, Label, ListItem, ListView, Input
 from rich.progress import Progress, BarColumn, TextColumn
 # > Typing
@@ -102,13 +103,9 @@ class MusicListView(ListView):
             if (mli:=self.get_item_from_index(index+1)) is not None:
                 return mli.sound_uuid
     
-    def select_list_item_from_index(self, index: Optional[int]) -> None:
-        try: self.post_message(self.Highlighted(self, self.children[index]))
-        except: pass
-    
     def select_list_item_from_sound_uuid(self, sound_uuid: str) -> None:
         try:
-            super().on_list_item__child_clicked(
+            super()._on_list_item__child_clicked(
                 ListItem._ChildClicked(
                     self.children[self.get_item_index_from_sound_uuid(sound_uuid)]
                 )
@@ -134,7 +131,7 @@ class MusicListView(ListView):
     
     async def aio_select_list_item_from_sound_uuid(self, sound_uuid: str) -> None:
         try:
-            super().on_list_item__child_clicked(
+            super()._on_list_item__child_clicked(
                 ListItem._ChildClicked(
                     self.children[await self.aio_get_item_index_from_sound_uuid(sound_uuid)]
                 )
@@ -200,8 +197,8 @@ class ImageLabel(Label):
             self.image_text = await self.tpng_image.to_rich_image()
 
 # ! Input Field Functions
-async def _conv(value: str) -> Tuple[bool, Optional[T]]: return True, value
-async def _submit(input: Input, value: T) -> None: ...
+async def _conv(value: str) -> Tuple[bool, Optional[Any]]: return True, value
+async def _submit(input: Input, value: Any) -> None: ...
 def _update_placeholder() -> str: return ""
 
 # ! Input Field
@@ -224,8 +221,7 @@ class InputField(Input):
         self.value = ""
         if value.replace(" ", "") != "":
             ok, c_value = await self._conv(value)
-            if ok:
-                await self._submit(self, c_value)
+            if ok: await self._submit(self, c_value)
         self.placeholder = self._update_placeholder()
 
 # ! Configurate List

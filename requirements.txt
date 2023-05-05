@@ -1,7 +1,8 @@
 pillow
 aiofiles
-rich==13.3.4
+rich>=13.3.5
 mutagen==1.45.1
-textual>=0.22.3
+textual==0.23.0
 playsoundsimple.py==0.6.3
 properties.py==1.1.0
+typing_inspect

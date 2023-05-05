@@ -6,6 +6,7 @@ import asyncio
 from playsoundsimple import Sound
 from playsoundsimple.units import SOUND_FONTS_PATH
 # > Graphics
+from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, Input, Button
@@ -211,34 +212,40 @@ class SeaPlayer(App):
             sound.unpause()
     
     async def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "plus-sound":
-            path = self.music_list_add_input.value
-            self.music_list_add_input.value = ""
-            
-            if path.replace(" ", "") != "":
-                try: self.last_paths_globalized = glob.glob(path, recursive=self.config.recursive_search)
-                except: self.last_paths_globalized = []
-                if len(self.last_paths_globalized) > 0:
-                    self.run_worker(
-                        self.add_sounds_to_list,
-                        name="ADD_SOUND",
-                        group="PLAYLIST_UPDATE",
-                        description="The process of adding sounds to a playlist."
-                    )
-        
-        elif (event.button.id == "button-play-stop") or (event.button.id == "button-pause-unpause"):
-            if (sound:=await self.aio_gcs()) is not None:
-                if event.button.id == "button-play-stop":
-                    if sound.playing: await self.currect_sound_stop(sound)
-                    else: await self.currect_sound_play(sound)
-                elif event.button.id == "button-pause-unpause":
-                    if sound.playing:
-                        if sound.paused: await self.currect_sound_unpause(sound)
-                        else: await self.currect_sound_pause(sound)
-                self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
-        elif event.button.id == "switch-playback-mode":
+        if event.button.id == "switch-playback-mode":
             self.switch_playback_mode()
             event.button.label = self.gpms()
+    
+    @on(Button.Pressed, "#button-pause-unpause")
+    async def bp_pause_unpause(self) -> None:
+        if (sound:=await self.aio_gcs()) is not None:
+            if sound.playing:
+                if sound.paused: await self.currect_sound_unpause(sound)
+                else: await self.currect_sound_pause(sound)
+            self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
+    
+    @on(Button.Pressed, "#button-play-stop")
+    async def bp_play_stop(self) -> None:
+        if (sound:=await self.aio_gcs()) is not None:
+            if sound.playing: await self.currect_sound_stop(sound)
+            else: await self.currect_sound_play(sound)
+            self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
+    
+    @on(Button.Pressed, "#plus-sound")
+    async def bp_plus_sound(self) -> None:
+        path = self.music_list_add_input.value
+        self.music_list_add_input.value = ""
+        
+        if path.replace(" ", "") != "":
+            try: self.last_paths_globalized = glob.glob(path, recursive=self.config.recursive_search)
+            except: self.last_paths_globalized = []
+            if len(self.last_paths_globalized) > 0:
+                self.run_worker(
+                    self.add_sounds_to_list,
+                    name="ADD_SOUND",
+                    group="PLAYLIST_UPDATE",
+                    description="The process of adding sounds to a playlist."
+                )
     
     async def set_sound_for_playback(
         self,
@@ -262,7 +269,7 @@ class SeaPlayer(App):
             return sound
     
     async def on_list_view_selected(self, selected: MusicListView.Selected):
-        if selected.list_view.has_class("music-list-view"):
+        if isinstance(selected.item, MusicListViewItem):
             await self.set_sound_for_playback(getattr(selected.item, "sound_uuid", None))
     
     async def action_plus_rewind(self):

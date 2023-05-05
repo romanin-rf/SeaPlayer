@@ -9,8 +9,8 @@ DEFAULT_CONFIG_DATA = {
         "sound_font_path": None
     },
     "playback": {
-        "volume_change_percent": 0.01,
-        "rewind_count_seconds": 1,
+        "volume_change_percent": 0.05,
+        "rewind_count_seconds": 5,
         "max_volume_percent": 2.0
     },
     "playlist": {
