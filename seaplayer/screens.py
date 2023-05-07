@@ -47,11 +47,12 @@ class Configurate(Screen):
     def guac(self, attr_name: str):
         async def an_uac(input: InputField, value: str) -> None: await self._uac(attr_name, input, value)
         return an_uac
-    
+
     # ! Configurator Generators
     def create_configurator_type(
         self,
         attr_name: str,
+        group: str="Option",
         title: str="",
         desc: str="",
         _type: type=str,
@@ -64,7 +65,7 @@ class Configurate(Screen):
                 submit=self.guac(attr_name),
                 update_placeholder=self.gupfif(attr_name)
             ),
-            title=title+f" ({richefication(type_alias)})",
+            title="[red]{"+group+"}[/]: "+title+f" ({richefication(type_alias)})",
             desc=desc+(" [red](restart required)[/]" if restart_required else "")
         )
     
@@ -80,7 +81,7 @@ class Configurate(Screen):
                 submit=self.guac(attr_name),
                 update_placeholder=self.gupfif(attr_name)
             ),
-            title=title+f" ({richefication(str)})",
+            title="[red]{Key}[/]: "+title+f" ({richefication(str)})",
             desc=desc+(" [red](restart required)[/]" if restart_required else "")
         )
     
@@ -90,38 +91,38 @@ class Configurate(Screen):
         yield ConfigurateListView(
             self.create_configurator_type(
                 "app.config.sound_font_path",
-                "[red]{Sound}[/]: Sound Font Path",
+                "Sound", "Sound Font Path",
                 "Path to SF2-file.",
                 conv.optional(conv.filepath), Optional[str], False
             ),
             self.create_configurator_type(
                 "app.config.volume_change_percent",
-                "[red]{Playback}[/]: Volume Change Percent",
+                "Playback", "Volume Change Percent",
                 "Percentage by which the volume changes when the special keys are pressed.",
                 float, float
             ),
             self.create_configurator_type(
                 "app.config.rewind_count_seconds",
-                "[red]{Playback}[/]: Rewind Count Seconds",
+                "Playback", "Rewind Count Seconds",
                 "The value of the seconds by which the current sound will be rewound.",
                 int, int
             ),
             self.create_configurator_type(
                 "app.config.max_volume_percent",
-                "[red]{Playback}[/]: Max Volume Percent",
+                "Playback", "Max Volume Percent",
                 "Maximum volume value.",
                 float, float
             ),
             self.create_configurator_type(
                 "app.config.recursive_search",
-                "[red]{Playlist}[/]: Recursive Search",
+                "Playlist", "Recursive Search",
                 "Recursive file search.",
                 conv.boolean, bool, False
             ),
-            self.create_configurator_keys("app.config.key_quit", "[red]{KEY}[/]: Quit", "Сlose the app."),
-            self.create_configurator_keys("app.config.key_rewind_forward", "[red]{KEY}[/]: Rewind Forward", "Forwards rewinding."),
-            self.create_configurator_keys("app.config.key_rewind_back", "[red]{KEY}[/]: Rewind Back", "Backwards rewinding."),
-            self.create_configurator_keys("app.config.key_volume_up", "[red]{KEY}[/]: Volume +", "Turn up the volume."),
-            self.create_configurator_keys("app.config.key_volume_down", "[red]{KEY}[/]: Volume -", "Turn down the volume.")
+            self.create_configurator_keys("app.config.key_quit", "Quit", "Сlose the app."),
+            self.create_configurator_keys("app.config.key_rewind_forward", "Rewind Forward", "Forwards rewinding."),
+            self.create_configurator_keys("app.config.key_rewind_back", "Rewind Back", "Backwards rewinding."),
+            self.create_configurator_keys("app.config.key_volume_up", "Volume +", "Turn up the volume."),
+            self.create_configurator_keys("app.config.key_volume_down", "Volume -", "Turn down the volume.")
         )
         yield Footer()
