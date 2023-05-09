@@ -20,7 +20,7 @@ from .screens import Unknown, UNKNOWN_OPEN_KEY, Configurate
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -60,7 +60,8 @@ class SeaPlayer(App):
         Binding(key=config.key_rewind_back, action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
         Binding(key=config.key_rewind_forward, action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),
         Binding(key=config.key_volume_down, action="minus_volume", description=f"Volume -{round(config.volume_change_percent*100)}%"),
-        Binding(key=config.key_volume_up, action="plus_volume", description=f"Volume +{round(config.volume_change_percent*100)}%")
+        Binding(key=config.key_volume_up, action="plus_volume", description=f"Volume +{round(config.volume_change_percent*100)}%"),
+        Binding(key="ctrl+s", action="screenshot", description="Screenshot")
     ]
     
     # ! Template Configuration
@@ -291,6 +292,9 @@ class SeaPlayer(App):
             if (vol:=round(sound.get_volume()-self.config.volume_change_percent, 2)) >= 0:
                 self.currect_volume = vol
                 sound.set_volume(vol)
+    
+    async def action_screenshot(self) -> None:
+        self.save_screenshot(path=LOCALDIR)
     
     async def action_quit(self):
         self.started = False

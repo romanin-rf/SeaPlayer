@@ -1,14 +1,14 @@
 from PIL import Image
 from playsoundsimple import Sound
 # > Graphics
-from textual.widgets import Static, Label, ListItem, ListView, Input
+from ripix import AsyncPixels
 from rich.progress import Progress, BarColumn, TextColumn
+from textual.widgets import Static, Label, ListItem, ListView, Input
 # > Typing
-from typing import Optional, Tuple, TypeVar
+from typing import Optional, Tuple, TypeVar, Union
 # > Local Import's
 from .types import *
 from .functions import *
-from .modules.asynctpng import AsyncTPNG
 
 # ! Types
 T = TypeVar('T')
@@ -166,21 +166,18 @@ class ImageLabel(Label):
     def __init__(self, image: Optional[Image.Image]=None, fps: int=2):
         super().__init__("<image not found>", classes="image-label")
         self.image: Optional[Image.Image] = image
-        self.tpng_image: Optional[AsyncTPNG] = AsyncTPNG(self.image) if self.image is not None else None
+        self.image_text: Union[str, AsyncPixels] = "<image not found>"
         self.last_image_size: Optional[Tuple[int, int]] = None
-        self.image_text = "<image not found>"
         self._fps = fps
     
     def on_mount(self) -> None:
         self.update_render = self.set_interval(1/self._fps, self.update_image_label)
     
     async def update_image_label(self):
-        if self.tpng_image is not None:
-            new_size = (self.size[0]-4, self.size[1])
+        if self.image is not None:
+            new_size = (self.size[0], self.size[1])
             if self.last_image_size != new_size:
-                await self.tpng_image.reset()
-                await self.tpng_image.resize(new_size)
-                self.image_text = await self.tpng_image.to_rich_image()
+                self.image_text = await AsyncPixels.from_image(self.image, new_size, loop=self.app._loop)
                 self.last_image_size = new_size
         else:
             self.image_text = "<image not found>"
@@ -189,12 +186,11 @@ class ImageLabel(Label):
     
     async def update_image(self, image: Optional[Image.Image]=None) -> None:
         self.image = image
-        self.tpng_image = await AsyncTPNG.async_init(self.image) if (self.image is not None) else None
         
-        if self.tpng_image is not None:
-            await self.tpng_image.reset()
-            await self.tpng_image.resize((self.size[0]-4, self.size[1]))
-            self.image_text = await self.tpng_image.to_rich_image()
+        if self.image is not None:
+            new_size = (self.size[0], self.size[1])
+            self.image_text = await AsyncPixels.from_image(self.image, new_size, loop=self.app._loop)
+
 
 # ! Input Field Functions
 async def _conv(value: str) -> Tuple[bool, Optional[Any]]: return True, value

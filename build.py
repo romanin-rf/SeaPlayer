@@ -28,11 +28,6 @@ DATA = {
     "seaplayer/modules": "seaplayer/modules/",
     "seaplayer/modules/__init__.py": "seaplayer/modules/",
     "seaplayer/modules/colorizer.py": "seaplayer/modules/",
-    # * 2.1) AsyncTPNG
-    "seaplayer/modules/asynctpng": "seaplayer/modules/asynctpng/",
-    "seaplayer/modules/asynctpng/__init__.py": "seaplayer/modules/asynctpng/",
-    "seaplayer/modules/asynctpng/tpng.py": "seaplayer/modules/asynctpng/",
-    "seaplayer/modules/asynctpng/tpng.pyi": "seaplayer/modules/asynctpng/",
     # * 3) CSS Files
     "seaplayer/css": "seaplayer/css/",
     "seaplayer/css/seaplayer.css": "seaplayer/css/",
