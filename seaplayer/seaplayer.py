@@ -22,17 +22,23 @@ from .screens import Unknown, UNKNOWN_OPEN_KEY, Configurate
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.3.4-unrelease.1"
+__version__ = "0.3.4"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
 
-# ! Contains
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'): LOCALDIR = os.path.dirname(sys.executable)
-else: LOCALDIR = os.path.dirname(os.path.dirname(__file__))
+# ! Paths
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    LOCALDIR = os.path.dirname(sys.executable)
+else:
+    LOCALDIR = os.path.dirname(os.path.dirname(__file__))
 
 CONFIG_PATH = os.path.join(LOCALDIR, "config.properties")
 CSS_LOCALDIR = os.path.join(os.path.dirname(__file__), "css")
+ASSETS_DIRPATH = os.path.join(os.path.dirname(__file__), "assets")
+
+# ! Assets Paths
+IMGPATH_IMAGE_NOT_FOUND = os.path.join(ASSETS_DIRPATH, "image-not-found.png")
 
 # ! Constants
 RESAMPLING_SAFE = {
@@ -147,11 +153,13 @@ class SeaPlayer(App):
         self.music_play_screen = Static(classes="screen-box")
         self.music_play_screen.border_title = "Player"
         
+        img_image_not_found = Image.open(IMGPATH_IMAGE_NOT_FOUND)
+        
         self.music_selected_label = Label(self.get_sound_selected_label_text(), classes="music-selected-label")
         if self.config.image_update_method == "sync":
-            self.music_image = StandartImageLabel(resample=RESAMPLING_SAFE[self.config.image_resample_method])
+            self.music_image = StandartImageLabel(img_image_not_found, resample=RESAMPLING_SAFE[self.config.image_resample_method])
         elif self.config.image_update_method == "async":
-            self.music_image = AsyncImageLabel(resample=RESAMPLING_SAFE[self.config.image_resample_method])
+            self.music_image = AsyncImageLabel(img_image_not_found, resample=RESAMPLING_SAFE[self.config.image_resample_method])
         else:
             raise RuntimeError("The configuration 'image_update_method' is incorrect.")
         

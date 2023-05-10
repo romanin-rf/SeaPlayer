@@ -32,7 +32,10 @@ DATA = {
     "seaplayer/css": "seaplayer/css/",
     "seaplayer/css/seaplayer.css": "seaplayer/css/",
     "seaplayer/css/configurate.css": "seaplayer/css/",
-    "seaplayer/css/unknown.css": "seaplayer/css/"
+    "seaplayer/css/unknown.css": "seaplayer/css/",
+    # * 4) Assets Files
+    "seaplayer/assets": "seaplayer/assets/",
+    "seaplayer/assets/image-not-found.png": "seaplayer/assets/"
 }
 
 def localize(path: str) -> str: return os.path.join(LOCALDIR, path.replace('/', os.sep).replace('\\', os.sep))
@@ -40,7 +43,7 @@ def add_datas(data: Dict[str, str]) -> List[str]: return [f"--add-data \"{locali
 
 COMMAND_LINE = [
     "pyinstaller", "--noconfirm", "--console", "--clean", "--onefile",
-    f"--icon \"{localize('icons/sea_player-icon-200x200.ico')}\"",
+    f"--icon \"{localize('icons/icon.ico')}\"",
     *add_datas(DATA),
     f"\"{localize('SeaPlayer.py')}\""
 ]
