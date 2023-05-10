@@ -1,12 +1,13 @@
 import properties
 from pathlib import Path
-from typing import Dict, Any, Optional, TypeVar, Union
+from typing import Dict, Any, Optional, TypeVar, Union, Literal
 
 T = TypeVar("T")
 
 DEFAULT_CONFIG_DATA = {
     "sound": {
-        "sound_font_path": None
+        "sound_font_path": None,
+        "image_update_method": "sync"
     },
     "playback": {
         "volume_change_percent": 0.05,
@@ -75,6 +76,11 @@ class SeaPlayerConfig:
     def sound_font_path(self) -> Optional[str]: return self.get("sound.sound_font_path")
     @sound_font_path.setter
     def sound_font_path(self, value: Optional[str]): self.set("sound.sound_font_path", value)
+    
+    @property
+    def image_update_method(self) -> Literal["sync", "async"]: return self.get("sound.image_update_method")
+    @image_update_method.setter
+    def image_update_method(self, value: Literal["sync", "async"]): self.set("sound.image_update_method", value)
     
     # ! Playback
     @property

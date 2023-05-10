@@ -116,3 +116,10 @@ class Converter:
                 except: pass
             raise TypeError(f"Could not convert to any of the listed types: {tps}")
         return union_wrapper
+    
+    @staticmethod
+    def literal_string(*values: str):
+        def literal_string_wrapper(value: str):
+            if value in values: return value
+            raise RuntimeError(f"The value ({repr(value)}) is not in the list of values.")
+        return literal_string_wrapper

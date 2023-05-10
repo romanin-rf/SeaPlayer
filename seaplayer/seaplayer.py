@@ -20,7 +20,7 @@ from .screens import Unknown, UNKNOWN_OPEN_KEY, Configurate
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -136,7 +136,12 @@ class SeaPlayer(App):
         self.music_play_screen.border_title = "Player"
         
         self.music_selected_label = Label(self.get_sound_selected_label_text(), classes="music-selected-label")
-        self.music_image = ImageLabel()
+        if self.config.image_update_method == "sync":
+            self.music_image = StandartImageLabel()
+        elif self.config.image_update_method == "async":
+            self.music_image = AsyncImageLabel()
+        else:
+            raise RuntimeError("The configuration 'image_update_method' is incorrect.")
         
         # * Compositions Screen
         self.music_list_screen = Static(classes="screen-box")

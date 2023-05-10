@@ -5,7 +5,7 @@ from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Static, Header, Footer
 # > Typing
-from typing import Optional
+from typing import Optional, Literal
 # > Local Imports
 from .types import Converter
 from .modules.colorizer import richefication
@@ -94,6 +94,12 @@ class Configurate(Screen):
                 "Sound", "Sound Font Path",
                 "Path to SF2-file.",
                 conv.optional(conv.filepath), Optional[str], False
+            ),
+            self.create_configurator_type(
+                "app.config.image_update_method",
+                "Sound", "Image Update Method",
+                "The name of the picture update option.",
+                conv.literal_string("sync", "async"), Literal["sync", "async"]
             ),
             self.create_configurator_type(
                 "app.config.volume_change_percent",

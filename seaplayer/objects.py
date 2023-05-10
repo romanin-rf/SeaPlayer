@@ -1,7 +1,7 @@
 from PIL import Image
 from playsoundsimple import Sound
 # > Graphics
-from ripix import AsyncPixels
+from ripix import AsyncPixels, Pixels
 from rich.progress import Progress, BarColumn, TextColumn
 from textual.widgets import Static, Label, ListItem, ListView, Input
 # > Typing
@@ -162,7 +162,36 @@ class IndeterminateProgress(Static):
         self.update(self._bar)
 
 # ! Image Label
-class ImageLabel(Label):
+class StandartImageLabel(Label):
+    def __init__(self, image: Optional[Image.Image]=None, fps: int=2):
+        super().__init__("<image not found>", classes="image-label")
+        self.image: Optional[Image.Image] = image
+        self.image_text: Union[str, Pixels] = "<image not found>"
+        self.last_image_size: Optional[Tuple[int, int]] = None
+        self._fps = fps
+    
+    def on_mount(self) -> None:
+        self.update_render = self.set_interval(1/self._fps, self.update_image_label)
+    
+    async def update_image_label(self):
+        if self.image is not None:
+            new_size = (self.size[0], self.size[1])
+            if self.last_image_size != new_size:
+                self.image_text = Pixels.from_image(self.image, new_size)
+                self.last_image_size = new_size
+        else:
+            self.image_text = "<image not found>"
+        
+        self.update(self.image_text)
+    
+    async def update_image(self, image: Optional[Image.Image]=None) -> None:
+        self.image = image
+        
+        if self.image is not None:
+            new_size = (self.size[0], self.size[1])
+            self.image_text = Pixels.from_image(self.image, new_size)
+
+class AsyncImageLabel(Label):
     def __init__(self, image: Optional[Image.Image]=None, fps: int=2):
         super().__init__("<image not found>", classes="image-label")
         self.image: Optional[Image.Image] = image
