@@ -6,8 +6,11 @@ T = TypeVar("T")
 
 DEFAULT_CONFIG_DATA = {
     "sound": {
-        "sound_font_path": None,
-        "image_update_method": "sync"
+        "sound_font_path": None,            # * Optional[str]
+    },
+    "image": {
+        "image_update_method": "sync",      # * Literal["sync", "async"]
+        "image_resample_method": "nearest", # * Literal["nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"]
     },
     "playback": {
         "volume_change_percent": 0.05,
@@ -77,10 +80,18 @@ class SeaPlayerConfig:
     @sound_font_path.setter
     def sound_font_path(self, value: Optional[str]): self.set("sound.sound_font_path", value)
     
+    # ! Image
     @property
-    def image_update_method(self) -> Literal["sync", "async"]: return self.get("sound.image_update_method")
+    def image_update_method(self) -> Literal["sync", "async"]: return self.get("image.image_update_method")
     @image_update_method.setter
-    def image_update_method(self, value: Literal["sync", "async"]): self.set("sound.image_update_method", value)
+    def image_update_method(self, value: Literal["sync", "async"]): self.set("image.image_update_method", value)
+    
+    @property
+    def image_resample_method(self) -> Literal["nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"]:
+        return self.get("image.image_resample_method")
+    @image_resample_method.setter
+    def image_resample_method(self, value: Literal["nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"]):
+        self.set("image.image_resample_method", value)
     
     # ! Playback
     @property

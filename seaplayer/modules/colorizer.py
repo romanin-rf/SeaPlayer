@@ -26,7 +26,11 @@ REPLACE_TYPES = {
     "Dict": "[green]Dict[/]",
     "List": "[green]List[/]",
     "Any": "[white]Any[/]",
-    "Literal": "[green]Literal[/]"
+    "Literal": "[green]Literal[/]",
+    "['": "[[yellow]'",
+    ", '": ", [yellow]'",
+    "']": "'[/]]",
+    "', ": "'[/], "
 }
 
 # ! Other Functions

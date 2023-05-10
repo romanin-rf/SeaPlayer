@@ -1,6 +1,7 @@
 from PIL import Image
 from playsoundsimple import Sound
 # > Graphics
+from PIL.Image import Resampling
 from ripix import AsyncPixels, Pixels
 from rich.progress import Progress, BarColumn, TextColumn
 from textual.widgets import Static, Label, ListItem, ListView, Input
@@ -163,8 +164,15 @@ class IndeterminateProgress(Static):
 
 # ! Image Label
 class StandartImageLabel(Label):
-    def __init__(self, image: Optional[Image.Image]=None, fps: int=2):
+    def __init__(
+        self,
+        image: Optional[Image.Image]=None,
+        fps: int=2,
+        *,
+        resample: Resampling=Resampling.NEAREST
+    ):
         super().__init__("<image not found>", classes="image-label")
+        self.image_resample = resample
         self.image: Optional[Image.Image] = image
         self.image_text: Union[str, Pixels] = "<image not found>"
         self.last_image_size: Optional[Tuple[int, int]] = None
@@ -177,7 +185,7 @@ class StandartImageLabel(Label):
         if self.image is not None:
             new_size = (self.size[0], self.size[1])
             if self.last_image_size != new_size:
-                self.image_text = Pixels.from_image(self.image, new_size)
+                self.image_text = Pixels.from_image(self.image, new_size, self.image_resample)
                 self.last_image_size = new_size
         else:
             self.image_text = "<image not found>"
@@ -189,11 +197,18 @@ class StandartImageLabel(Label):
         
         if self.image is not None:
             new_size = (self.size[0], self.size[1])
-            self.image_text = Pixels.from_image(self.image, new_size)
+            self.image_text = Pixels.from_image(self.image, new_size, self.image_resample)
 
 class AsyncImageLabel(Label):
-    def __init__(self, image: Optional[Image.Image]=None, fps: int=2):
+    def __init__(
+        self,
+        image: Optional[Image.Image]=None,
+        fps: int=2,
+        *,
+        resample: Resampling=Resampling.NEAREST
+    ):
         super().__init__("<image not found>", classes="image-label")
+        self.image_resample = resample
         self.image: Optional[Image.Image] = image
         self.image_text: Union[str, AsyncPixels] = "<image not found>"
         self.last_image_size: Optional[Tuple[int, int]] = None
@@ -206,7 +221,7 @@ class AsyncImageLabel(Label):
         if self.image is not None:
             new_size = (self.size[0], self.size[1])
             if self.last_image_size != new_size:
-                self.image_text = await AsyncPixels.from_image(self.image, new_size, loop=self.app._loop)
+                self.image_text = await AsyncPixels.from_image(self.image, new_size, self.image_resample)
                 self.last_image_size = new_size
         else:
             self.image_text = "<image not found>"
@@ -218,7 +233,7 @@ class AsyncImageLabel(Label):
         
         if self.image is not None:
             new_size = (self.size[0], self.size[1])
-            self.image_text = await AsyncPixels.from_image(self.image, new_size, loop=self.app._loop)
+            self.image_text = await AsyncPixels.from_image(self.image, new_size, self.image_resample)
 
 
 # ! Input Field Functions

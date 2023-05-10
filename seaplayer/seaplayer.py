@@ -11,6 +11,8 @@ from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, Input, Button
 from textual.binding import Binding
+# > Image Works
+from PIL.Image import Resampling
 # > Typing
 from typing import Optional, Literal, Tuple, List
 # > Local Imports
@@ -20,7 +22,7 @@ from .screens import Unknown, UNKNOWN_OPEN_KEY, Configurate
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.3.3"
+__version__ = "0.3.4-unrelease.1"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -31,6 +33,16 @@ else: LOCALDIR = os.path.dirname(os.path.dirname(__file__))
 
 CONFIG_PATH = os.path.join(LOCALDIR, "config.properties")
 CSS_LOCALDIR = os.path.join(os.path.dirname(__file__), "css")
+
+# ! Constants
+RESAMPLING_SAFE = {
+    "nearest": Resampling.NEAREST,
+    "bilinear": Resampling.BILINEAR,
+    "bicubic": Resampling.BICUBIC,
+    "lanczos": Resampling.LANCZOS,
+    "hamming": Resampling.HAMMING,
+    "box": Resampling.BOX
+}
 
 # ! Main
 class SeaPlayer(App):
@@ -137,9 +149,9 @@ class SeaPlayer(App):
         
         self.music_selected_label = Label(self.get_sound_selected_label_text(), classes="music-selected-label")
         if self.config.image_update_method == "sync":
-            self.music_image = StandartImageLabel()
+            self.music_image = StandartImageLabel(resample=RESAMPLING_SAFE[self.config.image_resample_method])
         elif self.config.image_update_method == "async":
-            self.music_image = AsyncImageLabel()
+            self.music_image = AsyncImageLabel(resample=RESAMPLING_SAFE[self.config.image_resample_method])
         else:
             raise RuntimeError("The configuration 'image_update_method' is incorrect.")
         

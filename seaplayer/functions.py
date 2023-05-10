@@ -15,8 +15,8 @@ T = TypeVar("T")
 # ! Async Functions
 async def aiter(it: Iterable[T]):
     for i in it:
-        yield i
         await asyncio.sleep(0)
+        yield i
 
 async def get_bar_status() -> Tuple[str, Optional[float], Optional[float]]: return "", None, None
 

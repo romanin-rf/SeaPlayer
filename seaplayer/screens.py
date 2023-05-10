@@ -85,7 +85,7 @@ class Configurate(Screen):
             desc=desc+(" [red](restart required)[/]" if restart_required else "")
         )
     
-    # ! Configurate Main Functions
+    # ! Configurate Main Functions # 
     def compose(self) -> ComposeResult:
         yield Header()
         yield ConfigurateListView(
@@ -97,9 +97,15 @@ class Configurate(Screen):
             ),
             self.create_configurator_type(
                 "app.config.image_update_method",
-                "Sound", "Image Update Method",
+                "Image", "Image Update Method",
                 "The name of the picture update option.",
                 conv.literal_string("sync", "async"), Literal["sync", "async"]
+            ),
+            self.create_configurator_type(
+                "app.config.image_resample_method",
+                "Image", "Image Resample Method",
+                "Method for reducing/increasing the number of pixels.",
+                conv.literal_string("nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"), Literal["nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"]
             ),
             self.create_configurator_type(
                 "app.config.volume_change_percent",
