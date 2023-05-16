@@ -7,3 +7,4 @@ playsoundsimple.py==0.6.3
 properties.py==1.1.0
 typing_inspect
 ripix>=2.2.3
+pyinstaller
