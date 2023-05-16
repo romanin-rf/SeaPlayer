@@ -6,11 +6,11 @@ T = TypeVar("T")
 
 DEFAULT_CONFIG_DATA = {
     "sound": {
-        "sound_font_path": None,            # * Optional[str]
+        "sound_font_path": None,                # * Optional[str]
     },
     "image": {
-        "image_update_method": "sync",      # * Literal["sync", "async"]
-        "image_resample_method": "nearest", # * Literal["nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"]
+        "image_update_method": "sync",          # * Literal["sync", "async"]
+        "image_resample_method": "bilinear",    # * Literal["nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"]
     },
     "playback": {
         "volume_change_percent": 0.05,
