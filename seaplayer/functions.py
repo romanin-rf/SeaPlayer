@@ -4,8 +4,6 @@ import aiofiles
 from io import BytesIO
 # > Image Works
 from PIL import Image
-# > Sound Works
-from playsoundsimple import Sound
 # > Typing
 from typing import Literal, Tuple, Optional, Iterable, TypeVar
 
@@ -25,7 +23,7 @@ async def aio_is_midi_file(filepath: str):
         return await file.read(4) == b"MThd"
 
 # ! Functions
-def check_status(sound: Sound) -> Literal["Stoped", "Playing", "Paused"]:
+def check_status(sound) -> Literal["Stoped", "Playing", "Paused"]:
     if sound.playing:
         if sound.paused: return "Paused"
         else: return "Playing"
@@ -34,7 +32,7 @@ def check_status(sound: Sound) -> Literal["Stoped", "Playing", "Paused"]:
 def image_from_bytes(data: Optional[bytes]) -> Optional[Image.Image]:
     if data is not None: return Image.open(BytesIO(data))
 
-def get_sound_basename(sound: Sound) -> str:
+def get_sound_basename(sound) -> str:
     if sound.title is not None:
         if sound.artist is not None:
             return f"{sound.artist} - {sound.title}"
