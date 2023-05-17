@@ -2,8 +2,14 @@
 ## Descriptions
 SeaPlayer is a player that works in the terminal. Works with `MP3`, `OGG`, `WAV`, `MIDI` files.
 
-## Install 
-You can use [Release](https://github.com/romanin-rf/sea-player/releases) or ***download clone repository*** install the dependencies from `requirements.txt` and run via [Python](https://www.python.org).
+## Install
+
+
+1. You can use [Release](https://github.com/romanin-rf/sea-player/releases)
+2. ***Download clone repository*** install the dependencies from `requirements.txt` and run via [Python](https://www.python.org).
+3.  ```
+    pip install --upgrade seaplayer
+    ```
 
 ### For MIDI playback
 ***If you have Windows*** you can skip this part as ***Windows*** has a default decoder for `MIDI` and ***does not need to be installed***.
