@@ -20,5 +20,9 @@ SeaPlayer is a player that works in the terminal. Works with `MP3`, `OGG`, `WAV`
 You need to [install the FluidSynth](https://github.com/FluidSynth/fluidsynth/wiki/Download) package in order to playback `MIDI`.
 
 ## Using
+```shell
+python -m seaplayer # Method for `downloaded repository` or `installed via pip`
+```
+
 ![MainScreen-v0.3.4-unrelease.1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/80b1cf95-7801-4fdd-9336-4d566804735a)
 ![ConfigurateScreen-v0.3.4-unrelease.1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/79ca17ad-d4af-4cc6-84d7-9329855746e9)
