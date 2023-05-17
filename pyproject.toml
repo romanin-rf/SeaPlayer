@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "SeaPlayer"
+version = "0.3.4"
+description = "SeaPlayer is a player that works in the terminal."
+repository = "https://github.com/romanin-rf/SeaPlayer"
+authors = ["Romanin <semina054@gmail.com>"]
+keywords = ["tui", "player", "seaplayer", "wav", "mp3", "ogg", "midi"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "seaplayer" }]
+include = [
+    "seaplayer/modules/__init__.py",
+    "seaplayer/modules/colorizer.py",
+    "seaplayer/assets/image-not-found.png",
+    "seaplayer/css/configurate.css",
+    "seaplayer/css/objects.css",
+    "seaplayer/css/seaplayer.css",
+    "seaplayer/css/unknown.css"
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pillow = "^9.5.0"
+aiofiles = "^23.1.0"
+rich = ">=13.3.5"
+mutagen = "1.45.1"
+textual = ">=0.24.1"
+playsoundsimple-py = "0.6.3"
+properties-py = "1.1.0"
+typing-inspect = "^0.8.0"
+ripix = ">=2.2.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

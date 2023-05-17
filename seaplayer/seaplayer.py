@@ -2,6 +2,7 @@ import os
 import sys
 import glob
 import asyncio
+from platformdirs import user_config_dir
 # > Sound Works
 from playsoundsimple import Sound
 from playsoundsimple.units import SOUND_FONTS_PATH
@@ -33,9 +34,14 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
 else:
     LOCALDIR = os.path.dirname(os.path.dirname(__file__))
 
-CONFIG_PATH = os.path.join(LOCALDIR, "config.properties")
 CSS_LOCALDIR = os.path.join(os.path.dirname(__file__), "css")
 ASSETS_DIRPATH = os.path.join(os.path.dirname(__file__), "assets")
+
+CONFIG_DIRPATH = os.path.abspath(user_config_dir(__title__, __author__))
+CONFIG_FILEPATH = os.path.join(CONFIG_DIRPATH, "config.properties")
+
+# ! Initialized Directoryes
+os.makedirs(CONFIG_DIRPATH, mode=644, exist_ok=True)
 
 # ! Assets Paths
 IMGPATH_IMAGE_NOT_FOUND = os.path.join(ASSETS_DIRPATH, "image-not-found.png")
@@ -66,7 +72,7 @@ class SeaPlayer(App):
     }
     
     # ! SeaPlayer Configuration
-    config = SeaPlayerConfig(CONFIG_PATH)
+    config = SeaPlayerConfig(CONFIG_FILEPATH)
     
     max_volume_percent: float = config.max_volume_percent
     
