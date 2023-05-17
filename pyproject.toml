@@ -30,6 +30,7 @@ playsoundsimple-py = "0.6.3"
 properties-py = "1.1.0"
 typing-inspect = "^0.8.0"
 ripix = ">=2.2.3"
+platformdirs = "^3.5.1"
 
 
 [build-system]

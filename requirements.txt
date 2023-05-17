@@ -1,10 +1,11 @@
-textual>=0.24.1
 rich>=13.3.5
 ripix>=2.2.3
+textual>=0.24.1
 mutagen==1.45.1
-playsoundsimple.py==0.6.3
 properties.py==1.1.0
+playsoundsimple.py==0.6.3
 pillow
 aiofiles
-typing_inspect
 pyinstaller
+platformdirs
+typing_inspect
