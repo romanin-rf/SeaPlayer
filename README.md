@@ -1,4 +1,8 @@
-# SeaPlayer
+<div id="header" align="center">
+    <img src="https://github.com/romanin-rf/SeaPlayer/assets/60302782/937adcc4-f547-440c-8139-a5f15bffa157" alt="Icon" width="300">
+</div>
+<div id="header" align="center"><h1>SeaPlayer</h1></div>
+
 ## Descriptions
 SeaPlayer is a player that works in the terminal. Works with `MP3`, `OGG`, `WAV`, `MIDI` files.
 
@@ -23,6 +27,5 @@ You need to [install the FluidSynth](https://github.com/FluidSynth/fluidsynth/wi
 ```shell
 python -m seaplayer # Method for `downloaded repository` or `installed via pip`
 ```
-
-![MainScreen-v0.3.4-unrelease.1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/80b1cf95-7801-4fdd-9336-4d566804735a)
-![ConfigurateScreen-v0.3.4-unrelease.1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/79ca17ad-d4af-4cc6-84d7-9329855746e9)
+![MainScreen-v0.4a1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/c0fb3ad6-53ac-4360-b7dc-dd96a1d5a5ea)
+![ConfigurateScreen-v0.4a1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/6e2dcded-8ffb-4f05-8dd8-26d5951cd89b)
