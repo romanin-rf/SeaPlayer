@@ -9,9 +9,7 @@ elif platform.system() == "Linux": ds = ":"
 else: raise RuntimeError("Your operating system is not supported.")
 
 LOCALDIR = os.getcwd()
-TRASH_FILES = [
-    "build", "SeaPlayer.spec"
-]
+TRASH_FILES = [ "build", "SeaPlayer.spec" ]
 DATA = {
     # * 1) Main Files
     "seaplayer": "seaplayer/",
@@ -24,7 +22,7 @@ DATA = {
     "seaplayer/config.py": "seaplayer/",
     "seaplayer/screens.py": "seaplayer/",
     "seaplayer/exceptions.py": "seaplayer/",
-    "seaplayer/codecbase.py": "seaplayer/",
+    "seaplayer/codeсbase.py": "seaplayer/",
     "seaplayer/codecs.py": "seaplayer/",
     # * 2) Modules Files
     "seaplayer/modules": "seaplayer/modules/",
