@@ -77,11 +77,12 @@ class MusicListView(ListView):
         await self.append(
             MusicListViewItem(
                 f"{get_sound_basename(sound)}",
-                "{duration} sec, {channel_mode}, {samplerate} Hz, {bitrate} kbps".format(
+                "{duration} sec, {channel_mode}, {samplerate} Hz, {bitrate} kbps, {codec_name}".format(
                     duration=round(sound.duration),
                     channel_mode="Mono" if sound.channels <= 1 else "Stereo",
                     samplerate=round(sound.samplerate),
-                    bitrate=round(sound.bitrate / 1000)
+                    bitrate=round(sound.bitrate / 1000),
+                    codec_name=sound.codec_name
                 ),
                 sound.name,
                 sound_uuid

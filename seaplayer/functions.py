@@ -42,6 +42,3 @@ def get_sound_basename(sound: CodecBase) -> str:
 def image_from_bytes(data: Optional[bytes]) -> Optional[Image.Image]:
     if data is not None: return Image.open(BytesIO(data))
 
-def is_midi_file(filepath: str) -> bool:
-    with open(filepath, 'rb') as file:
-        return file.read(4) == b"MThd"

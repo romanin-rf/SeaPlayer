@@ -9,20 +9,20 @@ from typing import Optional
 # > Local Imports
 from .codeсbase import CodecBase
 
-# ! Codec for MP3 & OGG & WAV files
-class Mp3OggWaveCodec(CodecBase):
-    codec_name: str = "MP3/OGG/WAVE"
+# ! MP3 Codec
+class MP3Codec(CodecBase):
+    codec_name: str = "MP3"
     
     # ! Testing
     @staticmethod
     def is_this_codec(path: str) -> bool:
-        try: Sound(path) ; return True
-        except: return False
+        with open(path, "rb") as file:
+            return file.read(3) == b'ID3'
     
     @staticmethod
     async def aio_is_this_codec(path: str) -> bool:
-        try: Sound(path) ; return True
-        except: return False
+        async with aiofiles.open(path, "rb") as file:
+            return await file.read(3) == b'ID3'
     
     # ! Initialized
     def __init__(self, path: str, **kwargs) -> None:
@@ -83,8 +83,40 @@ class Mp3OggWaveCodec(CodecBase):
     def get_pos(self) -> float: return self._sound.get_pos()
     def set_pos(self, value: float) -> None: self._sound.set_pos(value)
 
+# ! OGG Codec
+class OGGCodec(MP3Codec):
+    codec_name: str = "OGG"
+    
+    # ! Testing
+    @staticmethod
+    def is_this_codec(path: str) -> bool:
+        with open(path, "rb") as file:
+            return file.read(4) == b'OggS'
+    
+    @staticmethod
+    async def aio_is_this_codec(path: str) -> bool:
+        async with aiofiles.open(path, "rb") as file:
+            return await file.read(4) == b'OggS'
+
+# ! WAVE Codec
+class WAVECodec(MP3Codec):
+    codec_name: str = "WAVE"
+    
+    # ! Testing
+    @staticmethod
+    def is_this_codec(path: str) -> bool:
+        with open(path, "rb") as file:
+            signature = file.read(4)
+        return (signature == b'WAVE') or (signature == b'RIFF')
+    
+    @staticmethod
+    async def aio_is_this_codec(path: str) -> bool:
+        async with aiofiles.open(path, "rb") as file:
+            signature = await file.read(4)
+        return (signature == b'WAVE') or (signature == b'RIFF')
+
 # ! MIDI Codec
-class MIDICodec(Mp3OggWaveCodec):
+class MIDICodec(MP3Codec):
     codec_name: str = "MIDI"
     
     # ! Testing

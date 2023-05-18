@@ -3,14 +3,12 @@ import sys
 import glob
 import asyncio
 from platformdirs import user_config_dir
-# > Sound Works
-from playsoundsimple.units import SOUND_FONTS_PATH
 # > Graphics
 from textual import on
+from textual.binding import Binding
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, Input, Button
-from textual.binding import Binding
 # > Image Works
 from PIL.Image import Resampling
 # > Typing
@@ -19,14 +17,13 @@ from typing import Optional, Literal, Tuple, List, Type
 from .config import *
 from .objects import *
 from .codeсbase import CodecBase
-from .codecs import Mp3OggWaveCodec, MIDICodec
 from .functions import check_status, image_from_bytes
-from .screens import Unknown, UNKNOWN_OPEN_KEY, Configurate
-
+from .screens import Unknown, Configurate, UNKNOWN_OPEN_KEY
+from .codecs import MP3Codec, WAVECodec, OGGCodec, MIDICodec
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.3.6"
+__version__ = "0.4a1"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -101,7 +98,7 @@ class SeaPlayer(App):
     started: bool = True
     
     # ! Codecs Configuration
-    CODECS: List[Type[CodecBase]] = [ Mp3OggWaveCodec, MIDICodec ]
+    CODECS: List[Type[CodecBase]] = [ MP3Codec, WAVECodec, OGGCodec, MIDICodec ]
     CODECS_KWARGS: Dict[str, Any] = {"sound_font_path": config.sound_font_path}
     
     # ! Inherited Functions
@@ -272,7 +269,7 @@ class SeaPlayer(App):
         
         if path.replace(" ", "") != "":
             try: self.last_paths_globalized = glob.glob(path, recursive=self.config.recursive_search)
-            except: self.last_paths_globalized = []
+            except: self.last_paths_globalized = [ path ]
             if len(self.last_paths_globalized) > 0:
                 self.run_worker(
                     self.add_sounds_to_list,
