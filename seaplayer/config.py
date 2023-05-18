@@ -26,6 +26,9 @@ DEFAULT_CONFIG_DATA = {
         "rewind_back": "/",
         "volume_up": "+",
         "volume_down": "-"
+    },
+    "debag": {
+        "log_menu_enable": False
     }
 }
 
@@ -119,24 +122,30 @@ class SeaPlayerConfig:
     @property
     def key_quit(self) -> str: return self.get("keys.quit")
     @key_quit.setter
-    def key_quit(self, value: str): return self.set("keys.quit", value)
+    def key_quit(self, value: str): self.set("keys.quit", value)
     
     @property
     def key_rewind_forward(self) -> str: return self.get("keys.rewind_forward")
     @key_rewind_forward.setter
-    def key_rewind_forward(self, value: str): return self.set("keys.rewind_forward", value)
+    def key_rewind_forward(self, value: str): self.set("keys.rewind_forward", value)
     
     @property
     def key_rewind_back(self) -> str: return self.get("keys.rewind_back")
     @key_rewind_back.setter
-    def key_rewind_back(self, value: str): return self.set("keys.rewind_back", value)
+    def key_rewind_back(self, value: str): self.set("keys.rewind_back", value)
     
     @property
     def key_volume_up(self) -> str: return self.get("keys.volume_up")
     @key_volume_up.setter
-    def key_volume_up(self, value: str): return self.set("keys.volume_up", value)
+    def key_volume_up(self, value: str): self.set("keys.volume_up", value)
     
     @property
     def key_volume_down(self) -> str: return self.get("keys.volume_down")
     @key_volume_down.setter
-    def key_volume_down(self, value: str): return self.set("keys.volume_down", value)
+    def key_volume_down(self, value: str): self.set("keys.volume_down", value)
+    
+    # ! Debag
+    @property
+    def log_menu_enable(self) -> bool: return self.get("debag.log_menu_enable")
+    @log_menu_enable.setter
+    def log_menu_enable(self, value: bool): self.set("debag.log_menu_enable", value)

@@ -8,22 +8,36 @@ from textual import on
 from textual.binding import Binding
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
-from textual.widgets import Header, Footer, Static, Label, Input, Button
+from textual.widgets import Header, Footer, Static, Label, Button
 # > Image Works
+from PIL import Image
 from PIL.Image import Resampling
 # > Typing
 from typing import Optional, Literal, Tuple, List, Type
 # > Local Imports
 from .config import *
-from .objects import *
 from .codeсbase import CodecBase
-from .functions import check_status, image_from_bytes
 from .screens import Unknown, Configurate, UNKNOWN_OPEN_KEY
 from .codecs import MP3Codec, WAVECodec, OGGCodec, MIDICodec
+from .functions import (
+    aiter,
+    check_status,
+    image_from_bytes,
+    get_sound_basename
+)
+from .objects import (
+    LogMenu,
+    InputField,
+    MusicListView,
+    AsyncImageLabel,
+    MusicListViewItem,
+    StandartImageLabel,
+    IndeterminateProgress
+)
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.4a1"
+__version__ = "0.4a2"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -77,15 +91,18 @@ class SeaPlayer(App):
     
     # ! Textual Keys Configuration
     BINDINGS = [
-        Binding(key=config.key_quit, action="quit", description="Quit"),
-        Binding(key=UNKNOWN_OPEN_KEY, action="push_screen('unknown')", description="None", show=False),
-        Binding(key="c,с", action="push_screen('configurate')", description="Configurate"),
-        Binding(key=config.key_rewind_back, action="minus_rewind", description=f"Rewind -{config.rewind_count_seconds} sec"),
-        Binding(key=config.key_rewind_forward, action="plus_rewind", description=f"Rewind +{config.rewind_count_seconds} sec"),
-        Binding(key=config.key_volume_down, action="minus_volume", description=f"Volume -{round(config.volume_change_percent*100)}%"),
-        Binding(key=config.key_volume_up, action="plus_volume", description=f"Volume +{round(config.volume_change_percent*100)}%"),
-        Binding(key="ctrl+s", action="screenshot", description="Screenshot")
+        Binding(config.key_quit, "quit", "Quit", priority=True),
+        Binding("c,с", "push_screen('configurate')", "Configurate", priority=True),
+        #Binding("l,д", "app.toggle_class('.log-menu', '-hidden')", 'Logs'),
+        Binding(config.key_rewind_back, "minus_rewind", f"Rewind -{config.rewind_count_seconds} sec"),
+        Binding(config.key_rewind_forward, "plus_rewind", f"Rewind +{config.rewind_count_seconds} sec"),
+        Binding(config.key_volume_down, "minus_volume", f"Volume -{round(config.volume_change_percent*100)}%"),
+        Binding(config.key_volume_up, "plus_volume", f"Volume +{round(config.volume_change_percent*100)}%"),
+        Binding("ctrl+s", "screenshot", "Screenshot"),
+        Binding(UNKNOWN_OPEN_KEY, "push_screen('unknown')", "None", show=False)
     ]
+    if config.log_menu_enable:
+        BINDINGS.append(Binding("l,д", "app.toggle_class('.log-menu', '-hidden')", 'Logs', priority=True))
     
     # ! Template Configuration
     currect_sound_uuid: Optional[str] = None
@@ -147,17 +164,24 @@ class SeaPlayer(App):
                     self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
                 
                 if (status == "Stoped") and (self.last_playback_status == "Playing"):
-                    if self.playback_mode == 1: sound.play()
+                    if self.playback_mode == 1:
+                        sound.play()
+                        self.log_menu.wlog("INFO", f"Replay sound: {repr(sound)}")
                     elif self.playback_mode == 2:
                         if (sound:=await self.set_sound_for_playback(sound_uuid:=await self.music_list_view.aio_get_next_sound_uuid(self.currect_sound_uuid), True)) is not None:
                             self.playback_mode_blocked = True
                             await self.music_list_view.aio_select_list_item_from_sound_uuid(sound_uuid)
                             sound.play()
+                            self.log_menu.wlog("INFO", f"Playing the next sound: {repr(sound)}")
                 
                 self.last_playback_status = status
             await asyncio.sleep(0.33)
     
     def compose(self) -> ComposeResult:
+        # * Other
+        self.log_menu = LogMenu(enable_logging=(self.config.log_menu_enable), wrap=True, highlight=True, markup=True)
+        self.log_menu.wlog("INFO", f"Codecs: {repr(self.CODECS)}")
+        
         # * Play Screen
         self.music_play_screen = Static(classes="screen-box")
         self.music_play_screen.border_title = "Player"
@@ -172,12 +196,16 @@ class SeaPlayer(App):
         else:
             raise RuntimeError("The configuration 'image_update_method' is incorrect.")
         
+        self.log_menu.wlog("INFO", f"The picture from the media file is rendered using the {repr(self.config.image_update_method)} method.")
+        
         # * Compositions Screen
         self.music_list_screen = Static(classes="screen-box")
         self.music_list_screen.border_title = "Playlist"
         
         self.music_list_view = MusicListView()
-        self.music_list_add_input = Input(placeholder="FilePath", classes="music-list-screen-add-input")
+        
+        async def _spm(input: InputField, value: Any) -> None: await self.submit_plus_sound(value)
+        self.music_list_add_input = InputField(submit=_spm, placeholder="Filepath / Search Mask", classes="music-list-screen-add-input")
         
         # * Adding
         yield Header()
@@ -196,9 +224,9 @@ class SeaPlayer(App):
                         yield Button(self.gpms(), id="switch-playback-mode", variant="primary", classes="button-sound-control")
         with self.music_list_screen:
             yield self.music_list_view
-            with Horizontal(classes="music-list-screen-add-box"):
-                yield self.music_list_add_input
-                yield Button("+", id="plus-sound", variant="error", classes="music-list-screen-add-button")
+            yield self.music_list_add_input
+        if self.config.log_menu_enable:
+            yield self.log_menu
         yield Footer()
         
         self.run_worker(
@@ -217,6 +245,10 @@ class SeaPlayer(App):
                     if sound is not None:
                         if not await self.music_list_view.music_list.aio_exists_sha1(sound):
                             await self.music_list_view.aio_add_sound(sound)
+                            self.log_menu.wlog("INFO", f"Song added: {repr(sound)}")
+                            break
+            if sound is None:
+                self.log_menu.wlog("ERROR", f"The sound could not be loaded: {repr(path)}", cc="red")
     
     async def currect_sound_stop(self, sound: Optional[CodecBase]=None):
         if sound is None: sound = await self.aio_gcs()
@@ -262,14 +294,10 @@ class SeaPlayer(App):
             else: await self.currect_sound_play(sound)
             self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
     
-    @on(Button.Pressed, "#plus-sound")
-    async def bp_plus_sound(self) -> None:
-        path = self.music_list_add_input.value
-        self.music_list_add_input.value = ""
-        
-        if path.replace(" ", "") != "":
-            try: self.last_paths_globalized = glob.glob(path, recursive=self.config.recursive_search)
-            except: self.last_paths_globalized = [ path ]
+    async def submit_plus_sound(self, value: str) -> None:
+        if value.replace(" ", "") != "":
+            try: self.last_paths_globalized = glob.glob(value, recursive=self.config.recursive_search)
+            except: self.last_paths_globalized = [ value ]
             if len(self.last_paths_globalized) > 0:
                 self.run_worker(
                     self.add_sounds_to_list,
@@ -283,7 +311,8 @@ class SeaPlayer(App):
         sound_uuid: Optional[str],
         playback_mode_blocked: Optional[bool]=None
     ) -> Optional[CodecBase]:
-        if playback_mode_blocked is not None: self.playback_mode_blocked = playback_mode_blocked
+        if playback_mode_blocked is not None:
+            self.playback_mode_blocked = playback_mode_blocked
         if sound_uuid is not None:
             if not self.playback_mode_blocked:
                 if (sound:=await self.aio_gcs()) is not None:
@@ -295,6 +324,7 @@ class SeaPlayer(App):
             if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
                 sound.set_volume(self.currect_volume)
                 await self.music_image.update_image(image_from_bytes(sound.icon_data))
+                self.log_menu.wlog("INFO", f"A new sound has been selected: {repr(sound)}")
             self.currect_sound = sound
             self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
             return sound
@@ -324,7 +354,8 @@ class SeaPlayer(App):
                 sound.set_volume(vol)
     
     async def action_screenshot(self) -> None:
-        self.save_screenshot(path=LOCALDIR)
+        path = self.save_screenshot(path=LOCALDIR)
+        self.log_menu.wlog("INFO", f"Screenshot saved: {repr(path)}")
     
     async def action_quit(self):
         self.started = False

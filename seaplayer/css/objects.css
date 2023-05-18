@@ -22,10 +22,6 @@
 }
 
 .music-list-screen-add-input {
-    width: 3fr;
-}
-
-.music-list-screen-add-button {
     width: 1fr;
 }
 
@@ -57,3 +53,23 @@
 /* ! Any Elements CSS */
 .pass-one-width { width: 1; }
 
+/* ! Log Menu */
+.log-menu {
+    background: $surface;
+    color: $text;
+    height: 50vh;
+    dock: bottom;
+    layer: notes;
+    border-top: hkey $primary;
+    offset-y: 0;
+    transition: offset 400ms in_out_cubic;
+    padding: 0 1 1 1;
+}
+
+.log-menu:focus {
+    offset: 0 0 !important;
+}
+
+.log-menu.-hidden {
+    offset-y: 100%;
+}

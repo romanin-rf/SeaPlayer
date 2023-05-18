@@ -3,9 +3,9 @@ from PIL import Image
 from PIL.Image import Resampling
 from ripix import AsyncPixels, Pixels
 from rich.progress import Progress, BarColumn, TextColumn
-from textual.widgets import Static, Label, ListItem, ListView, Input
+from textual.widgets import Static, Label, ListItem, ListView, Input, TextLog
 # > Typing
-from typing import Optional, Tuple, TypeVar, Union, Any
+from typing import Optional, Tuple, TypeVar, Union, Any, Dict
 # > Local Import's
 from .types import MusicList
 from .codeсbase import CodecBase
@@ -244,7 +244,7 @@ class AsyncImageLabel(Label):
 # ! Input Field Functions
 async def _conv(value: str) -> Tuple[bool, Optional[Any]]: return True, value
 async def _submit(input: Input, value: Any) -> None: ...
-def _update_placeholder() -> str: return ""
+def _update_placeholder() -> Optional[str]: ...
 
 # ! Input Field
 class InputField(Input):
@@ -259,7 +259,8 @@ class InputField(Input):
         self._conv = conv
         self._submit = submit
         self._update_placeholder = update_placeholder
-        self.placeholder = self._update_placeholder()
+        if (placeholder:=self._update_placeholder()) is not None:
+            self.placeholder = placeholder
     
     async def action_submit(self):
         value = self.value
@@ -267,7 +268,8 @@ class InputField(Input):
         if value.replace(" ", "") != "":
             ok, c_value = await self._conv(value)
             if ok: await self._submit(self, c_value)
-        self.placeholder = self._update_placeholder()
+        if (placeholder:=self._update_placeholder()) is not None:
+            self.placeholder = placeholder
 
 # ! Configurate List
 class ConfigurateListItem(ListItem):
@@ -292,3 +294,17 @@ class ConfigurateListView(ListView):
         kwargs["classes"] = "configurate-list-view"
         super().__init__(*children, **kwargs)
         self.border_title = "Configurate"
+
+# ! Log Menu
+class LogMenu(TextLog):
+    def __init__(self, enable_logging: bool=True, **kwargs):
+        self.enable_logging = enable_logging
+        if kwargs.get("classes", None) is not None:
+            kwargs["classes"] = kwargs["classes"] + " log-menu -hidden"
+        else:
+            kwargs["classes"] = "log-menu -hidden"
+        super().__init__(**kwargs)
+    
+    def wlog(self, chap: str, msg: str, *, cc: str="green") -> None:
+        if self.enable_logging:
+            self.write(f"[[{cc}]{chap.center(8)}[/]]: {msg}\n")

@@ -41,4 +41,3 @@ def get_sound_basename(sound: CodecBase) -> str:
 
 def image_from_bytes(data: Optional[bytes]) -> Optional[Image.Image]:
     if data is not None: return Image.open(BytesIO(data))
-

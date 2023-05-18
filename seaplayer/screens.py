@@ -131,6 +131,12 @@ class Configurate(Screen):
                 "Recursive file search.",
                 conv.boolean, bool, False
             ),
+            self.create_configurator_type(
+                "app.config.log_menu_enable",
+                "Debag", "Log Menu Enable",
+                "Menu with logs for the current session.",
+                conv.boolean, bool
+            ),
             self.create_configurator_keys("app.config.key_quit", "Quit", "Сlose the app."),
             self.create_configurator_keys("app.config.key_rewind_forward", "Rewind Forward", "Forwards rewinding."),
             self.create_configurator_keys("app.config.key_rewind_back", "Rewind Back", "Backwards rewinding."),

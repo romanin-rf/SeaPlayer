@@ -1,9 +1,13 @@
 from typing import Optional
 
+# ! Functions
+def formater(**kwargs) -> str:
+    return ", ".join([f"{key}={repr(value)}" for key, value in kwargs.items()])
+
 # ! Codecs Base
 class CodecBase:
     # * Codec Info
-    codec_name: str
+    codec_name: str = "None"
     
     # * Info
     name: str
@@ -24,6 +28,21 @@ class CodecBase:
     
     # ! Initializing Functions
     def __init__(self, path: str, **kwargs) -> None: ...
+    def __repr__(self):
+        return \
+            "{0}({1})".format(
+                self.__class__.__name__,
+                formater(
+                    name=self.name,
+                    duration=self.duration,
+                    channels=self.channels,
+                    samplerate=self.samplerate,
+                    bitrate=self.bitrate,
+                    title=self.title,
+                    artist=self.artist,
+                    album=self.album
+                )
+            )
     
     def __sha1__(self, buffer_size: int) -> str: ...
     async def __aio_sha1__(self, buffer_size: int) -> str: ...
