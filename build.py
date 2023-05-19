@@ -1,6 +1,6 @@
 import os
+import shutil
 import platform
-import glob
 from pathlib import Path
 from typing import Dict, List
 
@@ -52,15 +52,12 @@ COMMAND = " ".join(COMMAND_LINE)
 print(COMMAND, end="\n\n")
 os.system(COMMAND)
 
-for path in TRASH_FILES:
+for i in TRASH_FILES:
+    path = Path(localize(i))
     try:
-        path = Path(localize(path))
-        if path.is_file(): os.remove(path.name)
-        elif path.is_dir():
-            files = glob.glob(os.path.join(path.name, "**", "*"))
-            for filepath in files:
-                try: os.remove(filepath)
-                except: pass
-            try: os.removedirs(path.name)
-            except: pass
-    except: pass
+        if path.is_dir():
+            shutil.rmtree(path.name, ignore_errors=True)
+        else:
+            os.remove(path.name)
+    except:
+        pass

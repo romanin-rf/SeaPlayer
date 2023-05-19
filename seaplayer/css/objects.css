@@ -73,3 +73,14 @@
 .log-menu.-hidden {
     offset-y: 100%;
 }
+
+Nofy {
+    dock: top;
+    layer: nofys;
+    width: auto;
+    margin: 2 4;
+    padding: 1 2;
+    background: $background;
+    color: $text;
+    height: auto;
+}

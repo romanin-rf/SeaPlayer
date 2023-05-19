@@ -5,7 +5,7 @@ from ripix import AsyncPixels, Pixels
 from rich.progress import Progress, BarColumn, TextColumn
 from textual.widgets import Static, Label, ListItem, ListView, Input, TextLog
 # > Typing
-from typing import Optional, Tuple, TypeVar, Union, Any, Dict
+from typing import Optional, Tuple, TypeVar, Union, Any, Literal
 # > Local Import's
 from .types import MusicList
 from .codeсbase import CodecBase
@@ -297,14 +297,36 @@ class ConfigurateListView(ListView):
 
 # ! Log Menu
 class LogMenu(TextLog):
-    def __init__(self, enable_logging: bool=True, **kwargs):
+    def __init__(self, chap_max_width: int=8, enable_logging: bool=True, **kwargs):
         self.enable_logging = enable_logging
+        self.chap_max_width = chap_max_width
+        
         if kwargs.get("classes", None) is not None:
             kwargs["classes"] = kwargs["classes"] + " log-menu -hidden"
         else:
             kwargs["classes"] = "log-menu -hidden"
+        
         super().__init__(**kwargs)
     
-    def wlog(self, chap: str, msg: str, *, cc: str="green") -> None:
-        if self.enable_logging:
-            self.write(f"[[{cc}]{chap.center(8)}[/]]: {msg}\n")
+    def write_log(self, chap: str, msg: str, *, chap_color: str="green") -> None:
+        if self.enable_logging: self.write(f"[[{chap_color}]{chap.center(self.chap_max_width)}[/]]: {msg}", shrink=False)
+    
+    def info(self, msg: str) -> None: self.write_log("INFO", msg, chap_color="green")
+    def error(self, msg: str) -> None: self.write_log("ERROR", msg, chap_color="red")
+    def warn(self, msg: str) -> None: self.write_log("WARN", msg, chap_color="orange")
+
+# ! Nofy
+class Nofy(Static):
+    def __init__(
+        self,
+        text: str,
+        life_time: float=3,
+        dosk: Literal["bottom", "left", "right", "top"]="top",
+        **kwargs
+    ) -> None:
+        super().__init__(text, **kwargs)
+        self.life_time = life_time
+        self.styles.dock = dosk
+    
+    def on_mount(self) -> None: self.set_timer(self.life_time, self.remove)
+    async def on_click(self) -> None: await self.remove()

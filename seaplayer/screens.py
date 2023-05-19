@@ -9,7 +9,12 @@ from typing import Optional, Literal
 # > Local Imports
 from .types import Converter
 from .modules.colorizer import richefication
-from .objects import ConfigurateListView, ConfigurateListItem, InputField
+from .objects import (
+    Nofy,
+    InputField,
+    ConfigurateListView,
+    ConfigurateListItem
+)
 
 # ! Constants
 TEXT = b'CkFuIGVycm9yIGhhcyBvY2N1cnJlZC4gVG8gY29udGludWU6CgpQcmVzcyBFbnRlciB0byByZXR1cm4gdG8ge3N5c3RlbX0sIG9yCgpQcmVzcyBDVFJMK0FMVCtERUwgdG8gcmVzdGFydCB5b3VyIGNvbXB1dGVyLiBJZiB5b3UgZG8gdGhpcywKeW91IHdpbGwgbG9zZSBhbnkgdW5zYXZlZCBpbmZvcm1hdGlvbiBpbiBhbGwgb3BlbiBhcHBsaWNhdGlvbnMuCgpFcnJvcjogMEUgOiAwMTZGIDogQkZGOUIzRDQK'
@@ -34,6 +39,23 @@ class Configurate(Screen):
     """This Configurate Menu screen."""
     BINDINGS = [("escape", "app.pop_screen", "Back")]
     
+    # ! Nofy Functions
+    def nofy(
+        self,
+        text: str,
+        life_time: float=3,
+        dosk: Literal["bottom", "left", "right", "top"]="top"
+    ) -> None:
+        self.screen.mount(Nofy(text, life_time, dosk))
+    
+    async def aio_nofy(
+        self,
+        text: str,
+        life_time: float=3,
+        dosk: Literal["bottom", "left", "right", "top"]="top"
+    ) -> None:
+        await self.screen.mount(Nofy(text, life_time, dosk))
+    
     # ! Update Placeholder from InputField
     def _upfif(self, attr_name: str) -> str:
         return "Currect: " + str(eval(f"self.{attr_name}"))
@@ -43,6 +65,7 @@ class Configurate(Screen):
     # ! Update App Config
     async def _uac(self, attr_name: str, input: InputField, value: str) -> None:
         exec(f"self.{attr_name} = value")
+        await self.aio_nofy("Saved!")
     
     def guac(self, attr_name: str):
         async def an_uac(input: InputField, value: str) -> None: await self._uac(attr_name, input, value)

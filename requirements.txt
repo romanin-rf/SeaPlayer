@@ -6,6 +6,6 @@ properties.py==1.1.0
 playsoundsimple.py==0.6.3
 pillow
 aiofiles
-pyinstaller
 platformdirs
 typing_inspect
+pyinstaller
