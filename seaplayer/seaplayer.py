@@ -201,6 +201,9 @@ class SeaPlayer(App):
             await asyncio.sleep(0.33)
     
     def compose(self) -> ComposeResult:
+        # * Codec Kwargs Added
+        self.CODECS_KWARGS["aloop"] = self._loop
+        
         # * Other
         self.info(f"{__title__} v{__version__} from {__author__} ({__email__})")
         self.info(f"Source         : {__url__}")
