@@ -3,13 +3,12 @@ import hashlib
 import aiofiles
 # > Sound Works
 from playsoundsimple import Sound
-from playsoundsimple.units import SOUND_FONTS_PATH
 # > Typing
 from typing import Optional
 # > Local Imports
-from .codeсbase import CodecBase
+from ..codeсbase import CodecBase
 
-# ! MP3 Codec
+
 class MP3Codec(CodecBase):
     codec_name: str = "MP3"
     
@@ -83,54 +82,3 @@ class MP3Codec(CodecBase):
     def get_pos(self) -> float: return self._sound.get_pos()
     def set_pos(self, value: float) -> None: self._sound.set_pos(value)
 
-# ! OGG Codec
-class OGGCodec(MP3Codec):
-    codec_name: str = "OGG"
-    
-    # ! Testing
-    @staticmethod
-    def is_this_codec(path: str) -> bool:
-        with open(path, "rb") as file:
-            return file.read(4) == b'OggS'
-    
-    @staticmethod
-    async def aio_is_this_codec(path: str) -> bool:
-        async with aiofiles.open(path, "rb") as file:
-            return await file.read(4) == b'OggS'
-
-# ! WAVE Codec
-class WAVECodec(MP3Codec):
-    codec_name: str = "WAVE"
-    
-    # ! Testing
-    @staticmethod
-    def is_this_codec(path: str) -> bool:
-        with open(path, "rb") as file:
-            signature = file.read(4)
-        return (signature == b'WAVE') or (signature == b'RIFF')
-    
-    @staticmethod
-    async def aio_is_this_codec(path: str) -> bool:
-        async with aiofiles.open(path, "rb") as file:
-            signature = await file.read(4)
-        return (signature == b'WAVE') or (signature == b'RIFF')
-
-# ! MIDI Codec
-class MIDICodec(MP3Codec):
-    codec_name: str = "MIDI"
-    
-    # ! Testing
-    @staticmethod
-    def is_this_codec(path: str) -> bool:
-        with open(path, 'rb') as file:
-            return file.read(4) == b"MThd"
-    
-    @staticmethod
-    async def aio_is_this_codec(path: str) -> bool:
-        async with aiofiles.open(path, 'rb') as file:
-            return await file.read(4) == b"MThd"
-    
-    # ! Initialized
-    def __init__(self, path: str, **kwargs) -> None:
-        self.name = os.path.abspath(path)
-        self._sound = Sound.from_midi(self.name, path_sound_fonts=(kwargs.get("sound_font_path", None) or SOUND_FONTS_PATH))

@@ -17,12 +17,10 @@ DATA = {
     "seaplayer/__main__.py": "seaplayer/",
     "seaplayer/functions.py": "seaplayer/",
     "seaplayer/seaplayer.py": "seaplayer/",
-    "seaplayer/types.py": "seaplayer/",
     "seaplayer/config.py": "seaplayer/",
     "seaplayer/screens.py": "seaplayer/",
     "seaplayer/exceptions.py": "seaplayer/",
     "seaplayer/codeсbase.py": "seaplayer/",
-    "seaplayer/codecs.py": "seaplayer/",
     # * 1.1) Objects
     "seaplayer/objects": "seaplayer/objects/",
     "seaplayer/objects/__init__.py": "seaplayer/objects/",
@@ -33,6 +31,18 @@ DATA = {
     "seaplayer/objects/MusicList.py": "seaplayer/objects/",
     "seaplayer/objects/Notification.py": "seaplayer/objects/",
     "seaplayer/objects/ProgressBar.py": "seaplayer/objects/",
+    # * 1.2) Types
+    "seaplayer/types": "seaplayer/types/",
+    "seaplayer/types/__init__.py": "seaplayer/types/",
+    "seaplayer/types/Convert.py": "seaplayer/types/",
+    "seaplayer/types/MusicList.py": "seaplayer/types/",
+    # * 1.3) Codecs
+    "seaplayer/codecs": "seaplayer/codecs/",
+    "seaplayer/codecs/__init__.py": "seaplayer/codecs/",
+    "seaplayer/codecs/MIDI.py": "seaplayer/codecs/",
+    "seaplayer/codecs/MP3.py": "seaplayer/codecs/",
+    "seaplayer/codecs/OGG.py": "seaplayer/codecs/",
+    "seaplayer/codecs/WAV.py": "seaplayer/codecs/",
     # * 2) Modules Files
     "seaplayer/modules": "seaplayer/modules/",
     "seaplayer/modules/__init__.py": "seaplayer/modules/",

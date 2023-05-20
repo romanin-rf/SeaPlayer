@@ -28,6 +28,7 @@ class CodecBase:
     
     # ! Initializing Functions
     def __init__(self, path: str, **kwargs) -> None: ...
+    #async def __aio_init__(self, path: str, **kwargs) -> None: ...
     def __repr__(self):
         return \
             "{0}({1})".format(

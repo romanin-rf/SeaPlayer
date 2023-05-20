@@ -38,7 +38,7 @@ from .objects import (
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -208,6 +208,7 @@ class SeaPlayer(App):
         self.info(f"Config Path    : {repr(self.config.filepath)}")
         self.info(f"CSS Dirpath    : {repr(CSS_LOCALDIR)}")
         self.info(f"Assets Dirpath : {repr(ASSETS_DIRPATH)}")
+        self.info(f"Codecs Kwargs  : {repr(self.CODECS_KWARGS)}")
         
         # * Play Screen
         self.music_play_screen = Static(classes="screen-box")
@@ -266,8 +267,12 @@ class SeaPlayer(App):
         async for path in aiter(self.last_paths_globalized):
             async for codec in aiter(self.CODECS):
                 if await codec.aio_is_this_codec(path):
-                    try: sound = codec(path, **self.CODECS_KWARGS)
-                    except: sound = None
+                    if not hasattr(codec, "__aio_init__"):
+                        try: sound = codec(path, **self.CODECS_KWARGS)
+                        except: sound = None
+                    else:
+                        try: sound: CodecBase = await codec.__aio_init__(path, **self.CODECS_KWARGS)
+                        except: sound = None
                     if sound is not None:
                         if not await self.music_list_view.music_list.aio_exists_sha1(sound):
                             await self.music_list_view.aio_add_sound(sound)

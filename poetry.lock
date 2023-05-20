@@ -363,13 +363,13 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.3.1)", "pytest-
 
 [[package]]
 name = "playsoundsimple-py"
-version = "0.6.3"
+version = "0.7.0"
 description = "A simple library for playing sound files"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "playsoundsimple.py-0.6.3-py3-none-any.whl", hash = "sha256:e4ba64fb80c479bcd19ecdd529af33c0ef153ba249c3ac9e3584fa8bccccea26"},
+    {file = "playsoundsimple.py-0.7.0-py3-none-any.whl", hash = "sha256:96281887b6765d50b19a2428900183f97f30a52595e1adf913222c7867d1a14d"},
 ]
 
 [package.dependencies]
@@ -500,14 +500,14 @@ numpy = ["numpy"]
 
 [[package]]
 name = "textual"
-version = "0.25.0"
+version = "0.26.0"
 description = "Modern Text User Interface framework"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "textual-0.25.0-py3-none-any.whl", hash = "sha256:8258499a09793696e13a1d1e1391810916828015a91770abd7ce3d9ab64cfd9e"},
-    {file = "textual-0.25.0.tar.gz", hash = "sha256:5e2d6320026dd8ff86e0d023fc4988071e80ec2e34de913bd63263a8301d664b"},
+    {file = "textual-0.26.0-py3-none-any.whl", hash = "sha256:1efd04e9f61b3e95fd1c65436d3262f99e3f86cdeb524d13045bb551eb615c02"},
+    {file = "textual-0.26.0.tar.gz", hash = "sha256:78094c83017d2836b726513abdf434cc034a0e68cc45e63b3b056c9b8b7fa673"},
 ]
 
 [package.dependencies]
@@ -581,4 +581,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ae7a0b32060b5329126308da41d084ddff795ed7d2faf2de014906a1a524bee2"
+content-hash = "478fb76f8cf0a81f9d8e0d06699938d72f29413bb3f18aed0f0d82f2138c3a7c"
