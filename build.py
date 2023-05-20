@@ -23,7 +23,7 @@ DATA = {
     # * 1.1) Objects
     "seaplayer/objects": "seaplayer/objects/",
     "seaplayer/objects/__init__.py": "seaplayer/objects/",
-    "seaplayer/objects/Config.py": "seaplayer/objects/",
+    "seaplayer/objects/Configurate.py": "seaplayer/objects/",
     "seaplayer/objects/Image.py": "seaplayer/objects/",
     "seaplayer/objects/Input.py": "seaplayer/objects/",
     "seaplayer/objects/Log.py": "seaplayer/objects/",
