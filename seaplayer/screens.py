@@ -12,7 +12,7 @@ from .modules.colorizer import richefication
 from .objects import (
     Nofy,
     InputField,
-    ConfigurateListView,
+    ConfigurateList,
     ConfigurateListItem
 )
 
@@ -111,7 +111,7 @@ class Configurate(Screen):
     # ! Configurate Main Functions # 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield ConfigurateListView(
+        yield ConfigurateList(
             self.create_configurator_type(
                 "app.config.sound_font_path",
                 "Sound", "Sound Font Path",

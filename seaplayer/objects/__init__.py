@@ -4,4 +4,4 @@ from .Notification import Nofy
 from .ProgressBar import IndeterminateProgress
 from .Image import AsyncImageLabel, StandartImageLabel
 from .MusicList import MusicListView, MusicListViewItem
-from .Config import ConfigurateListView, ConfigurateListItem
+from .Configurate import ConfigurateListItem, ConfigurateList

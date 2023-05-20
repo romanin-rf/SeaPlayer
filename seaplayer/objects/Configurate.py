@@ -1,9 +1,9 @@
-from textual.widgets import ListItem, ListView
+from textual.containers import ScrollableContainer, Container
 # > Typing
 from typing import Optional
 
 
-class ConfigurateListItem(ListItem):
+class ConfigurateListItem(Container):
     def __init__(
         self,
         *children,
@@ -12,7 +12,7 @@ class ConfigurateListItem(ListItem):
         **kwargs
     ):
         kwargs["classes"] = "configurate-list-view-item"
-        super(ConfigurateListItem, self).__init__(*children, **kwargs)
+        super().__init__(*children, **kwargs)
         self.border_title = title
         self.border_subtitle = desc
     
@@ -20,7 +20,7 @@ class ConfigurateListItem(ListItem):
         if title is not None: self.border_title = title
         if desc is not None: self.border_subtitle = desc
 
-class ConfigurateListView(ListView):
+class ConfigurateList(ScrollableContainer):
     def __init__(self, *children, **kwargs):
         kwargs["classes"] = "configurate-list-view"
         super().__init__(*children, **kwargs)
