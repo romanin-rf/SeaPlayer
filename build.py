@@ -18,7 +18,6 @@ DATA = {
     "seaplayer/functions.py": "seaplayer/",
     "seaplayer/seaplayer.py": "seaplayer/",
     "seaplayer/config.py": "seaplayer/",
-    "seaplayer/screens.py": "seaplayer/",
     "seaplayer/exceptions.py": "seaplayer/",
     "seaplayer/codeсbase.py": "seaplayer/",
     # * 1.1) Objects
@@ -43,6 +42,11 @@ DATA = {
     "seaplayer/codecs/MP3.py": "seaplayer/codecs/",
     "seaplayer/codecs/OGG.py": "seaplayer/codecs/",
     "seaplayer/codecs/WAV.py": "seaplayer/codecs/",
+    # * 1.4) Screens
+    "seaplayer/screens": "seaplayer/screens/",
+    "seaplayer/screens/__init__.py": "seaplayer/screens/",
+    "seaplayer/screens/Configurate.py": "seaplayer/screens/",
+    "seaplayer/screens/Unknown.py": "seaplayer/screens/",
     # * 2) Modules Files
     "seaplayer/modules": "seaplayer/modules/",
     "seaplayer/modules/__init__.py": "seaplayer/modules/",

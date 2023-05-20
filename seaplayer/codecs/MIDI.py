@@ -1,13 +1,15 @@
 import os
 import asyncio
 import aiofiles
-from asyncio import AbstractEventLoop
+import subprocess
 from tempfile import mkstemp
 # > Sound Works
 from playsoundsimple import Sound
 from playsoundsimple.units import SOUND_FONTS_PATH, FLUID_SYNTH_PATH
 from playsoundsimple.exceptions import FileTypeError
 from playsoundsimple.player import SoundFP, get_sound_filepath
+# > Typing Import
+from typing import Optional
 # > Local Imports
 from .MP3 import MP3Codec
 
@@ -16,15 +18,36 @@ from .MP3 import MP3Codec
 class MIDISound(Sound):
     async def aio_from_midi(
         fp: SoundFP,
-        sound_fonts_path: str=SOUND_FONTS_PATH,
+        sound_fonts_path: Optional[str]=None,
         **kwargs
     ):
         path, is_temp = get_sound_filepath(fp, filetype=".midi")
+        sound_fonts_path = sound_fonts_path or SOUND_FONTS_PATH
         if path is None: raise FileTypeError(fp)
         npath = mkstemp(suffix=".wav")[1]
         
-        process = await asyncio.create_subprocess_exec(FLUID_SYNTH_PATH, "-ni", sound_fonts_path, path, "-F", npath, "-q")
+        process = await asyncio.create_subprocess_exec(
+            FLUID_SYNTH_PATH, "-ni", sound_fonts_path, path, "-F", npath, "-q"
+        )
         await process.wait()
+        
+        if is_temp:
+            try: os.remove(path)
+            except: pass
+        
+        return Sound(npath, **{"is_temp": True, **kwargs})
+    
+    def from_midi(
+        fp: SoundFP,
+        sound_fonts_path: Optional[str]=None,
+        **kwargs
+    ):
+        path, is_temp = get_sound_filepath(fp, filetype=".midi")
+        sound_fonts_path = sound_fonts_path or SOUND_FONTS_PATH
+        if path is None: raise FileTypeError(fp)
+        npath = mkstemp(suffix=".wav")[1]
+        
+        subprocess.check_output([FLUID_SYNTH_PATH, "-ni", sound_fonts_path, path, "-F", npath, "-q"])
         
         if is_temp:
             try: os.remove(path)
@@ -51,7 +74,7 @@ class MIDICodec(MP3Codec):
     def __init__(self, path: str, aio_init: bool=False, **kwargs) -> None:
         self.name = os.path.abspath(path)
         if not aio_init:
-            self._sound = Sound.from_midi(self.name, **kwargs)
+            self._sound = MIDISound.from_midi(self.name, **kwargs)
     
     @staticmethod
     async def __aio_init__(path: str, **kwargs):

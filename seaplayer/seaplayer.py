@@ -38,7 +38,7 @@ from .objects import (
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.4.1"
+__version__ = "0.4.2.dev2"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -115,7 +115,7 @@ class SeaPlayer(App):
     
     # ! Codecs Configuration
     CODECS: List[Type[CodecBase]] = [ MP3Codec, WAVECodec, OGGCodec, MIDICodec ]
-    CODECS_KWARGS: Dict[str, Any] = {"sound_font_path": config.sound_font_path}
+    CODECS_KWARGS: Dict[str, Any] = {"sound_fonts_path": config.sound_font_path}
     
     # ! Init Objects
     log_menu = LogMenu(enable_logging=config.log_menu_enable, wrap=True, highlight=True, markup=True)
