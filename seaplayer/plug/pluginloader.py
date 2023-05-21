@@ -4,7 +4,7 @@ import asyncio
 from pathlib import Path
 from pydantic import BaseModel
 # > Typing
-from typing import Optional, Dict, Union, AsyncGenerator, Tuple, Any
+from typing import Optional, Dict, Union, Any
 # > Local Import's
 from ..functions import aiter
 from ..units import (
@@ -16,21 +16,35 @@ from ..units import (
 
 # ! Plugin Loader Config
 class PluginLoaderConfigModel(BaseModel):
-    plugins_enable: Dict[str, bool]
+    plugins_enable: Dict[str, bool] = {}
 
 class PluginLoaderConfigManager:
     @staticmethod
-    def dump(data: PluginLoaderConfigModel, path: str) -> None:
+    def dump(path: str, data: PluginLoaderConfigModel) -> None:
         with open(path, 'w') as file:
             file.write(data.json())
     
     @staticmethod
-    def load(path: str) -> PluginLoaderConfigModel:
-        return PluginLoaderConfigModel.parse_file(path)
+    def load(path: str, default_data: Dict[str, Any]) -> PluginLoaderConfigModel:
+        try:
+            return PluginLoaderConfigModel.parse_file(path)
+        except:
+            return default_data
+    
+    def refresh(self) -> None: self.dump(self.filepath, self.config)
     
     def __init__(self, path: str) -> None:
-        self.path = Path(path)
+        self.filepath = Path(path)
         
+        default_data  = PluginLoaderConfigModel().dict()
+        if self.filepath.exists():
+            self.config = self.load(self.filepath, default_data)
+            config_temp = default_data.copy()
+            config_temp.update(self.config)
+            self.config = PluginLoaderConfigModel.parse_obj(config_temp)
+        else:
+            self.config = PluginLoaderConfigModel.parse_obj(default_data)
+        self.refresh()
 
 # ! Plugin Loader Class
 class PluginLoader:
@@ -64,5 +78,3 @@ class PluginLoader:
                 if init_dirpath == info_dirpath:
                     yield info_path, init_path
                     await asyncio.sleep(0)
-    
-    
