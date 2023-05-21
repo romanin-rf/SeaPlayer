@@ -18,7 +18,7 @@ from typing import Optional, Literal, Tuple, List, Type
 from .config import *
 from .codeсbase import CodecBase
 from .screens import Unknown, Configurate, UNKNOWN_OPEN_KEY
-from .codecs import MP3Codec, WAVECodec, OGGCodec, MIDICodec
+from .codecs import MP3Codec, WAVECodec, OGGCodec, MIDICodec, FLACCodec
 from .functions import (
     aiter,
     check_status,
@@ -116,7 +116,7 @@ class SeaPlayer(App):
     started: bool = True
     
     # ! Codecs Configuration
-    CODECS: List[Type[CodecBase]] = [ MP3Codec, WAVECodec, OGGCodec, MIDICodec ]
+    CODECS: List[Type[CodecBase]] = [ MP3Codec, WAVECodec, OGGCodec, MIDICodec, FLACCodec ]
     CODECS_KWARGS: Dict[str, Any] = {"sound_fonts_path": config.sound_font_path}
     
     # ! Init Objects
