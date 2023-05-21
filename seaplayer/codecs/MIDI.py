@@ -19,7 +19,6 @@ class MIDISound(Sound):
     async def aio_from_midi(
         fp: SoundFP,
         sound_fonts_path: Optional[str]=None,
-        aloop: Optional[asyncio.AbstractEventLoop]=None,
         **kwargs
     ):
         path, is_temp = get_sound_filepath(fp, filetype=".midi")
@@ -29,7 +28,7 @@ class MIDISound(Sound):
         
         process = await asyncio.create_subprocess_exec(
             FLUID_SYNTH_PATH, "-ni", sound_fonts_path, path, "-F", npath, "-q",
-            loop=aloop, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
         await process.wait()
         
