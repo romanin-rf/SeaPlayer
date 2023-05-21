@@ -1,12 +1,22 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.4.3.dev3"
+version = "0.4.3"
 description = "SeaPlayer is a player that works in the terminal."
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
 keywords = ["tui", "player", "seaplayer", "wav", "mp3", "ogg", "midi"]
 license = "MIT"
 readme = "README.md"
+classifiers = [
+    "Environment :: Console",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
 packages = [{ include = "seaplayer" }]
 include = [
     "seaplayer/modules/__init__.py",
@@ -18,6 +28,8 @@ include = [
     "seaplayer/css/unknown.css"
 ]
 
+[tool.poetry.scripts]
+seaplayer = "seaplayer.__main__:run"
 
 [tool.poetry.dependencies]
 python = "^3.9"

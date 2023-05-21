@@ -20,6 +20,7 @@ DATA = {
     "seaplayer/config.py": "seaplayer/",
     "seaplayer/exceptions.py": "seaplayer/",
     "seaplayer/codeсbase.py": "seaplayer/",
+    "seaplayer/units.py": "seaplayer/",
     # * 1.1) Objects
     "seaplayer/objects": "seaplayer/objects/",
     "seaplayer/objects/__init__.py": "seaplayer/objects/",

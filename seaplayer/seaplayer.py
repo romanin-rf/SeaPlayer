@@ -1,8 +1,6 @@
 import os
-import sys
 import glob
 import asyncio
-from platformdirs import user_config_dir
 # > Graphics
 from textual import on
 from textual.binding import Binding
@@ -11,7 +9,6 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, Button
 # > Image Works
 from PIL import Image
-from PIL.Image import Resampling
 # > Typing
 from typing import Optional, Literal, Tuple, List, Type
 # > Local Imports
@@ -37,38 +34,19 @@ from .objects import (
     StandartImageLabel,
     IndeterminateProgress
 )
-
-# ! Metadata
-__title__ = "SeaPlayer"
-__version__ = "0.4.3.dev3"
-__author__ = "Romanin"
-__email__ = "semina054@gmail.com"
-__url__ = "https://github.com/romanin-rf/SeaPlayer"
-
-# ! Paths
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    LOCALDIR = os.path.dirname(sys.executable)
-else:
-    LOCALDIR = os.path.dirname(os.path.dirname(__file__))
-
-CSS_LOCALDIR = os.path.join(os.path.dirname(__file__), "css")
-ASSETS_DIRPATH = os.path.join(os.path.dirname(__file__), "assets")
-
-CONFIG_DIRPATH = user_config_dir(__title__, __author__, ensure_exists=True)
-CONFIG_FILEPATH = os.path.join(CONFIG_DIRPATH, "config.properties")
-
-# ! Assets Paths
-IMGPATH_IMAGE_NOT_FOUND = os.path.join(ASSETS_DIRPATH, "image-not-found.png")
-
-# ! Constants
-RESAMPLING_SAFE = {
-    "nearest": Resampling.NEAREST,
-    "bilinear": Resampling.BILINEAR,
-    "bicubic": Resampling.BICUBIC,
-    "lanczos": Resampling.LANCZOS,
-    "hamming": Resampling.HAMMING,
-    "box": Resampling.BOX
-}
+from .units import (
+    __title__,
+    __version__,
+    __author__,
+    __email__,
+    __url__,
+    CSS_LOCALDIR,
+    CONFIG_FILEPATH,
+    ASSETS_DIRPATH,
+    IMGPATH_IMAGE_NOT_FOUND,
+    RESAMPLING_SAFE,
+    LOCALDIR
+)
 
 # ! Main Functions
 def build_bindings(config: SeaPlayerConfig):
