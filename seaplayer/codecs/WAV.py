@@ -1,9 +1,9 @@
 import aiofiles
 # > Local Imports
-from .MP3 import MP3Codec
+from .Any import AnyCodec
 
 
-class WAVECodec(MP3Codec):
+class WAVECodec(AnyCodec):
     codec_name: str = "WAVE"
     
     # ! Testing

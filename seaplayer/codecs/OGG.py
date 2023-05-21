@@ -1,9 +1,9 @@
 import aiofiles
 # > Local Imports
-from .MP3 import MP3Codec
+from .Any import AnyCodec
 
 
-class OGGCodec(MP3Codec):
+class OGGCodec(AnyCodec):
     codec_name: str = "OGG"
     
     # ! Testing

@@ -1,9 +1,9 @@
 import aiofiles
 # > Local Imports
-from .MP3 import MP3Codec
+from .Any import AnyCodec
 
 
-class FLACCodec(MP3Codec):
+class FLACCodec(AnyCodec):
     codec_name: str = "FLAC"
     
     # ! Testing

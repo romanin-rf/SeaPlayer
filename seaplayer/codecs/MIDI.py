@@ -11,7 +11,7 @@ from playsoundsimple.player import SoundFP, get_sound_filepath
 # > Typing Import
 from typing import Optional
 # > Local Imports
-from .MP3 import MP3Codec
+from .Any import AnyCodec
 
 
 # ! Codec Types
@@ -48,7 +48,7 @@ class MIDISound(Sound):
         if path is None: raise FileTypeError(fp)
         npath = mkstemp(suffix=".wav")[1]
         
-        subprocess.check_output(
+        subprocess.call(
             [FLUID_SYNTH_PATH, "-ni", sound_fonts_path, path, "-F", npath, "-q"],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
@@ -60,7 +60,7 @@ class MIDISound(Sound):
         return Sound(npath, **{"is_temp": True, **kwargs})
 
 # ! Codec
-class MIDICodec(MP3Codec):
+class MIDICodec(AnyCodec):
     codec_name: str = "MIDI"
     
     # ! Testing

@@ -38,6 +38,7 @@ DATA = {
     # * 1.3) Codecs
     "seaplayer/codecs": "seaplayer/codecs/",
     "seaplayer/codecs/__init__.py": "seaplayer/codecs/",
+    "seaplayer/codecs/Any.py": "seaplayer/codecs/",
     "seaplayer/codecs/MIDI.py": "seaplayer/codecs/",
     "seaplayer/codecs/MP3.py": "seaplayer/codecs/",
     "seaplayer/codecs/OGG.py": "seaplayer/codecs/",
