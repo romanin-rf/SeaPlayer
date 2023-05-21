@@ -4,7 +4,7 @@
 <div id="header" align="center"><h1>SeaPlayer</h1></div>
 
 ## Descriptions
-SeaPlayer is a player that works in the terminal. Works with `MP3`, `OGG`, `WAV`, `MIDI` files.
+SeaPlayer is a player that works in the terminal. Works with `MP3`, `OGG`, `WAV`, `MIDI` and `FLAC` files.
 
 ## Install
 
