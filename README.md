@@ -27,5 +27,6 @@ You need to [install the FluidSynth](https://github.com/FluidSynth/fluidsynth/wi
 ```shell
 python -m seaplayer # Method for `downloaded repository` or `installed via pip`
 ```
-![MainScreen-v0.4a1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/c0fb3ad6-53ac-4360-b7dc-dd96a1d5a5ea)
-![ConfigurateScreen-v0.4a1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/6e2dcded-8ffb-4f05-8dd8-26d5951cd89b)
+
+![MainScreen-v0.4.3.dev1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/e4b2ee2c-9061-47ff-8818-a480b3a79a5e)
+![ConfigurateScreen-v0.4.3.dev1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/ad84eafb-2324-4036-81c3-81df9138025a)
