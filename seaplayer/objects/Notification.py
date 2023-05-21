@@ -17,3 +17,13 @@ class Nofy(Static):
     
     def on_mount(self) -> None: self.set_timer(self.life_time, self.remove)
     async def on_click(self) -> None: await self.remove()
+
+class CallNofy(Static):
+    def __init__(
+        self,
+        text: str,
+        dosk: Literal["bottom", "left", "right", "top"]="top",
+        **kwargs
+    ) -> None:
+        super().__init__(text, **kwargs)
+        self.styles.dock = dosk

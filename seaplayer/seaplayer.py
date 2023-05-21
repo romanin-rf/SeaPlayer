@@ -22,12 +22,14 @@ from .codecs import MP3Codec, WAVECodec, OGGCodec, MIDICodec
 from .functions import (
     aiter,
     check_status,
+    rich_exception,
     image_from_bytes,
     get_sound_basename
 )
 from .objects import (
     Nofy,
     LogMenu,
+    CallNofy,
     InputField,
     MusicListView,
     AsyncImageLabel,
@@ -38,7 +40,7 @@ from .objects import (
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.4.2.dev2"
+__version__ = "0.4.2"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -130,7 +132,7 @@ class SeaPlayer(App):
         if self.SCREENS[screen].id != self.screen.id:
             await super().action_push_screen(screen)
     
-    # ! Functions, Workers and other...
+    # ! Nofy's
     def nofy(
         self,
         text: str,
@@ -147,6 +149,25 @@ class SeaPlayer(App):
     ) -> None:
         await self.screen.mount(Nofy(text, life_time, dosk))
     
+    def callnofy(
+        self,
+        text: str,
+        dosk: Literal["bottom", "left", "right", "top"]="top"
+    ) -> CallNofy:
+        cn = CallNofy(text, dosk)
+        self.screen.mount(cn)
+        return cn
+    
+    async def aio_callnofy(
+        self,
+        text: str,
+        dosk: Literal["bottom", "left", "right", "top"]="top"
+    ) -> CallNofy:
+        cn = CallNofy(text, dosk)
+        await self.screen.mount(cn)
+        return cn
+    
+    # ! Functions, Workers and other...
     def gcs(self) -> Optional[CodecBase]:
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
             self.currect_sound = self.music_list_view.music_list.get(self.currect_sound_uuid)
@@ -198,7 +219,7 @@ class SeaPlayer(App):
                             self.info(f"Playing the next sound: {repr(sound)}")
                 
                 self.last_playback_status = status
-            await asyncio.sleep(0.33)
+            await asyncio.sleep(0.2)
     
     def compose(self) -> ComposeResult:
         # * Codec Kwargs Added
@@ -267,23 +288,40 @@ class SeaPlayer(App):
     
     async def add_sounds_to_list(self) -> None:
         added_oks = 0
+        loading_nofy = await self.aio_callnofy(
+            f"Found [cyan]{len(self.last_paths_globalized)}[/cyan] values. Loading..."
+        )
         async for path in aiter(self.last_paths_globalized):
+            sound = None
             async for codec in aiter(self.CODECS):
-                if await codec.aio_is_this_codec(path):
-                    if not hasattr(codec, "__aio_init__"):
-                        try: sound = codec(path, **self.CODECS_KWARGS)
-                        except: sound = None
-                    else:
-                        try: sound: CodecBase = await codec.__aio_init__(path, **self.CODECS_KWARGS)
-                        except: sound = None
-                    if sound is not None:
-                        if not await self.music_list_view.music_list.aio_exists_sha1(sound):
-                            await self.music_list_view.aio_add_sound(sound)
-                            self.info(f"Song added: {repr(sound)}")
-                            added_oks += 1
-                            break
+                try:
+                    if await codec.aio_is_this_codec(path):
+                        if not hasattr(codec, "__aio_init__"):
+                            try:
+                                sound = codec(path, **self.CODECS_KWARGS)
+                            except Exception as e:
+                                self.error(rich_exception(e))
+                                sound = None
+                        else:
+                            try:
+                                sound: CodecBase = await codec.__aio_init__(path, **self.CODECS_KWARGS)
+                            except Exception as e:
+                                self.error(rich_exception(e))
+                                sound = None
+                        if sound is not None:
+                            if not await self.music_list_view.music_list.aio_exists_sha1(sound):
+                                await self.music_list_view.aio_add_sound(sound)
+                                self.info(f"Song added: {repr(sound)}")
+                                added_oks += 1
+                                break
+                except FileNotFoundError:
+                    self.error(f"The file does not exist or is a directory: {repr(path)}")
+                    break
+                except Exception as e:
+                    self.error(rich_exception(e))
             if sound is None:
                 self.error(f"The sound could not be loaded: {repr(path)}")
+        await loading_nofy.remove()
         self.info(f"Added [cyan]{added_oks}[/cyan] songs!")
         await self.aio_nofy(f"Added [cyan]{added_oks}[/cyan] songs!")
     
@@ -335,6 +373,7 @@ class SeaPlayer(App):
         if value.replace(" ", "") != "":
             try: self.last_paths_globalized = glob.glob(value, recursive=self.config.recursive_search)
             except: self.last_paths_globalized = [ value ]
+            self.info(f"Submit 'plus_sound' values: {repr(self.last_paths_globalized)}")
             if len(self.last_paths_globalized) > 0:
                 self.run_worker(
                     self.add_sounds_to_list,

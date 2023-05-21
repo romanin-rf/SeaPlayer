@@ -24,6 +24,10 @@ async def aio_is_midi_file(filepath: str):
     async with aiofiles.open(filepath, 'rb') as file:
         return await file.read(4) == b"MThd"
 
+# ! Exceptions Rich
+def rich_exception(exc: Exception) -> str:
+    return f"[red]{exc.__class__.__name__}[/red]: {exc.__str__()}"
+
 # ! Functions
 def check_status(sound: CodecBase) -> Literal["Stoped", "Playing", "Paused"]:
     if sound.playing:

@@ -48,7 +48,7 @@
     background: #0000;
     border-title-color: #aaaaaa;
     border-subtitle-color: #6b6b6b;
-    height: 5;
+    height: auto;
 }
 
 /* ! Any Elements CSS */
@@ -75,13 +75,21 @@
     offset-y: 100%;
 }
 
+/* ! Nofy */
 Nofy {
-    dock: top;
     layer: nofys;
-    width: auto;
+    background: $background;
     margin: 2 4;
     padding: 1 2;
+    width: auto;
+    height: auto;
+}
+
+CallNofy {
+    layer: nofys;
     background: $background;
-    color: $text;
+    margin: 2 4;
+    padding: 1 2;
+    width: auto;
     height: auto;
 }
