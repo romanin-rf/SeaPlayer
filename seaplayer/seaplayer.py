@@ -13,6 +13,7 @@ from PIL import Image
 from typing import Optional, Literal, Tuple, List, Type
 # > Local Imports
 from .config import *
+from .plug import PluginLoader
 from .codeсbase import CodecBase
 from .screens import Unknown, Configurate, UNKNOWN_OPEN_KEY
 from .codecs import MP3Codec, WAVECodec, OGGCodec, MIDICodec, FLACCodec
@@ -104,6 +105,12 @@ class SeaPlayer(App):
     info = log_menu.info
     error = log_menu.error
     warn = log_menu.warn
+
+    # ! App Init
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.plugin_loader = PluginLoader(self)
+        self.plugin_loader.on_init()
     
     # ! Inherited Functions
     async def action_push_screen(self, screen: str) -> None:
@@ -144,7 +151,7 @@ class SeaPlayer(App):
         cn = CallNofy(text, dosk)
         await self.screen.mount(cn)
         return cn
-    
+
     # ! Functions, Workers and other...
     def gcs(self) -> Optional[CodecBase]:
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
@@ -199,7 +206,7 @@ class SeaPlayer(App):
                 self.last_playback_status = status
             await asyncio.sleep(0.2)
     
-    def compose(self) -> ComposeResult:        
+    def compose(self) -> ComposeResult:     
         # * Other
         self.info(f"{__title__} v{__version__} from {__author__} ({__email__})")
         self.info(f"Source         : {__url__}")
@@ -259,6 +266,12 @@ class SeaPlayer(App):
             name="PLAYBACK_CONTROLLER",
             group="CONTROL_UPDATER-LOOP",
             description="Control of playback modes and status updates."
+        )
+        self.run_worker(
+            self.plugin_loader.on_compose,
+            name="ON_COMPOSE",
+            group="PluginLoader",
+            description="<method PluginLoader.on_compose>"
         )
     
     async def add_sounds_to_list(self) -> None:
@@ -414,4 +427,9 @@ class SeaPlayer(App):
         if (sound:=await self.aio_gcs()) is not None:
             sound.unpause()
             sound.stop()
+            await self.plugin_loader.on_quit()
         return await super().action_quit()
+
+    def run(self, *args, **kwargs):
+        self.plugin_loader.on_run()
+        super().run(*args, **kwargs)
