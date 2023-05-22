@@ -50,6 +50,13 @@ DATA = {
     "seaplayer/screens/__init__.py": "seaplayer/screens/",
     "seaplayer/screens/Configurate.py": "seaplayer/screens/",
     "seaplayer/screens/Unknown.py": "seaplayer/screens/",
+    # * 1.5) Plugun System
+    "seaplayer/plug": "seaplayer/plug/",
+    "seaplayer/plug/__init__.py": "seaplayer/plug/",
+    "seaplayer/plug/pluginbase.py": "seaplayer/plug/",
+    "seaplayer/plug/pluginbase.pyi": "seaplayer/plug/",
+    "seaplayer/plug/pluginloader.py": "seaplayer/plug/",
+    "seaplayer/plug/pluginloader.pyi": "seaplayer/plug/",
     # * 2) Modules Files
     "seaplayer/modules": "seaplayer/modules/",
     "seaplayer/modules/__init__.py": "seaplayer/modules/",
