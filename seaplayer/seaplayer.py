@@ -46,9 +46,7 @@ from .units import (
     ASSETS_DIRPATH,
     IMGPATH_IMAGE_NOT_FOUND,
     RESAMPLING_SAFE,
-    LOCALDIR,
-    PLUGINS_CONFIG_PATH,
-    PLUGINS_DIRPATH
+    LOCALDIR
 )
 
 # ! Main Functions
@@ -211,14 +209,12 @@ class SeaPlayer(App):
     def compose(self) -> ComposeResult:     
         # * Other
         self.info(f"{__title__} v{__version__} from {__author__} ({__email__})")
-        self.info(f"Source              : {__url__}")
-        self.info(f"Codecs              : {repr(self.CODECS)}")
-        self.info(f"Config Path         : {repr(self.config.filepath)}")
-        self.info(f"CSS Dirpath         : {repr(CSS_LOCALDIR)}")
-        self.info(f"Assets Dirpath      : {repr(ASSETS_DIRPATH)}")
-        self.info(f"Codecs Kwargs       : {repr(self.CODECS_KWARGS)}")
-        self.info(f"Plugins Dirpath     : {repr(PLUGINS_DIRPATH)}")
-        self.info(f"Plugins Config Path : {repr(PLUGINS_CONFIG_PATH)}")
+        self.info(f"Source         : {__url__}")
+        self.info(f"Codecs         : {repr(self.CODECS)}")
+        self.info(f"Config Path    : {repr(self.config.filepath)}")
+        self.info(f"CSS Dirpath    : {repr(CSS_LOCALDIR)}")
+        self.info(f"Assets Dirpath : {repr(ASSETS_DIRPATH)}")
+        self.info(f"Codecs Kwargs  : {repr(self.CODECS_KWARGS)}")
         
         # * Play Screen
         self.music_play_screen = Static(classes="screen-box")
