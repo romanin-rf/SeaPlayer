@@ -1,3 +1,4 @@
+import time
 from textual.widgets import Label
 # > Image Works
 from PIL import Image

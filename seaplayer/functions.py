@@ -7,7 +7,7 @@ from PIL import Image
 # > Typing
 from typing import Literal, Tuple, Optional, Iterable, TypeVar
 # > Local Imports
-from .codecbase import CodecBase
+from .codeсbase import CodecBase
 
 # ! Types
 T = TypeVar("T")

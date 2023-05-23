@@ -2,7 +2,7 @@ import os
 import glob
 import asyncio
 # > Graphics
-from textual import on, work
+from textual import on
 from textual.binding import Binding
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
@@ -10,15 +10,13 @@ from textual.widgets import Header, Footer, Static, Label, Button
 # > Image Works
 from PIL import Image
 # > Typing
-from typing import Optional, Literal, Tuple, List, Type, Dict, Any
+from typing import Optional, Literal, Tuple, List, Type
 # > Local Imports
-from .config import SeaPlayerConfig
+from .config import *
 from .plug import PluginLoader
-from .codecbase import CodecBase
-from .audioportbase import AudioPortBase
+from .codeсbase import CodecBase
 from .screens import Unknown, Configurate, UNKNOWN_OPEN_KEY
-from .codec import MP3Codec, OGGCodec, WAVECodec, MIDICodec, FLACCodec
-from .audioport import SoundDeviceAudioPort
+from .codecs import MP3Codec, WAVECodec, OGGCodec, MIDICodec, FLACCodec
 from .functions import (
     aiter,
     check_status,
@@ -98,10 +96,9 @@ class SeaPlayer(App):
     last_paths_globalized: List[str] = []
     started: bool = True
     
-    # ! Playback Backend Configuration
-    AUDIO_PORT: AudioPortBase = SoundDeviceAudioPort()
-    CODECS: List[Type[CodecBase]] = [ MP3Codec, OGGCodec, WAVECodec, MIDICodec, FLACCodec ]
-    CODECS_KWARGS: Dict[str, Any] = {"sound_fonts_path": config.sound_font_path, "sender": AUDIO_PORT.send_data}
+    # ! Codecs Configuration
+    CODECS: List[Type[CodecBase]] = [ MP3Codec, WAVECodec, OGGCodec, MIDICodec, FLACCodec ]
+    CODECS_KWARGS: Dict[str, Any] = {"sound_fonts_path": config.sound_font_path}
     
     # ! Init Objects
     log_menu = LogMenu(enable_logging=config.log_menu_enable, wrap=True, highlight=True, markup=True)
@@ -158,9 +155,6 @@ class SeaPlayer(App):
         return cn
 
     # ! Functions, Workers and other...
-    def splay(self, sound: CodecBase) -> None:
-        self.run_worker(sound.play, group="CodecBasePlayLoop")
-    
     def gcs(self) -> Optional[CodecBase]:
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
             self.currect_sound = self.music_list_view.music_list.get(self.currect_sound_uuid)
@@ -193,11 +187,6 @@ class SeaPlayer(App):
         if self.playback_mode == 2: self.playback_mode = 0
         else: self.playback_mode += 1
     
-    @work(
-        name="PLAYBACK_CONTROLLER",
-        group="ControllUpdateLoop",
-        exclusive=True
-    )
     async def update_loop_playback(self) -> None:
         while self.started:
             if (sound:=await self.aio_gcs()) is not None:
@@ -207,26 +196,19 @@ class SeaPlayer(App):
                 
                 if (status == "Stoped") and (self.last_playback_status == "Playing"):
                     if self.playback_mode == 1:
-                        self.splay(sound)
+                        sound.play()
                         self.info(f"Replay sound: {repr(sound)}")
                     elif self.playback_mode == 2:
-                        if (
-                            sound:= \
-                                await self.set_sound_for_playback(
-                                    sound_uuid:= \
-                                        await self.music_list_view.aio_get_next_sound_uuid(self.currect_sound_uuid),
-                                    True
-                                )
-                        ) is not None:
+                        if (sound:=await self.set_sound_for_playback(sound_uuid:=await self.music_list_view.aio_get_next_sound_uuid(self.currect_sound_uuid), True)) is not None:
                             self.playback_mode_blocked = True
                             await self.music_list_view.aio_select_list_item_from_sound_uuid(sound_uuid)
-                            self.splay(sound)
+                            sound.play()
                             self.info(f"Playing the next sound: {repr(sound)}")
                 
                 self.last_playback_status = status
             await asyncio.sleep(0.2)
     
-    def compose(self) -> ComposeResult:
+    def compose(self) -> ComposeResult:     
         # * Other
         self.info(f"{__title__} v{__version__} from {__author__} ({__email__})")
         self.info(f"Source              : {__url__}")
@@ -283,8 +265,18 @@ class SeaPlayer(App):
             yield self.log_menu
         yield Footer()
         
-        self.run_worker(self.AUDIO_PORT.start, group="AudioPortLoop")
-        self.run_worker(self.plugin_loader.on_compose, name="ON_COMPOSE", group="PluginLoader", description="<method PluginLoader.on_compose>")
+        self.run_worker(
+            self.update_loop_playback,
+            name="PLAYBACK_CONTROLLER",
+            group="CONTROL_UPDATER-LOOP",
+            description="Control of playback modes and status updates."
+        )
+        self.run_worker(
+            self.plugin_loader.on_compose,
+            name="ON_COMPOSE",
+            group="PluginLoader",
+            description="<method PluginLoader.on_compose>"
+        )
     
     async def add_sounds_to_list(self) -> None:
         added_oks = 0
@@ -325,17 +317,17 @@ class SeaPlayer(App):
         self.info(f"Added [cyan]{added_oks}[/cyan] songs!")
         await self.aio_nofy(f"Added [cyan]{added_oks}[/cyan] songs!")
     
-    def currect_sound_stop(self, sound: Optional[CodecBase]=None):
-        if sound is None: sound = self.gcs()
+    async def currect_sound_stop(self, sound: Optional[CodecBase]=None):
+        if sound is None: sound = await self.aio_gcs()
         if sound is not None:
             self.last_playback_status = "Stoped"
             sound.stop()
     
-    def currect_sound_play(self, sound: Optional[CodecBase]=None):
-        if sound is None: sound = self.gcs()
+    async def currect_sound_play(self, sound: Optional[CodecBase]=None):
+        if sound is None: sound = await self.aio_gcs()
         if sound is not None:
             self.last_playback_status = "Playing"
-            self.splay(sound)
+            sound.play()
     
     async def currect_sound_pause(self, sound: Optional[CodecBase]=None):
         if sound is None: sound = await self.aio_gcs()
@@ -363,11 +355,11 @@ class SeaPlayer(App):
             self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
     
     @on(Button.Pressed, "#button-play-stop")
-    def bp_play_stop(self) -> None:
-        if (sound:=self.gcs()) is not None:
-            if sound.playing: self.currect_sound_stop(sound)
-            else: self.currect_sound_play(sound)
-            self.music_selected_label.update(self.get_sound_selected_label_text())
+    async def bp_play_stop(self) -> None:
+        if (sound:=await self.aio_gcs()) is not None:
+            if sound.playing: await self.currect_sound_stop(sound)
+            else: await self.currect_sound_play(sound)
+            self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
     
     async def submit_plus_sound(self, value: str) -> None:
         if value.replace(" ", "") != "":
@@ -439,7 +431,6 @@ class SeaPlayer(App):
         if (sound:=await self.aio_gcs()) is not None:
             sound.unpause()
             sound.stop()
-            await self.AUDIO_PORT.stop()
             await self.plugin_loader.on_quit()
         return await super().action_quit()
 
