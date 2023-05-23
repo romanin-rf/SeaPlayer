@@ -1,9 +1,6 @@
-
-
-# > Typing
 from typing import Optional, Dict
 # > Local Import's
-from ..codeсbase import CodecBase
+from ..codecbase import CodecBase
 
 
 class MusicList:

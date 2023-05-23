@@ -2,7 +2,7 @@ import os
 import pytest
 import asyncio
 try:
-    from seaplayer.codecs import (
+    from seaplayer.codec import (
         MP3Codec,
         OGGCodec,
         WAVECodec,

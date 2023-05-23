@@ -1,21 +1,26 @@
 import os
 import hashlib
+import asyncio
 import aiofiles
 # > Sound Works
-from playsoundsimple import Sound
+from ..modules.sound import Sound, DATA
 # > Typing
-from typing import Optional
+from typing import Optional, Callable, NoReturn
 # > Local Imports
-from ..codeсbase import CodecBase
+from ..codecbase import CodecBase
 
 
 class AnyCodec(CodecBase):
     codec_name: str = "Any"
     
     # ! Initialized
-    def __init__(self, path: str, **kwargs) -> None:
+    def __init__(self, path: str, sender: Callable[[DATA], None], **kwargs) -> None:
         self.name = os.path.abspath(path)
-        self._sound = Sound(self.name)
+        self._sound = Sound(self.name, **kwargs)
+        self.__playing: bool = False
+        self.__paused: bool = False
+        self.__volume: float = 1.0
+        self.sender = sender
     
     def __sha1__(self, buffer_size: int) -> str:
         sha1 = hashlib.sha1()
@@ -47,9 +52,9 @@ class AnyCodec(CodecBase):
     
     # ! Playback Info
     @property
-    def playing(self) -> bool: return self._sound.playing
+    def playing(self) -> bool: return self.__playing
     @property
-    def paused(self) -> bool: return self._sound.paused
+    def paused(self) -> bool: return self.__paused
     
     # ! Sound Info
     @property
@@ -61,12 +66,29 @@ class AnyCodec(CodecBase):
     @property
     def icon_data(self) -> Optional[bytes]: return self._sound.icon_data
     
+    # ! Private Functions
+    async def check_pause(self) -> None:
+        while self.__paused: await asyncio.sleep(0)
+    
+    async def loop(self) -> None:
+        async for data in self._sound:
+            if not self.__playing:
+                break
+            await self.check_pause()
+            await self.sender(data * self.__volume)
+    
     # ! Functions
-    def play(self) -> None: self._sound.play()
-    def stop(self) -> None: self._sound.stop()
-    def pause(self) -> None: self._sound.pause()
-    def unpause(self) -> None: self._sound.unpause()
-    def get_volume(self) -> float: return self._sound.get_volume()
-    def set_volume(self, value: float) -> None: self._sound.set_volume(value)
+    async def play(self) -> NoReturn:
+        self.__playing = True
+        await self.loop()
+    
+    def stop(self) -> None:
+        self.__playing = False
+        self._sound.stop()
+    def pause(self) -> None:
+        self.__paused = True
+    def unpause(self) -> None: self.__paused = False
+    def get_volume(self) -> float: return self.__volume
+    def set_volume(self, value: float) -> None: self.__volume = value
     def get_pos(self) -> float: return self._sound.get_pos()
     def set_pos(self, value: float) -> None: self._sound.set_pos(value)

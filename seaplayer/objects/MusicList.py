@@ -3,7 +3,7 @@ from textual.widgets import Label, ListItem, ListView
 from typing import Optional
 # > Local Import's
 from ..types import MusicList
-from ..codeсbase import CodecBase
+from ..codecbase import CodecBase
 from ..functions import get_sound_basename, aiter
 
 
