@@ -75,13 +75,13 @@ class MIDICodec(AnyCodec):
             return await file.read(4) == b"MThd"
     
     # ! Initialized
-    def __init__(self, path: str, aio_init: bool=False, **kwargs) -> None:
+    def __init__(self, path: str, aio_init: bool=False, sound_device_id: Optional[int]=None, **kwargs) -> None:
         self.name = os.path.abspath(path)
         if not aio_init:
-            self._sound = MIDISound.from_midi(self.name, **kwargs)
+            self._sound = MIDISound.from_midi(self.name, device_id=sound_device_id, **kwargs)
     
     @staticmethod
-    async def __aio_init__(path: str, **kwargs):
+    async def __aio_init__(path: str, sound_device_id: Optional[int]=None, **kwargs):
         self = MIDICodec(path, aio_init=True)
-        self._sound = await MIDISound.aio_from_midi(self.name, **kwargs)
+        self._sound = await MIDISound.aio_from_midi(self.name, device_id=sound_device_id, **kwargs)
         return self
