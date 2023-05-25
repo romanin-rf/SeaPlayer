@@ -1,66 +1,27 @@
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Header, Footer, OptionList
-from textual.widgets.option_list import Option
+from textual.widgets import Header, Footer
 # > Typing
 try:
     from sounddevice import query_devices, query_hostapis
     INIT_SOUNDDEVICE = True
 except:
     INIT_SOUNDDEVICE = False
-from typing import Optional, Literal, Dict, Any, List, Callable
+from typing import Optional, Literal, Dict, Any, List
 # > Local Imports
 from ..types import Converter
 from ..modules.colorizer import richefication
 from ..objects import (
     Nofy,
     InputField,
+    DataOption,
+    DataOptionList,
     ConfigurateList,
     ConfigurateListItem
 )
 
 # ! Vars
 conv = Converter()
-
-# ! Types
-class DataOption(Option):
-    def __init__(
-        self,
-        text: str,
-        selected: bool=False,
-        id: Optional[str]=None,
-        disable: bool=False,
-        **data
-    ) -> None:
-        super().__init__(text, id=id, disabled=disable)
-        self.group = ""
-        self.selected = selected
-        self.data = data
-
-class DataOptionList(OptionList):
-    def __init__(
-        self,
-        *content: DataOption,
-        group: Optional[str]="",
-        after_selected: Callable[[DataOption], None]=lambda option: None
-    ) -> None:
-        super().__init__()
-        self.group = group
-        self.content = content
-        self.after_selected = after_selected
-    
-    def on_mount(self):
-        for index, option in enumerate(self.content):
-            self.add_option(option)
-            if isinstance(option, DataOption):
-                option.group = self.group
-                if option.selected:
-                    self.highlighted = index
-    
-    async def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        if isinstance(event.option, DataOption):
-            if self.group == event.option.group:
-                await self.after_selected(event.option)
 
 # ! Functions
 if INIT_SOUNDDEVICE:
