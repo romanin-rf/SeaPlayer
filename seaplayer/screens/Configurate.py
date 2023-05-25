@@ -3,7 +3,11 @@ from textual.screen import Screen
 from textual.widgets import Header, Footer, OptionList
 from textual.widgets.option_list import Option
 # > Typing
-from sounddevice import query_devices, query_hostapis
+try:
+    from sounddevice import query_devices, query_hostapis
+    INIT_SOUNDDEVICE = True
+except:
+    INIT_SOUNDDEVICE = False
 from typing import Optional, Literal, Dict, Any, List, Callable
 # > Local Imports
 from ..types import Converter
@@ -56,37 +60,37 @@ class DataOptionList(OptionList):
     async def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         if isinstance(event.option, DataOption):
             if self.group == event.option.group:
-                self.app.info("Select OutputSoundDeviceID: " + str(event))
                 await self.after_selected(event.option)
 
 # ! Functions
-def generate_devices_options(currect: Optional[int]=None):
-    hosts: List[Dict[str, Any]] = [_1 for _1 in query_hostapis()]
-    devices: List[Dict[str, Any]] = [_2 for _2 in query_devices()]
-    devices_options: List[DataOption] = []
-    devices_options.append(DataOption("([cyan]*[/cyan]) [yellow]Auto[/yellow]", device_index=None))
-    
-    for device in devices:
-        if device["max_output_channels"] > 0:
-            try:
-                format_data = dict(
-                    device_name=device["name"], 
-                    device_index=device["index"],
-                    hostapi_index=device["hostapi"],
-                    hostapi_name=hosts[device["hostapi"]]["name"]
-                )
-                devices_options.append(
-                    DataOption(
-                        "([cyan]{device_index}[/cyan]) [yellow]{device_name}[/yellow] \[[green]{hostapi_name}[/green]]".format(**format_data),
-                        device_index=device["index"]
+if INIT_SOUNDDEVICE:
+    def generate_devices_options(currect: Optional[int]=None):
+        hosts: List[Dict[str, Any]] = [_1 for _1 in query_hostapis()]
+        devices: List[Dict[str, Any]] = [_2 for _2 in query_devices()]
+        devices_options: List[DataOption] = []
+        devices_options.append(DataOption("([cyan]*[/cyan]) [yellow]Auto[/yellow]", device_index=None))
+        
+        for device in devices:
+            if device["max_output_channels"] > 0:
+                try:
+                    format_data = dict(
+                        device_name=device["name"], 
+                        device_index=device["index"],
+                        hostapi_index=device["hostapi"],
+                        hostapi_name=hosts[device["hostapi"]]["name"]
                     )
-                )
-            except:
-                pass
-    for d in devices_options:
-        if d.data["device_index"] == currect:
-            d.selected = True
-    return devices_options
+                    devices_options.append(
+                        DataOption(
+                            "([cyan]{device_index}[/cyan]) [yellow]{device_name}[/yellow] \[[green]{hostapi_name}[/green]]".format(**format_data),
+                            device_index=device["index"]
+                        )
+                    )
+                except:
+                    pass
+        for d in devices_options:
+            if d.data["device_index"] == currect:
+                d.selected = True
+        return devices_options
 
 # ! Main Class
 class Configurate(Screen):
@@ -121,11 +125,12 @@ class Configurate(Screen):
         exec(f"self.{attr_name} = value")
         await self.aio_nofy("Saved!")
     
-    def gucsdi(self):
-        async def n_ucsdi(option: DataOption) -> None:
-            self.app.config.output_sound_device_id = option.data.get("device_index", None)
-            await self.aio_nofy("Saved!")
-        return n_ucsdi
+    if INIT_SOUNDDEVICE:
+        def gucsdi(self):
+            async def n_ucsdi(option: DataOption) -> None:
+                self.app.config.output_sound_device_id = option.data.get("device_index", None)
+                await self.aio_nofy("Saved!")
+            return n_ucsdi
     
     def guac(self, attr_name: str):
         async def an_uac(input: InputField, value: str) -> None: await self._uac(attr_name, input, value)
@@ -170,18 +175,19 @@ class Configurate(Screen):
             height=5
         )
     
-    def create_configurator_sound_devices(self):
-        options_list = DataOptionList(
-            *generate_devices_options(self.app.config.output_sound_device_id),
-            group="SoundDevicesSelect",
-            after_selected=self.gucsdi()
-        )
-        return ConfigurateListItem(
-            options_list,
-            title="[red]{Sound}[/]: Output Sound Device",
-            desc="Select the device that SeaPlayer will work with. [red](restart required)[/red]",
-            height=8
-        )
+    if INIT_SOUNDDEVICE:
+        def create_configurator_sound_devices(self):
+            options_list = DataOptionList(
+                *generate_devices_options(self.app.config.output_sound_device_id),
+                group="SoundDevicesSelect",
+                after_selected=self.gucsdi()
+            )
+            return ConfigurateListItem(
+                options_list,
+                title="[red]{Sound}[/]: Output Sound Device",
+                desc="Select the device that SeaPlayer will work with. [red](restart required)[/red]",
+                height=8
+            )
     
     # ! Configurate Main Functions
     def compose(self) -> ComposeResult:
@@ -193,7 +199,8 @@ class Configurate(Screen):
                 "Path to SF2-file.",
                 conv.optional(conv.filepath), Optional[str], False
             )
-            yield self.create_configurator_sound_devices()
+            if INIT_SOUNDDEVICE:
+                yield self.create_configurator_sound_devices()
             yield self.create_configurator_type(
                 "app.config.image_update_method",
                 "Image", "Image Update Method",

@@ -211,6 +211,7 @@ class SeaPlayer(App):
     
     def compose(self) -> ComposeResult:     
         # * Other
+        self.info("--- [pink]SeaPlayer.compose[/pink] [green]Starting[/green] ---")
         self.info(f"{__title__} v{__version__} from {__author__} ({__email__})")
         self.info(f"Source          : {__url__}")
         self.info(f"Codecs          : {repr(self.CODECS)}")
@@ -219,7 +220,7 @@ class SeaPlayer(App):
         self.info(f"Assets Dirpath  : {repr(ASSETS_DIRPATH)}")
         self.info(f"Codecs Kwargs   : {repr(self.CODECS_KWARGS)}")
         self.info(f"Sound Device ID : {repr(self.config.output_sound_device_id)}")
-        self.info(f"")
+        
         
         # * Play Screen
         self.music_play_screen = Static(classes="screen-box")
@@ -278,6 +279,7 @@ class SeaPlayer(App):
             group="PluginLoader",
             description="<method PluginLoader.on_compose>"
         )
+        self.info("--- [pink]SeaPlayer.compose[/pink] [red]Starting[/red] ---")
     
     async def add_sounds_to_list(self) -> None:
         added_oks = 0
