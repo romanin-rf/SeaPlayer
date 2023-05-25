@@ -16,7 +16,7 @@ from .config import *
 from .plug import PluginLoader
 from .codeсbase import CodecBase
 from .screens import Unknown, Configurate, UNKNOWN_OPEN_KEY
-from .codecs import MP3Codec, WAVECodec, OGGCodec, MIDICodec, FLACCodec
+from .codecs import codecs
 from .functions import (
     aiter,
     check_status,
@@ -46,9 +46,7 @@ from .units import (
     ASSETS_DIRPATH,
     IMGPATH_IMAGE_NOT_FOUND,
     RESAMPLING_SAFE,
-    LOCALDIR,
-    PLUGINS_CONFIG_PATH,
-    PLUGINS_DIRPATH
+    LOCALDIR
 )
 
 # ! Main Functions
@@ -97,8 +95,11 @@ class SeaPlayer(App):
     started: bool = True
     
     # ! Codecs Configuration
-    CODECS: List[Type[CodecBase]] = [ MP3Codec, WAVECodec, OGGCodec, MIDICodec, FLACCodec ]
-    CODECS_KWARGS: Dict[str, Any] = {"sound_fonts_path": config.sound_font_path}
+    CODECS: List[Type[CodecBase]] = [ *codecs ]
+    CODECS_KWARGS: Dict[str, Any] = {
+        "sound_fonts_path": config.sound_font_path,
+        "sound_device_id": config.output_sound_device_id
+    }
     
     # ! Init Objects
     log_menu = LogMenu(enable_logging=config.log_menu_enable, wrap=True, highlight=True, markup=True)
@@ -210,15 +211,16 @@ class SeaPlayer(App):
     
     def compose(self) -> ComposeResult:     
         # * Other
+        self.info("--- [pink]SeaPlayer.compose[/pink] [green]Starting[/green] ---")
         self.info(f"{__title__} v{__version__} from {__author__} ({__email__})")
-        self.info(f"Source              : {__url__}")
-        self.info(f"Codecs              : {repr(self.CODECS)}")
-        self.info(f"Config Path         : {repr(self.config.filepath)}")
-        self.info(f"CSS Dirpath         : {repr(CSS_LOCALDIR)}")
-        self.info(f"Assets Dirpath      : {repr(ASSETS_DIRPATH)}")
-        self.info(f"Codecs Kwargs       : {repr(self.CODECS_KWARGS)}")
-        self.info(f"Plugins Dirpath     : {repr(PLUGINS_DIRPATH)}")
-        self.info(f"Plugins Config Path : {repr(PLUGINS_CONFIG_PATH)}")
+        self.info(f"Source          : {__url__}")
+        self.info(f"Codecs          : {repr(self.CODECS)}")
+        self.info(f"Config Path     : {repr(self.config.filepath)}")
+        self.info(f"CSS Dirpath     : {repr(CSS_LOCALDIR)}")
+        self.info(f"Assets Dirpath  : {repr(ASSETS_DIRPATH)}")
+        self.info(f"Codecs Kwargs   : {repr(self.CODECS_KWARGS)}")
+        self.info(f"Sound Device ID : {repr(self.config.output_sound_device_id)}")
+        
         
         # * Play Screen
         self.music_play_screen = Static(classes="screen-box")
@@ -277,6 +279,7 @@ class SeaPlayer(App):
             group="PluginLoader",
             description="<method PluginLoader.on_compose>"
         )
+        self.info("--- [pink]SeaPlayer.compose[/pink] [red]Starting[/red] ---")
     
     async def add_sounds_to_list(self) -> None:
         added_oks = 0

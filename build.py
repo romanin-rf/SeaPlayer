@@ -31,6 +31,7 @@ DATA = {
     "seaplayer/objects/MusicList.py": "seaplayer/objects/",
     "seaplayer/objects/Notification.py": "seaplayer/objects/",
     "seaplayer/objects/ProgressBar.py": "seaplayer/objects/",
+    "seaplayer/objects/DataOptions.py": "seaplayer/objects/",
     # * 1.2) Types
     "seaplayer/types": "seaplayer/types/",
     "seaplayer/types/__init__.py": "seaplayer/types/",
@@ -50,13 +51,6 @@ DATA = {
     "seaplayer/screens/__init__.py": "seaplayer/screens/",
     "seaplayer/screens/Configurate.py": "seaplayer/screens/",
     "seaplayer/screens/Unknown.py": "seaplayer/screens/",
-    # * 1.5) Plugun System
-    "seaplayer/plug": "seaplayer/plug/",
-    "seaplayer/plug/__init__.py": "seaplayer/plug/",
-    "seaplayer/plug/pluginbase.py": "seaplayer/plug/",
-    "seaplayer/plug/pluginbase.pyi": "seaplayer/plug/",
-    "seaplayer/plug/pluginloader.py": "seaplayer/plug/",
-    "seaplayer/plug/pluginloader.pyi": "seaplayer/plug/",
     # * 2) Modules Files
     "seaplayer/modules": "seaplayer/modules/",
     "seaplayer/modules/__init__.py": "seaplayer/modules/",

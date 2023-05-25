@@ -7,6 +7,7 @@ T = TypeVar("T")
 DEFAULT_CONFIG_DATA = {
     "sound": {
         "sound_font_path": None,                # * Optional[str]
+        "output_sound_device_id": None,         # * Optional[int]
     },
     "image": {
         "image_update_method": "sync",          # * Literal["sync", "async"]
@@ -82,6 +83,11 @@ class SeaPlayerConfig:
     def sound_font_path(self) -> Optional[str]: return self.get("sound.sound_font_path")
     @sound_font_path.setter
     def sound_font_path(self, value: Optional[str]): self.set("sound.sound_font_path", value)
+    
+    @property
+    def output_sound_device_id(self) -> Optional[int]: return self.get("sound.output_sound_device_id")
+    @output_sound_device_id.setter
+    def output_sound_device_id(self, value: Optional[int]): self.set("sound.output_sound_device_id", value)
     
     # ! Image
     @property
