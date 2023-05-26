@@ -13,14 +13,12 @@ from PIL import Image
 from typing import Optional, Literal, Tuple, List, Type
 # > Local Imports
 from .config import *
-from .plug import PluginLoader
 from .codeсbase import CodecBase
 from .screens import Unknown, Configurate, UNKNOWN_OPEN_KEY
 from .codecs import codecs
 from .functions import (
     aiter,
     check_status,
-    rich_exception,
     image_from_bytes,
     get_sound_basename
 )
@@ -46,8 +44,12 @@ from .units import (
     ASSETS_DIRPATH,
     IMGPATH_IMAGE_NOT_FOUND,
     RESAMPLING_SAFE,
-    LOCALDIR
+    LOCALDIR,
+    ENABLE_PLUGIN_SYSTEM
 )
+# > Plugin System Init
+if ENABLE_PLUGIN_SYSTEM:
+    from .plug import PluginLoader
 
 # ! Main Functions
 def build_bindings(config: SeaPlayerConfig):
@@ -108,12 +110,14 @@ class SeaPlayer(App):
     info = log_menu.info
     error = log_menu.error
     warn = log_menu.warn
+    exception = log_menu.exception
 
     # ! App Init
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.plugin_loader = PluginLoader(self)
-        self.plugin_loader.on_init()
+        if ENABLE_PLUGIN_SYSTEM:
+            self.plugin_loader = PluginLoader(self)
+            self.plugin_loader.on_init()
     
     # ! Inherited Functions
     async def action_push_screen(self, screen: str) -> None:
@@ -209,9 +213,9 @@ class SeaPlayer(App):
                 self.last_playback_status = status
             await asyncio.sleep(0.2)
     
-    def compose(self) -> ComposeResult:     
+    def compose(self) -> ComposeResult:
         # * Other
-        self.info("--- [pink]SeaPlayer.compose[/pink] [green]Starting[/green] ---")
+        self.info("---")
         self.info(f"{__title__} v{__version__} from {__author__} ({__email__})")
         self.info(f"Source          : {__url__}")
         self.info(f"Codecs          : {repr(self.CODECS)}")
@@ -273,13 +277,14 @@ class SeaPlayer(App):
             group="CONTROL_UPDATER-LOOP",
             description="Control of playback modes and status updates."
         )
-        self.run_worker(
-            self.plugin_loader.on_compose,
-            name="ON_COMPOSE",
-            group="PluginLoader",
-            description="<method PluginLoader.on_compose>"
-        )
-        self.info("--- [pink]SeaPlayer.compose[/pink] [red]Starting[/red] ---")
+        if ENABLE_PLUGIN_SYSTEM:
+            self.run_worker(
+                self.plugin_loader.on_compose,
+                name="ON_COMPOSE",
+                group="PluginLoader",
+                description="<method PluginLoader.on_compose>"
+            )
+        self.info("---")
     
     async def add_sounds_to_list(self) -> None:
         added_oks = 0
@@ -293,15 +298,15 @@ class SeaPlayer(App):
                     if await codec.aio_is_this_codec(path):
                         if not hasattr(codec, "__aio_init__"):
                             try:
-                                sound = codec(path, **self.CODECS_KWARGS)
+                                sound: CodecBase = codec(path, **self.CODECS_KWARGS)
                             except Exception as e:
-                                self.error(rich_exception(e))
+                                self.exception(e)
                                 sound = None
                         else:
                             try:
                                 sound: CodecBase = await codec.__aio_init__(path, **self.CODECS_KWARGS)
                             except Exception as e:
-                                self.error(rich_exception(e))
+                                self.exception(e)
                                 sound = None
                         if sound is not None:
                             if not await self.music_list_view.music_list.aio_exists_sha1(sound):
@@ -313,7 +318,7 @@ class SeaPlayer(App):
                     self.error(f"The file does not exist or is a directory: {repr(path)}")
                     break
                 except Exception as e:
-                    self.error(rich_exception(e))
+                    self.exception(e)
             if sound is None:
                 self.error(f"The sound could not be loaded: {repr(path)}")
         await loading_nofy.remove()
@@ -434,9 +439,11 @@ class SeaPlayer(App):
         if (sound:=await self.aio_gcs()) is not None:
             sound.unpause()
             sound.stop()
-            await self.plugin_loader.on_quit()
+            if ENABLE_PLUGIN_SYSTEM:
+                await self.plugin_loader.on_quit()
         return await super().action_quit()
 
     def run(self, *args, **kwargs):
-        self.plugin_loader.on_run()
+        if ENABLE_PLUGIN_SYSTEM:
+            self.plugin_loader.on_run()
         super().run(*args, **kwargs)
