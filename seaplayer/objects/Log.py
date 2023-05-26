@@ -1,4 +1,5 @@
 from textual.widgets import TextLog
+from rich.traceback import Traceback
 # > Typing
 from typing import TypeVar
 # > Local Import's
@@ -21,7 +22,8 @@ class LogMenu(TextLog):
         super().__init__(**kwargs)
     
     def write_log(self, chap: str, msg: str, *, chap_color: str="green") -> None:
-        if self.enable_logging: self.write(f"[[{chap_color}]{chap.center(self.chap_max_width)}[/]]: {msg}", shrink=False)
+        if self.enable_logging:
+            self.write(f"[[{chap_color}]{chap.center(self.chap_max_width)}[/]]: {msg}", shrink=False)
     
     def info(self, msg: str) -> None: self.write_log("INFO", msg, chap_color="green")
     def error(self, msg: str) -> None: self.write_log("ERROR", msg, chap_color="red")

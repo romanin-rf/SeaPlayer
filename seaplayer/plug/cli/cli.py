@@ -107,13 +107,20 @@ def creating(dirpath: str, recreate: bool, **kwargs: str):
 
 @click.command("load", help="Load the plugin into the SeaPlayer plugins directory.")
 @click.argument("dirpath", type=click.Path(True, False))
-def loading(dirpath: str):
+@click.option(
+    "--rewrite", "-w", "rewrite",
+    help="Delete if it exists and overwrite.",
+    is_flag=True, default=False
+)
+def loading(dirpath: str, rewrite: bool):
     dirpath = os.path.abspath(dirpath)
     if is_plugin_dirpath(dirpath):
         with Live("[yellow]Loading...[/yellow]", console=console) as l:
+            to_path = os.path.join(PLUGINS_DIRPATH, os.path.basename(dirpath))
+            if rewrite: shutil.rmtree(to_path, ignore_errors=True)
             shutil.copytree(
                 dirpath,
-                os.path.join(PLUGINS_DIRPATH, os.path.basename(dirpath)),
+                to_path,
                 dirs_exist_ok=True
             )
             init_config()
