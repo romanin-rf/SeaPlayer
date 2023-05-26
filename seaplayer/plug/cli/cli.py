@@ -1,9 +1,12 @@
 import os
 import click
+import shutil
 from rich.console import Console
+from rich.live import Live
 # > Local Import's
 from .exceptions import *
-from ...units import PLUGINS_CONFIG_PATH
+from .vars import CREATE_DEFAULT_CODE
+from ...units import PLUGINS_CONFIG_PATH, PLUGINS_DIRPATH
 from ..pluginbase import PluginInfo
 from ..pluginloader import PluginLoaderConfigManager
 from .functions import (
@@ -14,18 +17,9 @@ from .functions import (
     is_plugin_dirpath
 )
 
-# ! Vars
+# ! Init
 console = Console()
 plugin_config = PluginLoaderConfigManager(PLUGINS_CONFIG_PATH)
-
-CREATE_DEFAULT_CODE = """\
-from seaplayer.plug import PluginBase
-
-class Plugin(PluginBase):
-    pass
-
-plugin_main = Plugin
-"""
 
 # ! Commands
 @click.command("enable", help="Enabling plugin.")
@@ -94,11 +88,7 @@ def listing():
     help="Ignores if there is already a plugin in the folder and overwrites it.",
     is_flag=True, default=False
 )
-def creating(
-    dirpath: str,
-    recreate: bool,
-    **kwargs: str
-):
+def creating(dirpath: str, recreate: bool, **kwargs: str):
     dirpath = os.path.abspath(dirpath)
     try:
         if (not is_plugin_dirpath(dirpath)) or recreate:
@@ -114,6 +104,22 @@ def creating(
             raise_exception(console, IsPluginDirectoryError, dirpath)
     except:
         console.print_exception()
+
+@click.command("load", help="Load the plugin into the SeaPlayer plugins directory.")
+@click.argument("dirpath", type=click.Path(True, False))
+def loading(dirpath: str):
+    dirpath = os.path.abspath(dirpath)
+    if is_plugin_dirpath(dirpath):
+        with Live("[yellow]Loading...[/yellow]", console=console) as l:
+            shutil.copytree(
+                dirpath,
+                os.path.join(PLUGINS_DIRPATH, os.path.basename(dirpath)),
+                dirs_exist_ok=True
+            )
+            init_config()
+            l.update("[yellow]Plugin [green]loaded[/green]![/yellow]", refresh=True)
+    else:
+        raise_exception(console, IsNotPluginDirectoryError, dirpath)
 
 # ! Main Group
 @click.group
@@ -131,3 +137,4 @@ main.add_command(enabling)
 main.add_command(disabling)
 main.add_command(listing)
 main.add_command(creating)
+main.add_command(loading)
