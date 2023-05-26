@@ -175,8 +175,9 @@ class PluginLoader:
     def on_init(self) -> None:
         self.app.info(f"{self.__title__} v{self.__version__} from {self.__author__} ({self.__email__})")
         plugins_paths = list(self.search_plugins_paths())
-        self.app.info(f"Found plugin paths   : {repr(plugins_paths)}")
+        self.app.info(f"Found plugins        : {repr([os.path.basename(os.path.dirname(i[0])) for i in plugins_paths])}")
         for info_path, init_path in plugins_paths:
+            info = None
             try:
                 info = self.load_plugin_info(info_path)
 
@@ -197,7 +198,10 @@ class PluginLoader:
                     self.off_plugins.append(info)
             except Exception as e:
                 self.error_plugins.append( (info_path, init_path) )
-                self.app.info(f"Failed to load plugin: {repr( (info_path, init_path) )}")
+                if info is not None:
+                    self.app.info(f"Failed to load plugin: {repr(info)}")
+                else:
+                    self.app.info(f"Failed to load plugin: {repr(os.path.basename(os.path.dirname(info_path)))}")
                 raise e
         self.app.info(f"Plugins loaded ([green]ON [/green]) : {repr(self.on_plugins)}")
         self.app.info(f"Plugins loaded ([red]OFF[/red]) : {repr(self.off_plugins)}")
