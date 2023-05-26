@@ -13,11 +13,15 @@ class PluginInfo(BaseModel):
 
 # ! Plugin Base Class
 class PluginBase:
-    def __init__(self, app, pl, info) -> None:
+    def __init_repr__(self) -> str:
+        return f"[green]{self.info.name}[/] ({repr(self.info.name_id)}) [cyan]v{self.info.version}[/cyan] [yellow]is initialized[/yellow]!"
+    
+    def __init__(self, app, pl, info: PluginInfo) -> None:
         self.app = app
         self.pl = pl
         self.info = info
-    
+        
+        self.app.info(self.__init_repr__())
 
     def on_init(self): pass
     def on_run(self): pass

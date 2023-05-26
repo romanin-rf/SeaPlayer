@@ -6,7 +6,7 @@ from PIL.Image import Resampling
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -14,8 +14,10 @@ __url__ = "https://github.com/romanin-rf/SeaPlayer"
 # ! Paths
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     LOCALDIR = os.path.dirname(sys.executable)
+    ENABLE_PLUGIN_SYSTEM = False
 else:
     LOCALDIR = os.path.dirname(os.path.dirname(__file__))
+    ENABLE_PLUGIN_SYSTEM = True
 
 CSS_LOCALDIR = os.path.join(os.path.dirname(__file__), "css")
 ASSETS_DIRPATH = os.path.join(os.path.dirname(__file__), "assets")

@@ -1,6 +1,13 @@
 from textual.widgets import TextLog
+# > Typing
+from typing import TypeVar
+# > Local Import's
+from ..functions import rich_exception
 
+# ! Types
+RETURN = TypeVar('RETURN')
 
+# ! Main Class
 class LogMenu(TextLog):
     def __init__(self, chap_max_width: int=8, enable_logging: bool=True, **kwargs):
         self.enable_logging = enable_logging
@@ -19,3 +26,4 @@ class LogMenu(TextLog):
     def info(self, msg: str) -> None: self.write_log("INFO", msg, chap_color="green")
     def error(self, msg: str) -> None: self.write_log("ERROR", msg, chap_color="red")
     def warn(self, msg: str) -> None: self.write_log("WARN", msg, chap_color="orange")
+    def exception(self, e: Exception) -> None: self.write_log("ERROR", rich_exception(e), chap_color="red")

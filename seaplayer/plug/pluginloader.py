@@ -73,6 +73,9 @@ class PluginLoaderConfigManager:
     def exists_plugin(self, info: PluginInfo) -> bool:
         return info.name_id in self.config.plugins_enable.keys()
     
+    def exists_plugin_by_name_id(self, name_id: str) -> bool:
+        return name_id in self.config.plugins_enable.keys()
+    
     def add_plugin(self, info: PluginInfo) -> None:
         self.config.plugins_enable[info.name_id] = True
         self.refresh()
@@ -82,12 +85,27 @@ class PluginLoaderConfigManager:
             if name_id == info.name_id:
                 return enable
         return False
-        
+    
+    def disable_plugin(self, info: PluginInfo) -> None:
+        self.config.plugins_enable[info.name_id] = False
+        self.refresh()
+    
+    def disable_plugin_by_name_id(self, name_id: str) -> None:
+        self.config.plugins_enable[name_id] = True
+        self.refresh()
+    
+    def enable_plugin(self, info: PluginInfo) -> None:
+        self.config.plugins_enable[info.name_id] = True
+        self.refresh()
+    
+    def enable_plugin_by_name_id(self, name_id: str) -> None:
+        self.config.plugins_enable[name_id] = True
+        self.refresh()
 
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.1.0"
+    __version__: str = "0.1.2"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
 
@@ -113,8 +131,12 @@ class PluginLoader:
         self.on_plugins: List[PluginBase] = []
         self.off_plugins: List[PluginInfo] = []
         self.error_plugins: List[Tuple[str, str]] = []
+        
+        # * Logging
+        self.app.info("---")
     
-    async def aio_search_plugins_paths(self):
+    @staticmethod
+    async def aio_search_plugins_paths():
         info_search, init_search = glob.glob(GLOB_PLUGINS_INFO_SEARCH), glob.glob(GLOB_PLUGINS_INIT_SEARCH)
         async for info_path in aiter(info_search):
             info_dirpath = os.path.dirname(info_path)
@@ -124,7 +146,8 @@ class PluginLoader:
                     yield info_path, init_path
                     await asyncio.sleep(0)
     
-    def search_plugins_paths(self):
+    @staticmethod
+    def search_plugins_paths():
         info_search, init_search = glob.glob(GLOB_PLUGINS_INFO_SEARCH), glob.glob(GLOB_PLUGINS_INIT_SEARCH)
         for info_path in info_search:
             info_dirpath = os.path.dirname(info_path)
@@ -133,7 +156,8 @@ class PluginLoader:
                 if init_dirpath == info_dirpath:
                     yield info_path, init_path
     
-    def load_plugin_info(self, path: str) -> PluginInfo: return PluginInfo.parse_file(path)
+    @staticmethod
+    def load_plugin_info(path: str) -> PluginInfo: return PluginInfo.parse_file(path)
     
     def on_init(self) -> None:
         self.app.info(f"{self.__title__} v{self.__version__} from {self.__author__} ({self.__email__})")
