@@ -11,9 +11,6 @@ class Cacher:
     def __init__(self, cache_dirpath: str) -> None:
         self.main_dirpath = os.path.abspath(cache_dirpath)
         self.vars_dirpath = os.path.join(self.main_dirpath, "vars")
-        
-        # * Environment Variables
-        self.vars = {}
 
         # * Create Directory
         os.makedirs(self.main_dirpath, 0o755, True)
@@ -35,15 +32,10 @@ class Cacher:
             self.write(default, filepath)
             return default
     
-    def write_var(self, value: Any, name: str) -> None:
-        self.write(value, os.path.join(self.vars_dirpath, f"{name}.pycache"))
+    def write_var(self, value: Any, name: str, *, group: str="main") -> None: self.write(value, os.path.join(self.vars_dirpath, f"{name}-{group}.pycache"))
+    def read_var(self, name: str, default: D, *, group: str="main") -> D: return self.read(os.path.join(self.vars_dirpath, f"{name}-{group}.pycache"), default)
     
-    def read_var(self, name: str, default: D) -> D:
-        return self.read(os.path.join(self.vars_dirpath, f"{name}.pycache"), default)
-    
-    def var(self, name: str, default: D) -> D:
-        def setter(s, value: D) -> None:
-            self.write_var(value, name)
-        def getter(s) -> D:
-            return self.read_var(name, default)
+    def var(self, name: str, default: D, *, group: str="main") -> D:
+        def setter(s, value: D) -> None: self.write_var(value, name, group=group)
+        def getter(s) -> D: return self.read_var(name, default, group=group)
         return property(getter, setter)

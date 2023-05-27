@@ -53,9 +53,6 @@ from .units import (
 if ENABLE_PLUGIN_SYSTEM:
     from .plug import PluginLoader
 
-# ! Initialize
-cache = Cacher(CACHE_DIRPATH)
-
 # ! Main Functions
 def build_bindings(config: SeaPlayerConfig):
     yield Binding(config.key_quit, "quit", "Quit")
@@ -84,7 +81,8 @@ class SeaPlayer(App):
         "configurate": Configurate(id="screen_configurate")
     }
     
-    # ! SeaPlayer Configuration
+    # ! SeaPlayer Configuration & Hanlders
+    cache = Cacher(CACHE_DIRPATH)
     config = SeaPlayerConfig(CONFIG_FILEPATH)
     max_volume_percent: float = config.max_volume_percent
     

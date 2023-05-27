@@ -37,6 +37,7 @@ DATA = {
     "seaplayer/types/__init__.py": "seaplayer/types/",
     "seaplayer/types/Convert.py": "seaplayer/types/",
     "seaplayer/types/MusicList.py": "seaplayer/types/",
+    "seaplayer/types/Cache.py": "seaplayer/types/",
     # * 1.3) Codecs
     "seaplayer/codecs": "seaplayer/codecs/",
     "seaplayer/codecs/__init__.py": "seaplayer/codecs/",

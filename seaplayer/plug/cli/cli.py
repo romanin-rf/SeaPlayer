@@ -27,7 +27,7 @@ plugin_config = PluginLoaderConfigManager(PLUGINS_CONFIG_PATH)
 def enabling(plugin_name_id: str):
     if plugin_config.exists_plugin_by_name_id(plugin_name_id):
         plugin_config.enable_plugin_by_name_id(plugin_name_id)
-        console.print(f"[yellow]The {repr(plugin_name_id)} plug-in is [green]enabled[/green].[/yellow]")
+        console.print(f"[yellow]The [green]{repr(plugin_name_id)}[/green] plug-in is [green]enabled[/green].[/yellow]")
     else:
         raise_exception(console, PluginNotExistsError, plugin_name_id)
 
@@ -36,7 +36,7 @@ def enabling(plugin_name_id: str):
 def disabling(plugin_name_id: str):
     if plugin_config.exists_plugin_by_name_id(plugin_name_id):
         plugin_config.disable_plugin_by_name_id(plugin_name_id)
-        console.print(f"[yellow]The {repr(plugin_name_id)} plug-in is [red]disabled[/red].[/yellow]")
+        console.print(f"[yellow]The [green]{repr(plugin_name_id)}[/green] plug-in is [red]disabled[/red].[/yellow]")
     else:
         raise_exception(console, PluginNotExistsError, plugin_name_id)
 
