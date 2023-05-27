@@ -10,26 +10,26 @@ from typing_inspect import (
 
 # ! Vars
 REPLACE_TYPES = {
-    "str": "[green]str[/]",
-    "bool": "[green]bool[/]",
-    "int": "[green]int[/]",
-    "float": "[green]float[/]",
-    "bytes": "[green]bytes[/]",
-    "bytearray": "[green]bytearray[/]",
-    "complex": "[green]complex[/]",
-    "list": "[green]list[/]",
-    "tuple": "[green]tuple[/]",
-    "dict": "[green]dict[/]",
-    "None": "[cyan]None[/]",
-    "Tuple": "[green]Tuple[/]",
-    "Dict": "[green]Dict[/]",
-    "List": "[green]List[/]",
-    "Any": "[white]Any[/]",
-    "Literal": "[green]Literal[/]",
+    "str": "[green]str[/green]",
+    "bool": "[green]bool[/green]",
+    "int": "[green]int[/green]",
+    "float": "[green]float[/green]",
+    "bytes": "[green]bytes[/green]",
+    "bytearray": "[green]bytearray[/green]",
+    "complex": "[green]complex[/green]",
+    "list": "[green]list[/green]",
+    "tuple": "[green]tuple[/green]",
+    "dict": "[green]dict[/green]",
+    "None": "[cyan]None[/cyan]",
+    "Tuple": "[green]Tuple[/green]",
+    "Dict": "[green]Dict[/green]",
+    "List": "[green]List[/green]",
+    "Any": "[white]Any[/white]",
+    "Literal": "[green]Literal[/green]",
     "['": "[[yellow]'",
     ", '": ", [yellow]'",
-    "']": "'[/]]",
-    "', ": "'[/], "
+    "']": "'[/yellow]]",
+    "', ": "'[/yellow], "
 }
 
 # ! Other Functions
@@ -43,7 +43,7 @@ def replaces(string: str, replacement: Dict[str, str]) -> str:
 def pullyper(tp: type) -> str:
     if tp is None: return "None"
     elif is_optional_type(tp):
-       return f"{pullyper(get_args(tp)[0])} | None"
+        return f"{pullyper(get_args(tp)[0])} | None"
     elif is_union_type(tp):
         return " | ".join(pullyper(arg) for arg in get_args(tp))
     elif is_literal_type(tp):

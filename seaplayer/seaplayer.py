@@ -107,7 +107,10 @@ class SeaPlayer(App):
     }
     
     # ! Init Objects
-    log_menu = LogMenu(enable_logging=config.log_menu_enable, wrap=True, highlight=True, markup=True)
+    log_menu = LogMenu(
+        enable_logging=config.log_menu_enable,
+        wrap=True, highlight=True, markup=True
+    )
     
     # ! Log Functions
     info = log_menu.info
@@ -180,15 +183,25 @@ class SeaPlayer(App):
             return f"{minutes}:{str(seconds).rjust(2,'0')} | {str(round(sound.get_volume()*100)).rjust(3)}%", pos, sound.duration
         return "0:00 |   0%", None, None
     
-    def get_sound_selected_label_text(self) -> str:
-        if (sound:=self.gcs()) is not None:
+    def get_sound_selected_label_text(self, sound: Optional[CodecBase]=None) -> str:
+        if sound is None:
+            sound = self.gcs()
+        if sound is not None:
             return f"({check_status(sound)}): {get_sound_basename(sound)}"
         return "<sound not selected>"
     
-    async def aio_get_sound_selected_label_text(self) -> str:
-        if (sound:=await self.aio_gcs()) is not None:
+    async def aio_get_sound_selected_label_text(self, sound: Optional[CodecBase]=None) -> str:
+        if sound is None:
+            sound = await self.aio_gcs()
+        if sound is not None:
             return f"({check_status(sound)}): {get_sound_basename(sound)}"
         return "<sound not selected>"
+    
+    def update_select_label(self, sound: Optional[CodecBase]=None) -> None:
+        self.music_selected_label.update(self.get_sound_selected_label_text(sound))
+    
+    async def aio_update_select_label(self, sound: Optional[CodecBase]=None) -> None:
+        self.music_selected_label.update(await self.aio_get_sound_selected_label_text(sound))
     
     def gpms(self, modes: Tuple[str, str, str]=("(MODE): PLAY", "(MODE): REPLAY SOUND", "(MODE): REPLAY LIST")) -> str: return modes[self.playback_mode]
     def switch_playback_mode(self) -> None:
@@ -200,14 +213,16 @@ class SeaPlayer(App):
             if (sound:=await self.aio_gcs()) is not None:
                 status = check_status(sound)
                 if (self.last_playback_status is not None) and (self.last_playback_status != status):
-                    self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
+                    await self.aio_update_select_label(sound)
                 
                 if (status == "Stoped") and (self.last_playback_status == "Playing"):
                     if self.playback_mode == 1:
                         sound.play()
                         self.info(f"Replay sound: {repr(sound)}")
                     elif self.playback_mode == 2:
-                        if (sound:=await self.set_sound_for_playback(sound_uuid:=await self.music_list_view.aio_get_next_sound_uuid(self.currect_sound_uuid), True)) is not None:
+                        sound_uuid = await self.music_list_view.aio_get_next_sound_uuid(self.currect_sound_uuid)
+                        sound = await self.set_sound_for_playback(sound_uuid, True)
+                        if sound is not None:
                             self.playback_mode_blocked = True
                             await self.music_list_view.aio_select_list_item_from_sound_uuid(sound_uuid)
                             sound.play()
@@ -226,8 +241,6 @@ class SeaPlayer(App):
         self.info(f"CSS Dirpath     : {repr(CSS_LOCALDIR)}")
         self.info(f"Assets Dirpath  : {repr(ASSETS_DIRPATH)}")
         self.info(f"Codecs Kwargs   : {repr(self.CODECS_KWARGS)}")
-        self.info(f"Sound Device ID : {repr(self.config.output_sound_device_id)}")
-        
         
         # * Play Screen
         self.music_play_screen = Static(classes="screen-box")
@@ -262,9 +275,9 @@ class SeaPlayer(App):
                     yield self.music_selected_label
                     yield IndeterminateProgress(getfunc=self.get_sound_seek)
                     with Horizontal(classes="box-buttons-sound-control"):
-                        yield Button("Play/Stop", id="button-play-stop", variant="warning", classes="button-sound-control")
+                        yield Button("Pause", id="button-pause", variant="success", classes="button-sound-control")
                         yield Static(classes="pass-one-width")
-                        yield Button("Pause/Unpause", id="button-pause-unpause", variant="success", classes="button-sound-control")
+                        yield Button("Play/Stop/Unpause", id="button-play-stop", variant="warning", classes="button-sound-control")
                         yield Static(classes="pass-one-width")
                         yield Button(self.gpms(), id="switch-playback-mode", variant="primary", classes="button-sound-control")
         with self.music_list_screen:
@@ -357,20 +370,23 @@ class SeaPlayer(App):
             self.switch_playback_mode()
             event.button.label = self.gpms()
     
-    @on(Button.Pressed, "#button-pause-unpause")
+    @on(Button.Pressed, "#button-pause")
     async def bp_pause_unpause(self) -> None:
         if (sound:=await self.aio_gcs()) is not None:
-            if sound.playing:
-                if sound.paused: await self.currect_sound_unpause(sound)
-                else: await self.currect_sound_pause(sound)
-            self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
+            if sound.playing: await self.currect_sound_pause(sound)
+            await self.aio_update_select_label(sound)
     
     @on(Button.Pressed, "#button-play-stop")
     async def bp_play_stop(self) -> None:
         if (sound:=await self.aio_gcs()) is not None:
-            if sound.playing: await self.currect_sound_stop(sound)
-            else: await self.currect_sound_play(sound)
-            self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
+            if sound.playing:
+                if sound.paused:
+                    await self.currect_sound_unpause(sound)
+                else:
+                    await self.currect_sound_stop(sound)
+            else:
+                await self.currect_sound_play(sound)
+            await self.aio_update_select_label(sound)
     
     async def submit_plus_sound(self, value: str) -> None:
         if value.replace(" ", "") != "":
@@ -394,23 +410,27 @@ class SeaPlayer(App):
             self.playback_mode_blocked = playback_mode_blocked
         if sound_uuid is not None:
             if not self.playback_mode_blocked:
-                if (sound:=await self.aio_gcs()) is not None:
-                    self.last_playback_status = "Stoped"
-                    sound.stop()
+                sound = await self.aio_gcs()
+                await self.currect_sound_stop(sound)
             self.playback_mode_blocked = False
             
-            self.currect_sound_uuid = sound_uuid
-            if (sound:=self.music_list_view.get_sound(self.currect_sound_uuid)) is not None:
+            sound = await self.music_list_view.aio_get_sound(sound_uuid)
+            if sound is not None:
                 sound.set_volume(self.currect_volume)
                 await self.music_image.update_image(image_from_bytes(sound.icon_data))
                 self.info(f"A new sound has been selected: {repr(sound)}")
+            
             self.currect_sound = sound
-            self.music_selected_label.update(await self.aio_get_sound_selected_label_text())
+            self.currect_sound_uuid = sound_uuid if self.currect_sound is not None else None
+            
+            await self.aio_update_select_label(sound)
             return sound
     
     async def on_list_view_selected(self, selected: MusicListView.Selected):
         if isinstance(selected.item, MusicListViewItem):
-            await self.set_sound_for_playback(getattr(selected.item, "sound_uuid", None))
+            sound_uuid = getattr(selected.item, "sound_uuid", None)
+            if (sound_uuid != self.currect_sound_uuid) or (self.currect_sound_uuid is None):
+                await self.set_sound_for_playback(sound_uuid)
     
     async def action_plus_rewind(self):
         if (sound:=await self.aio_gcs()) is not None:
@@ -439,14 +459,15 @@ class SeaPlayer(App):
     
     async def action_quit(self):
         self.started = False
+        if ENABLE_PLUGIN_SYSTEM:
+            await self.plugin_loader.on_quit()
         if (sound:=await self.aio_gcs()) is not None:
             sound.unpause()
             sound.stop()
-            if ENABLE_PLUGIN_SYSTEM:
-                await self.plugin_loader.on_quit()
         return await super().action_quit()
 
     def run(self, *args, **kwargs):
         if ENABLE_PLUGIN_SYSTEM:
             self.plugin_loader.on_run()
         super().run(*args, **kwargs)
+

@@ -58,7 +58,11 @@ class MusicListView(ListView):
         )
         return sound_uuid
     
-    def get_sound(self, sound_uuid: str) -> Optional[CodecBase]: return self.music_list.get(sound_uuid)
+    def get_sound(self, sound_uuid: str) -> Optional[CodecBase]:
+        return self.music_list.get(sound_uuid)
+    
+    async def aio_get_sound(self, sound_uuid: str) -> Optional[CodecBase]:
+        return self.music_list.get(sound_uuid)
     
     async def aio_add_sound(self, sound: CodecBase):
         sound_uuid = await self.music_list.aio_add(sound)
