@@ -1,4 +1,5 @@
 import os
+import sys
 import glob
 import asyncio
 from pathlib import Path
@@ -28,10 +29,22 @@ def get_module_info(path: str):
         return os.path.basename(os.path.dirname(path)), path
     return os.path.basename(path), path
 
-def load_module(path: str) -> PluginModuleType:
-    module_name, module_location = get_module_info(path)
-    module_spec = spec_from_file_location(module_name, module_location)
+def get_submodules_locations(init_path: str) -> List[str]:
+    return [ os.path.dirname(init_path) ]
+
+def load_module(init_path: str) -> PluginModuleType:
+    module_name, module_location = get_module_info(init_path)
+    module_spec = spec_from_file_location(
+        module_name,
+        module_location,
+        submodule_search_locations=get_submodules_locations(init_path)
+    )
     module = module_from_spec(module_spec)
+    
+    sys.modules[module_spec.name] = module 
+    # TODO: Temporary option as there is a risk of replacing existing modules
+    # TODO: Make an environment-module to surround all these modules for security
+    
     module_spec.loader.exec_module(module)
     return module
 
@@ -91,7 +104,7 @@ class PluginLoaderConfigManager:
         self.refresh()
     
     def disable_plugin_by_name_id(self, name_id: str) -> None:
-        self.config.plugins_enable[name_id] = True
+        self.config.plugins_enable[name_id] = False
         self.refresh()
     
     def enable_plugin(self, info: PluginInfo) -> None:
@@ -105,7 +118,7 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.1.2"
+    __version__: str = "0.1.3"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
 
@@ -162,8 +175,9 @@ class PluginLoader:
     def on_init(self) -> None:
         self.app.info(f"{self.__title__} v{self.__version__} from {self.__author__} ({self.__email__})")
         plugins_paths = list(self.search_plugins_paths())
-        self.app.info(f"Found plugin paths   : {repr(plugins_paths)}")
+        self.app.info(f"Found plugins        : {repr([os.path.basename(os.path.dirname(i[0])) for i in plugins_paths])}")
         for info_path, init_path in plugins_paths:
+            info = None
             try:
                 info = self.load_plugin_info(info_path)
 
@@ -182,9 +196,13 @@ class PluginLoader:
                     self.on_plugins.append(plugin)
                 else:
                     self.off_plugins.append(info)
-            except:
+            except Exception as e:
                 self.error_plugins.append( (info_path, init_path) )
-                self.app.info(f"Failed to load plugin: {repr( (info_path, init_path) )}")
+                if info is not None:
+                    self.app.info(f"Failed to load plugin: {repr(info)}")
+                else:
+                    self.app.info(f"Failed to load plugin: {repr(os.path.basename(os.path.dirname(info_path)))}")
+                raise e
         self.app.info(f"Plugins loaded ([green]ON [/green]) : {repr(self.on_plugins)}")
         self.app.info(f"Plugins loaded ([red]OFF[/red]) : {repr(self.off_plugins)}")
     
