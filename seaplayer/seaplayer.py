@@ -13,6 +13,7 @@ from PIL import Image
 from typing import Optional, Literal, Tuple, List, Type
 # > Local Imports
 from .config import *
+from .types import Cacher
 from .codeсbase import CodecBase
 from .screens import Unknown, Configurate, UNKNOWN_OPEN_KEY
 from .codecs import codecs
@@ -45,11 +46,15 @@ from .units import (
     IMGPATH_IMAGE_NOT_FOUND,
     RESAMPLING_SAFE,
     LOCALDIR,
-    ENABLE_PLUGIN_SYSTEM
+    ENABLE_PLUGIN_SYSTEM,
+    CACHE_DIRPATH
 )
 # > Plugin System Init
 if ENABLE_PLUGIN_SYSTEM:
     from .plug import PluginLoader
+
+# ! Initialize
+cache = Cacher(CACHE_DIRPATH)
 
 # ! Main Functions
 def build_bindings(config: SeaPlayerConfig):
@@ -89,9 +94,9 @@ class SeaPlayer(App):
     # ! Template Configuration
     currect_sound_uuid: Optional[str] = None
     currect_sound: Optional[CodecBase] = None
-    currect_volume = 1.0
+    currect_volume = cache.var("currect_volume", 1.0)
     last_playback_status: Optional[Literal["Stoped", "Playing", "Paused"]] = None
-    playback_mode: int = 0
+    playback_mode: int = cache.var("playback_mode", 0)
     playback_mode_blocked: bool = False
     last_paths_globalized: List[str] = []
     started: bool = True
