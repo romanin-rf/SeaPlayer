@@ -118,7 +118,7 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.1.3"
+    __version__: str = "0.1.4"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
 
