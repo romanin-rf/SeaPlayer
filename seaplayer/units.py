@@ -6,7 +6,7 @@ from PIL.Image import Resampling
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.5.3"
+__version__ = "0.5.4"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -27,6 +27,8 @@ CONFIG_FILEPATH = os.path.join(CONFIG_DIRPATH, "config.properties")
 
 PLUGINS_DIRPATH = os.path.join(CONFIG_DIRPATH, "plugins")
 PLUGINS_CONFIG_PATH = os.path.join(CONFIG_DIRPATH, "plugins.json")
+
+CACHE_DIRPATH = os.path.join(CONFIG_DIRPATH, "cache")
 
 GLOB_PLUGINS_INFO_SEARCH = os.path.join(PLUGINS_DIRPATH, "*", "info.json")
 GLOB_PLUGINS_INIT_SEARCH = os.path.join(PLUGINS_DIRPATH, "*", "__init__.py")
