@@ -4,7 +4,8 @@ try:
     from .WAV import WAVECodec
     from .MIDI import MIDICodec
     from .FLAC import FLACCodec
+    from .URLS import URLSoundCodec
 
-    codecs = [ MP3Codec, OGGCodec, WAVECodec, MIDICodec, FLACCodec ]
+    codecs = [ MP3Codec, OGGCodec, WAVECodec, MIDICodec, FLACCodec, URLSoundCodec ]
 except:
     codecs = []

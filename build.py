@@ -42,11 +42,13 @@ DATA = {
     "seaplayer/codecs": "seaplayer/codecs/",
     "seaplayer/codecs/__init__.py": "seaplayer/codecs/",
     "seaplayer/codecs/Any.py": "seaplayer/codecs/",
+    "seaplayer/codecs/AnySound.py": "seaplayer/codecs/",
     "seaplayer/codecs/MIDI.py": "seaplayer/codecs/",
     "seaplayer/codecs/MP3.py": "seaplayer/codecs/",
     "seaplayer/codecs/OGG.py": "seaplayer/codecs/",
     "seaplayer/codecs/WAV.py": "seaplayer/codecs/",
     "seaplayer/codecs/FLAC.py": "seaplayer/codecs/",
+    "seaplayer/codecs/URLS.py": "seaplayer/codecs/",
     # * 1.4) Screens
     "seaplayer/screens": "seaplayer/screens/",
     "seaplayer/screens/__init__.py": "seaplayer/screens/",

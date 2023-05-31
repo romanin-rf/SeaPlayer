@@ -2,7 +2,7 @@ import os
 import hashlib
 import aiofiles
 # > Sound Works
-from playsoundsimple import Sound
+from .AnySound import AnySound
 # > Typing
 from typing import Optional
 # > Local Imports
@@ -15,7 +15,7 @@ class AnyCodec(CodecBase):
     # ! Initialized
     def __init__(self, path: str, sound_device_id: Optional[int]=None, **kwargs) -> None:
         self.name = os.path.abspath(path)
-        self._sound = Sound(self.name, device_id=sound_device_id)
+        self._sound = AnySound(self.name, device_id=sound_device_id)
     
     def __sha1__(self, buffer_size: int) -> str:
         sha1 = hashlib.sha1()
