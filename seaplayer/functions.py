@@ -5,7 +5,7 @@ from io import BytesIO
 # > Image Works
 from PIL import Image
 # > Typing
-from typing import Literal, Tuple, Optional, Iterable, TypeVar
+from typing import Literal, Tuple, Optional, Iterable, TypeVar, AsyncGenerator, Any
 # > Local Imports
 from .codeсbase import CodecBase
 
@@ -13,7 +13,7 @@ from .codeсbase import CodecBase
 T = TypeVar("T")
 
 # ! Async Functions
-async def aiter(it: Iterable[T]):
+async def aiter(it: Iterable[T]) -> AsyncGenerator[T, Any]:
     for i in it:
         await asyncio.sleep(0)
         yield i

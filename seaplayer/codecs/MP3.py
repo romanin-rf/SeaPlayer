@@ -2,7 +2,7 @@ import aiofiles
 # > Local Imports
 from .Any import AnyCodec
 
-
+# ! Main Class
 class MP3Codec(AnyCodec):
     codec_name: str = "MP3"
     

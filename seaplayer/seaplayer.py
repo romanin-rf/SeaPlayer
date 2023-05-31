@@ -283,7 +283,7 @@ class SeaPlayer(App):
             await self.submit_plus_sound(value)
         self.music_list_add_input = InputField(
             submit=_spm,
-            placeholder="Filepath / Search Mask",
+            placeholder="Filepath / Search Mask / URL",
             classes="music-list-screen-add-input"
         )
         
@@ -405,8 +405,8 @@ class SeaPlayer(App):
                 except FileNotFoundError:
                     self.error(f"The file does not exist or is a directory: {repr(path)}")
                     break
-                except Exception as e:
-                    self.exception(e)
+                except OSError: pass
+                except Exception as e: self.exception(e)
             if sound is None:
                 self.error(f"The sound could not be loaded: {repr(path)}")
         await loading_nofy.remove()
@@ -440,8 +440,12 @@ class SeaPlayer(App):
     # ! Input Submits
     async def submit_plus_sound(self, value: str) -> None:
         if value.replace(" ", "") != "":
-            try: self.last_paths_globalized = glob.glob(value, recursive=self.config.recursive_search)
-            except: self.last_paths_globalized = [ value ]
+            try:
+                self.last_paths_globalized = glob.glob(value, recursive=self.config.recursive_search)
+            except:
+                self.last_paths_globalized = [ value ]
+            if len(self.last_paths_globalized) == 0:
+                self.last_paths_globalized = [ value ]
             self.info(f"Submit 'plus_sound' values: {repr(self.last_paths_globalized)}")
             if len(self.last_paths_globalized) > 0:
                 self.run_worker(
