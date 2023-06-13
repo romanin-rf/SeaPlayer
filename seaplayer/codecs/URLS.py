@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import aiofiles
 import validators
@@ -73,5 +74,5 @@ class URLSoundCodec(AnyCodec):
     @staticmethod
     async def __aio_init__(url: str, sound_device_id: Optional[int]=None, **kwargs):
         self = URLSoundCodec(url, aio_init=True)
-        self._sound = await AnySound.aio_from_url(url, device_id=sound_device_id)
+        self._sound = await asyncio.to_thread(AnySound.from_url, url, device_id=sound_device_id)
         return self

@@ -1,11 +1,9 @@
-
-
 # > Typing
 from typing import Optional, Dict
 # > Local Import's
 from ..codeсbase import CodecBase
 
-
+# ! Main Class
 class MusicList:
     @staticmethod
     def get_file_sha1(sound: CodecBase, buffer_size: int=65536) -> str: return sound.__sha1__(buffer_size)
