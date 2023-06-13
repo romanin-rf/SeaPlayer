@@ -1,4 +1,4 @@
-import time
+import asyncio
 from textual.widgets import Label
 # > Image Works
 from PIL import Image
@@ -7,7 +7,7 @@ from ripix import AsyncPixels, Pixels
 # > Typing
 from typing import Optional, Union, Tuple
 
-
+# ! Main Class
 class StandartImageLabel(Label):
     def __init__(
         self,
@@ -27,7 +27,7 @@ class StandartImageLabel(Label):
         image, resample = (self.default_image, Resampling.NEAREST) if (self.image is None) else (self.image, self.image_resample)
         new_size = (self.size[0], self.size[1])
         if self.last_image_size != new_size:
-            self.image_text = Pixels.from_image(image, new_size, resample)
+            self.image_text = await asyncio.to_thread(Pixels.from_image, image, new_size, resample)
             self.last_image_size = new_size
         self.update(self.image_text)
     
@@ -35,7 +35,7 @@ class StandartImageLabel(Label):
         self.image = image
         
         image, resample = (self.default_image, Resampling.NEAREST) if (self.image is None) else (self.image, self.image_resample)
-        self.image_text = Pixels.from_image(image, (self.size[0], self.size[1]), resample)
+        self.image_text = await asyncio.to_thread(Pixels.from_image, image, (self.size[0], self.size[1]), resample)
         self.update(self.image_text)
 
 class AsyncImageLabel(Label):
