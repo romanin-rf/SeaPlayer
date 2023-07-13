@@ -1921,4 +1921,4 @@ build = ["poetry", "pyinstaller"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.12"
-content-hash = "6ef0874e78d77fcf047730752ff25febeed5a8a03b33ad08dc1b360e4a0aa79a"
+content-hash = "8b0433698b23833d8e28eefe67ebf3af4af30c5d8348f5accf2295a93c17b343"
