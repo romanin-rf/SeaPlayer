@@ -93,3 +93,9 @@ CallNofy {
     width: auto;
     height: auto;
 }
+
+/* ! FullLabel */
+.full-label {
+    height: 1fr;
+    width: 1fr;
+}
