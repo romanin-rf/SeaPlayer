@@ -2,11 +2,12 @@ from textual.widgets import Label, ListItem, ListView
 # > Typing
 from typing import Optional
 # > Local Import's
+from .FullLabel import FullLabel
 from ..types import MusicList
 from ..codeсbase import CodecBase
 from ..functions import get_sound_basename, aiter
 
-
+# ! Children Classes
 class MusicListViewItem(ListItem):
     def __init__(
         self,
@@ -24,6 +25,7 @@ class MusicListViewItem(ListItem):
         self.compose_add_child(self.title_label)
         self.compose_add_child(self.first_subtitle_label)
         self.compose_add_child(self.second_subtitle_label)
+        self.compose_add_child(FullLabel())
     
     async def update_labels(
         self,
@@ -35,6 +37,7 @@ class MusicListViewItem(ListItem):
         if first_subtitle is not None: self.first_subtitle_label.update(title)
         if second_subtitle is not None: self.second_subtitle_label.update(title)
 
+# ! Main Class
 class MusicListView(ListView):
     def __init__(self, **kwargs) -> None:
         kwargs["classes"] = "music-list-view"
