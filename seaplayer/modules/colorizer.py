@@ -41,7 +41,8 @@ def replaces(string: str, replacement: Dict[str, str]) -> str:
 
 # ! Functions
 def pullyper(tp: type) -> str:
-    if tp is None: return "None"
+    if tp is None:
+        return "None"
     elif is_optional_type(tp):
         return f"{pullyper(get_args(tp)[0])} | None"
     elif is_union_type(tp):
@@ -49,14 +50,18 @@ def pullyper(tp: type) -> str:
     elif is_literal_type(tp):
         return f"Literal[{', '.join(repr(arg) for arg in get_args(tp))}]"
     elif is_tuple_type(tp):
-        if len(args:=get_args(tp)) > 0: return f"Tuple[{', '.join(pullyper(arg) for arg in args)}]"
+        if len(args:=get_args(tp)) > 0:
+            return f"Tuple[{', '.join(pullyper(arg) for arg in args)}]"
         return "Tuple"
     elif is_list_type(tp):
-        if len(args:=get_args(tp)) > 0: return f"List[{pullyper(args[0])}]"
+        if len(args:=get_args(tp)) > 0:
+            return f"List[{pullyper(args[0])}]"
         return "List"
     elif is_dict_type(tp):
-        if len(args:=get_args(tp)) > 0: return f"Dict[{', '.join(pullyper(arg) for arg in args)}]"
+        if len(args:=get_args(tp)) > 0:
+            return f"Dict[{', '.join(pullyper(arg) for arg in args)}]"
         return "Dict"
-    return tp.__name__
+    else:
+        return tp.__name__
 
 def richefication(tp: type) -> str: return replaces(pullyper(tp), REPLACE_TYPES)
