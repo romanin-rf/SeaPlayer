@@ -1,5 +1,4 @@
-from textual.widgets import TextLog
-from rich.traceback import Traceback
+from textual.widgets import RichLog
 # > Typing
 from typing import TypeVar
 # > Local Import's
@@ -9,7 +8,7 @@ from ..functions import rich_exception
 RETURN = TypeVar('RETURN')
 
 # ! Main Class
-class LogMenu(TextLog):
+class LogMenu(RichLog):
     def __init__(self, chap_max_width: int=8, enable_logging: bool=True, **kwargs):
         self.enable_logging = enable_logging
         self.chap_max_width = chap_max_width
