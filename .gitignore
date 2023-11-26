@@ -2,7 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-__*.py
+
+# My Python Files
+__clean.py
 
 # C extensions
 *.so
