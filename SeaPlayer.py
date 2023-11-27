@@ -6,7 +6,7 @@ console = Console()
 if __name__ == "__main__":
     try:
         from seaplayer.seaplayer import SeaPlayer
-
+        
         app = SeaPlayer()
         app.run()
         app.started = False

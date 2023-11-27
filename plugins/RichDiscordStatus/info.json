@@ -1,7 +1,7 @@
 {
-    "name": "Discord Rich Status",
+    "name": "Rich Discord Status",
     "name_id": "seaplayer.plugins.discord.status",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "author": "Romanin",
     "description": "Now what you are listening to will be visible to everyone in Discord.",
     "url": "https://github.com/romanin-rf/SeaPlayer"

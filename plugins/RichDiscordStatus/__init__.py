@@ -26,14 +26,18 @@ class RichDiscordStatus(PluginBase):
             else:
                 data["details"] = os.path.basename(self.app.currect_sound.name)
             if self.app.currect_sound.paused:
-                data["state"] = "Paused"
+                data["small_image"] = "pause"
+                data["small_text"] = "Paused"
             elif self.app.currect_sound.playing:
-                data["state"] = "Playing"
+                data["small_image"] = "play"
+                data["small_text"] = "Playning"
             else:
-                data["state"] = "Stopped"
+                data["small_image"] = "stop"
+                data["small_text"] = "Stoped"
         else:
-            data["details"] = "Sound not selected"
-            data["state"] = "Waiting"
+            data["details"] = "<unknown>"
+            data["small_image"] = "question"
+            data["small_text"] = "Sount not selected"
         return data
     
     async def __status__(self) -> None:
@@ -52,10 +56,11 @@ class RichDiscordStatus(PluginBase):
     
     async def on_compose(self):
         self.running = True
-        self.app.run_worker(self.__status__, "Discord Rich Status", "seaplayer.plugins.discord.status", thread=True)
+        self.thread = self.app.run_worker(self.__status__, "Rich Discord Status", "seaplayer.plugins.discord.status", thread=True)
     
     async def on_quit(self) -> None:
         self.running = False
+        await self.thread.wait()
 
 # ! Registration Plugin Class
 plugin_main = RichDiscordStatus

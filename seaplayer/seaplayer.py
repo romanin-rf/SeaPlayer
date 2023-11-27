@@ -246,7 +246,7 @@ class SeaPlayer(App):
     def compose(self) -> ComposeResult:
         # * Other
         self.info("---")
-        self.info(f"{__title__} v{__version__} from {__author__} ({__email__})")
+        self.info(f"{__title__} [#00ffee]v{__version__}[/#00ffee] from {__author__} ({__email__})")
         self.info(f"Source          : {__url__}")
         self.info(f"Codecs          : {repr(self.CODECS)}")
         self.info(f"Config Path     : {repr(self.config.filepath)}")
