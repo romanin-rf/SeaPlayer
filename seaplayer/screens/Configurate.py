@@ -78,12 +78,14 @@ class Configurate(Screen):
     # ! Update Placeholder from InputField
     def _upfif(self, attr_name: str) -> str:
         return "Currect: " + str(eval(f"self.{attr_name}"))
+    
     def gupfif(self, attr_name: str):
         return lambda: self._upfif(attr_name)
     
     # ! Update App Config
     async def _uac(self, attr_name: str, input: InputField, value: str) -> None:
         exec(f"self.{attr_name} = value")
+        self.app.update_bindings()
         await self.aio_nofy("Saved!")
     
     if INIT_SOUNDDEVICE:
@@ -94,7 +96,8 @@ class Configurate(Screen):
             return n_ucsdi
     
     def guac(self, attr_name: str):
-        async def an_uac(input: InputField, value: str) -> None: await self._uac(attr_name, input, value)
+        async def an_uac(input: InputField, value: str) -> None:
+            await self._uac(attr_name, input, value)
         return an_uac
 
     # ! Configurator Generators
@@ -114,7 +117,7 @@ class Configurate(Screen):
                 submit=self.guac(attr_name),
                 update_placeholder=self.gupfif(attr_name)
             ),
-            title="[red]{"+group+"}[/red]: "+title+f" ({richefication(type_alias)})",
+            title="[red]{"+group+"}[/red]: "+f"{title} ({richefication(type_alias)})",
             desc=desc+(" [red](restart required)[/red]" if restart_required else ""),
             height=5
         )
@@ -131,7 +134,7 @@ class Configurate(Screen):
                 submit=self.guac(attr_name),
                 update_placeholder=self.gupfif(attr_name)
             ),
-            title="[red]{Key}[/red]: "+title+f" ({richefication(str)})",
+            title="[red]{Key}[/red]: "+f"{title} ({richefication(str)})",
             desc=desc+(" [red](restart required)[/red]" if restart_required else ""),
             height=5
         )
@@ -179,19 +182,19 @@ class Configurate(Screen):
                 "app.config.volume_change_percent",
                 "Playback", "Volume Change Percent",
                 "Percentage by which the volume changes when the special keys are pressed.",
-                float, float
+                float, float, False
             )
             yield self.create_configurator_type(
                 "app.config.rewind_count_seconds",
                 "Playback", "Rewind Count Seconds",
                 "The value of the seconds by which the current sound will be rewound.",
-                int, int
+                int, int, False
             )
             yield self.create_configurator_type(
                 "app.config.max_volume_percent",
                 "Playback", "Max Volume Percent",
                 "Maximum volume value.",
-                float, float
+                float, float, False
             )
             yield self.create_configurator_type(
                 "app.config.recursive_search",
@@ -203,11 +206,11 @@ class Configurate(Screen):
                 "app.config.log_menu_enable",
                 "Debag", "Log Menu Enable",
                 "Menu with logs for the current session.",
-                conv.boolean, bool
+                conv.boolean, bool, False
             )
-            yield self.create_configurator_keys("app.config.key_quit", "Quit", "Сlose the app.")
-            yield self.create_configurator_keys("app.config.key_rewind_forward", "Rewind Forward", "Forwards rewinding.")
-            yield self.create_configurator_keys("app.config.key_rewind_back", "Rewind Back", "Backwards rewinding.")
-            yield self.create_configurator_keys("app.config.key_volume_up", "Volume +", "Turn up the volume.")
-            yield self.create_configurator_keys("app.config.key_volume_down", "Volume -", "Turn down the volume.")
+            yield self.create_configurator_keys("app.config.key_quit", "Quit", "Сlose the app.", False)
+            yield self.create_configurator_keys("app.config.key_rewind_forward", "Rewind Forward", "Forwards rewinding.", False)
+            yield self.create_configurator_keys("app.config.key_rewind_back", "Rewind Back", "Backwards rewinding.", False)
+            yield self.create_configurator_keys("app.config.key_volume_up", "Volume +", "Turn up the volume.", False)
+            yield self.create_configurator_keys("app.config.key_volume_down", "Volume -", "Turn down the volume.", False)
         yield Footer()

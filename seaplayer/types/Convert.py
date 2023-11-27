@@ -14,13 +14,17 @@ class Converter:
     
     @staticmethod
     def conv(tp: type, value: str) -> Tuple[bool, Optional[Any]]:
-        try: return True, tp(value)
-        except: return False, None
+        try:
+            return True, tp(value)
+        except:
+            return False, None
     
     @staticmethod
     async def aio_conv(tp: type, value: str) -> Tuple[bool, Optional[Any]]:
-        try: return True, tp(value)
-        except: return False, None
+        try:
+            return True, tp(value)
+        except:
+            return False, None
     
     def gen_conv(self, tp: type):
         def conv_wrapper(value: str) -> Tuple[bool, Optional[Any]]:
@@ -36,22 +40,27 @@ class Converter:
     @staticmethod
     def path(value: str) -> str:
         """Checking the existence of a `path`."""
-        if not Path(value).exists(): raise PathNotExistsError(value)
+        if not Path(value).exists():
+            raise PathNotExistsError(value)
         return value
     
     @staticmethod
     def filepath(value: str) -> str:
         """Check if there is a file on the path."""
         path = Path(value)
-        if not(path.exists() and path.is_file()): raise PathNotExistsError(value)
+        if not(path.exists() and path.is_file()):
+            raise PathNotExistsError(value)
         return value
     
     @staticmethod
     def boolean(value: str) -> bool:
         """Converting to `bool`."""
-        if value.lower() == "true": return True
-        elif value.lower() == "false": return False
-        else: raise NotBooleanError(value)
+        if value.lower() == "true":
+            return True
+        elif value.lower() == "false":
+            return False
+        else:
+            raise NotBooleanError(value)
     
     @staticmethod
     def optional(tp: type):
@@ -65,14 +74,17 @@ class Converter:
     def union(*tps: type):
         def union_wrapper(value: str):
             for tp in tps:
-                try: return tp(value)
-                except: pass
+                try:
+                    return tp(value)
+                except:
+                    pass
             raise TypeError(f"Could not convert to any of the listed types: {tps}")
         return union_wrapper
     
     @staticmethod
     def literal_string(*values: str):
         def literal_string_wrapper(value: str):
-            if value in values: return value
+            if value in values:
+                return value
             raise RuntimeError(f"The value ({repr(value)}) is not in the list of values.")
         return literal_string_wrapper

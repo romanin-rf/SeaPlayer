@@ -36,6 +36,8 @@ class Cacher:
     def read_var(self, name: str, default: D, *, group: str="main") -> D: return self.read(os.path.join(self.vars_dirpath, f"{name}-{group}.pycache"), default)
     
     def var(self, name: str, default: D, *, group: str="main") -> D:
-        def setter(s, value: D) -> None: self.write_var(value, name, group=group)
-        def getter(s) -> D: return self.read_var(name, default, group=group)
+        def setter(s, value: D) -> None:
+            self.write_var(value, name, group=group)
+        def getter(s) -> D:
+            return self.read_var(name, default, group=group)
         return property(getter, setter)
