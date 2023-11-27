@@ -64,23 +64,26 @@ class PluginLoaderConfigManager:
     @staticmethod
     def load(path: str, default_data: Dict[str, Any]) -> PluginLoaderConfigModel:
         try:
-            return PluginLoaderConfigModel.parse_file(path)
+            with open(path, 'rb') as file:
+                data = file.read()
+            return PluginLoaderConfigModel.model_validate_json(data)
         except:
             return default_data
     
-    def refresh(self) -> None: self.dump(self.filepath, self.config)
+    def refresh(self) -> None:
+        self.dump(self.filepath, self.config)
     
     def __init__(self, path: str) -> None:
         self.filepath = Path(path)
         
-        default_data  = PluginLoaderConfigModel().dict()
+        default_data = PluginLoaderConfigModel().model_dump()
         if self.filepath.exists():
             self.config = self.load(self.filepath, default_data)
             config_temp = default_data.copy()
             config_temp.update(self.config)
-            self.config = PluginLoaderConfigModel.parse_obj(config_temp)
+            self.config = PluginLoaderConfigModel.model_validate(config_temp)
         else:
-            self.config = PluginLoaderConfigModel.parse_obj(default_data)
+            self.config = PluginLoaderConfigModel.model_validate(default_data)
         self.refresh()
     
     def exists_plugin(self, info: PluginInfo) -> bool:
@@ -118,7 +121,7 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.1.4"
+    __version__: str = "0.1.5"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
 
@@ -170,28 +173,28 @@ class PluginLoader:
                     yield info_path, init_path
     
     @staticmethod
-    def load_plugin_info(path: str) -> PluginInfo: return PluginInfo.parse_file(path)
+    def load_plugin_info(path: str) -> PluginInfo:
+        with open(path, 'rb') as file:
+            data = file.read()
+        return PluginInfo.model_validate_json(data)
     
     def on_init(self) -> None:
-        self.app.info(f"{self.__title__} v{self.__version__} from {self.__author__} ({self.__email__})")
+        self.app.info(f"{self.__title__} [#00ffee]v{self.__version__}[/#00ffee] from {self.__author__} ({self.__email__})")
         plugins_paths = list(self.search_plugins_paths())
         self.app.info(f"Found plugins        : {repr([os.path.basename(os.path.dirname(i[0])) for i in plugins_paths])}")
         for info_path, init_path in plugins_paths:
             info = None
             try:
                 info = self.load_plugin_info(info_path)
-
                 if not self.config.exists_plugin(info):
                     self.config.add_plugin(info)
-                
                 if self.config.is_enable_plugin(info):
                     plugin_module = load_module(init_path)
                     plugin = plugin_from_module(self.app, self, info, plugin_module)
-
                     try:
                         plugin.on_init()
                     except:
-                        self.app.info(f"Failed to do [green]`on_init`[/green] in: {plugin}")
+                        self.app.error(f"Failed to do [green]`on_init`[/green] in: {plugin}")
                     
                     self.on_plugins.append(plugin)
                 else:
@@ -199,9 +202,9 @@ class PluginLoader:
             except Exception as e:
                 self.error_plugins.append( (info_path, init_path) )
                 if info is not None:
-                    self.app.info(f"Failed to load plugin: {repr(info)}")
+                    self.app.error(f"Failed to load plugin: {repr(info)}")
                 else:
-                    self.app.info(f"Failed to load plugin: {repr(os.path.basename(os.path.dirname(info_path)))}")
+                    self.app.error(f"Failed to load plugin: {repr(os.path.basename(os.path.dirname(info_path)))}")
                 raise e
         self.app.info(f"Plugins loaded ([green]ON [/green]) : {repr(self.on_plugins)}")
         self.app.info(f"Plugins loaded ([red]OFF[/red]) : {repr(self.off_plugins)}")
@@ -211,18 +214,18 @@ class PluginLoader:
             try:
                 i.on_run()
             except:
-                self.app.info(f"Failed to do [green]`on_run`[/green] in: {i}")
+                self.app.error(f"Failed to do [green]`on_run`[/green] in: {i}")
 
     async def on_compose(self) -> None:
         async for i in aiter(self.on_plugins):
             try:
                 await i.on_compose()
             except:
-                self.app.info(f"Failed to do [green]`await on_compose`[/green] in: {i}")
+                self.app.error(f"Failed to do [green]`await on_compose`[/green] in: {i}")
     
     async def on_quit(self) -> None:
         async for i in aiter(self.on_plugins):
             try:
                 await i.on_quit()
             except:
-                self.app.info(f"Failed to do [green]`await on_quit`[/green] in: {i}")
+                self.app.error(f"Failed to do [green]`await on_quit`[/green] in: {i}")
