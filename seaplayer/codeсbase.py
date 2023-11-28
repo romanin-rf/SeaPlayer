@@ -50,9 +50,12 @@ class CodecBase:
     
     # ! Testing Functions
     @staticmethod
-    def is_this_codec(path: str) -> bool: return False
+    def is_this_codec(path: str) -> bool:
+        return False
+    
     @staticmethod
-    async def aio_is_this_codec(path: str) -> bool: return False
+    async def aio_is_this_codec(path: str) -> bool:
+        return False
     
     # ! Playback Functions
     def play(self) -> None: ...

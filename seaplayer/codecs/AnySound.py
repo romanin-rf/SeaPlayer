@@ -7,23 +7,27 @@ from tempfile import mkstemp
 from urlopen2 import URLFile
 # > Sound Works
 from playsoundsimple import Sound
-from playsoundsimple.units import SOUND_FONTS_PATH, FLUID_SYNTH_PATH
+from playsoundsimple.sound import FPType, getfp
+from playsoundsimple.units import DEFAULT_SOUND_FONTS_PATH
 from playsoundsimple.exceptions import FileTypeError
-from playsoundsimple.player import SoundFP, get_sound_filepath
 # > Typing
 from typing import Optional
+
+# ! Vars
+FLUID_SYNTH_PATH = 'fluidsynth'
 
 # ! Main Class
 class AnySound(Sound):
     @staticmethod
     async def aio_from_midi(
-        fp: SoundFP,
+        fp: FPType,
         sound_fonts_path: Optional[str]=None,
         **kwargs
     ):
-        path, is_temp = get_sound_filepath(fp, filetype=".midi")
-        sound_fonts_path = sound_fonts_path or SOUND_FONTS_PATH
-        if path is None: raise FileTypeError(fp)
+        path, is_temp = getfp(fp, filetype=".midi")
+        sound_fonts_path = sound_fonts_path or DEFAULT_SOUND_FONTS_PATH
+        if path is None:
+            raise FileTypeError(fp)
         npath = mkstemp(suffix=".wav")[1]
         
         process = await asyncio.create_subprocess_exec(
@@ -33,20 +37,23 @@ class AnySound(Sound):
         await process.wait()
         
         if is_temp:
-            try: os.remove(path)
-            except: pass
+            try:
+                os.remove(path)
+            except:
+                pass
         
         return AnySound(npath, **{"is_temp": True, **kwargs})
     
     @staticmethod
     def from_midi(
-        fp: SoundFP,
+        fp: FPType,
         sound_fonts_path: Optional[str]=None,
         **kwargs
     ):
-        path, is_temp = get_sound_filepath(fp, filetype=".midi")
-        sound_fonts_path = sound_fonts_path or SOUND_FONTS_PATH
-        if path is None: raise FileTypeError(fp)
+        path, is_temp = getfp(fp, filetype=".midi")
+        sound_fonts_path = sound_fonts_path or DEFAULT_SOUND_FONTS_PATH
+        if path is None:
+            raise FileTypeError(fp)
         npath = mkstemp(suffix=".wav")[1]
         
         subprocess.call(
@@ -55,8 +62,10 @@ class AnySound(Sound):
         )
         
         if is_temp:
-            try: os.remove(path)
-            except: pass
+            try:
+                os.remove(path)
+            except:
+                pass
         
         return AnySound(npath, **{"is_temp": True, **kwargs})
     
