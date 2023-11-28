@@ -7,8 +7,6 @@
 SeaPlayer is a player that works in the terminal. Works with `MP3`, `OGG`, `WAV`, `MIDI` and `FLAC` files.
 
 ## Install
-
-
 1. You can use [Release](https://github.com/romanin-rf/sea-player/releases)
 2. ***Download clone repository*** install the dependencies from `requirements.txt` and run via [Python](https://www.python.org).
 3.  ```
@@ -16,12 +14,30 @@ SeaPlayer is a player that works in the terminal. Works with `MP3`, `OGG`, `WAV`
     ```
 
 ### For MIDI playback
-***If you have Windows*** you can skip this part as ***Windows*** has a default decoder for `MIDI` and ***does not need to be installed***.
-
-
-***For Linux or MacOS users:***
-
-You need to [install the FluidSynth](https://github.com/FluidSynth/fluidsynth/wiki/Download) package in order to playback `MIDI`.
+In order to play MIDI files you need to install FluidSynth:
+- **Windows**: https://github.com/FluidSynth/fluidsynth/releases
+- **Linux**:
+    - **Ubuntu/Debian**:
+        ```shell
+        sudo apt-get install fluidsynth
+        ```
+    - **Arch Linux**:
+        ```shell
+        sudo pacman -S fluidsynth
+        ```
+- **MacOS**
+    - With [Fink](http://www.finkproject.org/):
+        ```shell
+        fink install fluidsynth
+        ```
+    - With [Homebrew](https://brew.sh/):
+        ```shell
+        brew install fluidsynth
+        ```
+    - With [MacPorts](http://www.macports.org/):
+        ```shell
+        sudo port install fluidsynth
+        ```
 
 ## Using
 ```shell
