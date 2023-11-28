@@ -10,13 +10,15 @@ from importlib.util import spec_from_file_location, module_from_spec
 from types import ModuleType
 from typing import Optional, Dict, Union, Any, List, Tuple, Type
 # > Local Import's
+from .pipw import pip
 from .pluginbase import PluginInfo, PluginBase
 from ..functions import aiter
 from ..units import (
     PLUGINS_DIRPATH,
     PLUGINS_CONFIG_PATH,
     GLOB_PLUGINS_INFO_SEARCH,
-    GLOB_PLUGINS_INIT_SEARCH
+    GLOB_PLUGINS_INIT_SEARCH,
+    GLOB_PLUGINS_DEPS_SEARCH
 )
 
 # ! Types
@@ -59,7 +61,7 @@ class PluginLoaderConfigManager:
     @staticmethod
     def dump(path: str, data: PluginLoaderConfigModel) -> None:
         with open(path, 'w') as file:
-            file.write(data.json())
+            file.write(data.model_dump_json())
     
     @staticmethod
     def load(path: str, default_data: Dict[str, Any]) -> PluginLoaderConfigModel:
@@ -121,7 +123,7 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.1.5"
+    __version__: str = "0.2.0"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
 
@@ -153,24 +155,48 @@ class PluginLoader:
     
     @staticmethod
     async def aio_search_plugins_paths():
-        info_search, init_search = glob.glob(GLOB_PLUGINS_INFO_SEARCH), glob.glob(GLOB_PLUGINS_INIT_SEARCH)
-        async for info_path in aiter(info_search):
-            info_dirpath = os.path.dirname(info_path)
-            async for init_path in aiter(init_search):
-                init_dirpath = os.path.dirname(init_path)
-                if init_dirpath == info_dirpath:
-                    yield info_path, init_path
-                    await asyncio.sleep(0)
+        init_search, info_search, deps_search =  \
+            glob.glob(GLOB_PLUGINS_INIT_SEARCH), \
+            glob.glob(GLOB_PLUGINS_INFO_SEARCH), \
+            glob.glob(GLOB_PLUGINS_DEPS_SEARCH)
+        async for init_path in aiter(init_search):
+            _init_dirpath = os.path.dirname(init_path)
+            info_path, deps_path = None, None
+            async for _info_path in aiter(info_search):
+                _info_dirpath = os.path.dirname(_info_path)
+                if _info_dirpath == _init_dirpath:
+                    info_path = _info_path
+                    break
+            async for _deps_path in aiter(deps_search):
+                _deps_dirpath = os.path.dirname(_deps_path)
+                if _deps_dirpath == _init_dirpath:
+                    deps_path = _deps_path
+                    break
+            if info_path is not None:
+                yield init_path, info_path, deps_path
+                await asyncio.sleep(0)
     
     @staticmethod
     def search_plugins_paths():
-        info_search, init_search = glob.glob(GLOB_PLUGINS_INFO_SEARCH), glob.glob(GLOB_PLUGINS_INIT_SEARCH)
-        for info_path in info_search:
-            info_dirpath = os.path.dirname(info_path)
-            for init_path in init_search:
-                init_dirpath = os.path.dirname(init_path)
-                if init_dirpath == info_dirpath:
-                    yield info_path, init_path
+        init_search, info_search, deps_search =  \
+            glob.glob(GLOB_PLUGINS_INIT_SEARCH), \
+            glob.glob(GLOB_PLUGINS_INFO_SEARCH), \
+            glob.glob(GLOB_PLUGINS_DEPS_SEARCH)
+        for init_path in init_search:
+            _init_dirpath = os.path.dirname(init_path)
+            info_path, deps_path = None, None
+            for _info_path in info_search:
+                _info_dirpath = os.path.dirname(_info_path)
+                if _info_dirpath == _init_dirpath:
+                    info_path = _info_path
+                    break
+            for _deps_path in deps_search:
+                _deps_dirpath = os.path.dirname(_deps_path)
+                if _deps_dirpath == _init_dirpath:
+                    deps_path = _deps_path
+                    break
+            if info_path is not None:
+                yield init_path, info_path, deps_path
     
     @staticmethod
     def load_plugin_info(path: str) -> PluginInfo:
@@ -182,22 +208,31 @@ class PluginLoader:
         self.app.info(f"{self.__title__} [#00ffee]v{self.__version__}[/#00ffee] from {self.__author__} ({self.__email__})")
         plugins_paths = list(self.search_plugins_paths())
         self.app.info(f"Found plugins        : {repr([os.path.basename(os.path.dirname(i[0])) for i in plugins_paths])}")
-        for info_path, init_path in plugins_paths:
+        self.app.info(f"Initialization plugins...")
+        for init_path, info_path, deps_path in plugins_paths:
             info = None
             try:
                 info = self.load_plugin_info(info_path)
                 if not self.config.exists_plugin(info):
                     self.config.add_plugin(info)
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > New plugin added to config!")
                 if self.config.is_enable_plugin(info):
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Plugin is [green]enabled[/green]!")
+                    if deps_path is not None:
+                        self.app.info(f"{info.name} ({repr(info.name_id)}) > Installing plugin dependencies...")
+                        pip.install("-U", "-r", deps_path)
+                        self.app.info(f"{info.name} ({repr(info.name_id)}) > Installed!")
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Importing in SeaPlayer...")
                     plugin_module = load_module(init_path)
                     plugin = plugin_from_module(self.app, self, info, plugin_module)
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Imported!")
                     try:
                         plugin.on_init()
                     except:
-                        self.app.error(f"Failed to do [green]`on_init`[/green] in: {plugin}")
-                    
+                        self.app.error(f"Failed to do [green]`on_init`[/green] in: {plugin.info}")
                     self.on_plugins.append(plugin)
                 else:
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Plugin is [red]disabled[/red]!")
                     self.off_plugins.append(info)
             except Exception as e:
                 self.error_plugins.append( (info_path, init_path) )

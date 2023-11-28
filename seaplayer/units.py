@@ -6,7 +6,7 @@ from PIL.Image import Resampling
 
 # ! Metadata
 __title__ = "SeaPlayer"
-__version__ = "0.5.8"
+__version__ = "0.7.0"
 __author__ = "Romanin"
 __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
@@ -32,6 +32,7 @@ CACHE_DIRPATH = os.path.join(CONFIG_DIRPATH, "cache")
 
 GLOB_PLUGINS_INFO_SEARCH = os.path.join(PLUGINS_DIRPATH, "*", "info.json")
 GLOB_PLUGINS_INIT_SEARCH = os.path.join(PLUGINS_DIRPATH, "*", "__init__.py")
+GLOB_PLUGINS_DEPS_SEARCH = os.path.join(PLUGINS_DIRPATH, "*", "requirements.txt")
 
 # ! Assets Paths
 IMGPATH_IMAGE_NOT_FOUND = os.path.join(ASSETS_DIRPATH, "image-not-found.png")
