@@ -3,7 +3,7 @@ import glob
 import asyncio
 # > Graphics
 from textual import on
-from textual.binding import Binding
+from textual.binding import Binding, _Bindings
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Footer, Static, Label, Button
@@ -53,21 +53,21 @@ from .units import (
 if ENABLE_PLUGIN_SYSTEM:
     from .plug import PluginLoader
 
+# ! Main Functions
+def build_bindings(config: SeaPlayerConfig):
+    yield Binding(config.key_quit, "quit", "Quit")
+    yield Binding("c,с", "push_screen('configurate')", "Configurate")
+    if config.log_menu_enable:
+        yield Binding("l,д", "app.toggle_class('.log-menu', '-hidden')", 'Logs')
+    yield Binding(config.key_rewind_back, "minus_rewind", f"Rewind -{config.rewind_count_seconds} sec")
+    yield Binding(config.key_rewind_forward, "plus_rewind", f"Rewind +{config.rewind_count_seconds} sec")
+    yield Binding(config.key_volume_down, "minus_volume", f"Volume -{round(config.volume_change_percent*100)}%")
+    yield Binding(config.key_volume_up, "plus_volume", f"Volume +{round(config.volume_change_percent*100)}%")
+    yield Binding("ctrl+s", "screenshot", "Screenshot")
+    yield Binding(UNKNOWN_OPEN_KEY, "push_screen('unknown')", "None", show=False)
+
 # ! Main
 class SeaPlayer(App):
-    # ! Pre-Initialization Functions
-    def build_bindings(config: SeaPlayerConfig):
-        yield Binding(config.key_quit, "quit", "Quit")
-        yield Binding("c,с", "push_screen('configurate')", "Configurate")
-        if config.log_menu_enable:
-            yield Binding("l,д", "app.toggle_class('.log-menu', '-hidden')", 'Logs')
-        yield Binding(config.key_rewind_back, "minus_rewind", f"Rewind -{config.rewind_count_seconds} sec")
-        yield Binding(config.key_rewind_forward, "plus_rewind", f"Rewind +{config.rewind_count_seconds} sec")
-        yield Binding(config.key_volume_down, "minus_volume", f"Volume -{round(config.volume_change_percent*100)}%")
-        yield Binding(config.key_volume_up, "plus_volume", f"Volume +{round(config.volume_change_percent*100)}%")
-        yield Binding("ctrl+s", "screenshot", "Screenshot")
-        yield Binding(UNKNOWN_OPEN_KEY, "push_screen('unknown')", "None", show=False)
-    
     # ! Textual Configuration
     TITLE = f"{__title__} v{__version__}"
     CSS_PATH = [
@@ -84,7 +84,6 @@ class SeaPlayer(App):
     # ! SeaPlayer Configuration
     cache = Cacher(CACHE_DIRPATH)
     config = SeaPlayerConfig(CONFIG_FILEPATH)
-    max_volume_percent: float = config.max_volume_percent
     image_type: Optional[Union[Type[AsyncImageLabel], Type[StandartImageLabel]]] = None
     
     # ! Textual Keys Configuration
@@ -125,6 +124,9 @@ class SeaPlayer(App):
         if ENABLE_PLUGIN_SYSTEM:
             self.plugin_loader = PluginLoader(self)
             self.plugin_loader.on_init()
+    
+    def update_bindings(self) -> None:
+        self._bindings = _Bindings(list(build_bindings(self.config)))
     
     # ! Inherited Functions
     async def action_push_screen(self, screen: str) -> None:
@@ -473,7 +475,7 @@ class SeaPlayer(App):
     
     async def action_plus_volume(self) -> None:
         if (sound:=await self.aio_gcs()) is not None:
-            if (vol:=round(sound.get_volume()+self.config.volume_change_percent, 2)) <= self.max_volume_percent:
+            if (vol:=round(sound.get_volume()+self.config.volume_change_percent, 2)) <= self.config.max_volume_percent:
                 self.currect_volume = vol
                 sound.set_volume(vol)
     

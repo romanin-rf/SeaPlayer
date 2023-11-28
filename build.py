@@ -4,9 +4,12 @@ import platform
 from pathlib import Path
 from typing import Dict, List
 
-if platform.system() == "Windows": ds = ";"
-elif platform.system() == "Linux": ds = ":"
-else: raise RuntimeError("Your operating system is not supported.")
+if platform.system() == "Windows":
+    ds = ";"
+elif platform.system() == "Linux":
+    ds = ":"
+else:
+    raise RuntimeError("Your operating system is not supported.")
 
 LOCALDIR = os.getcwd()
 TRASH_FILES = [ "build", "SeaPlayer.spec" ]
@@ -68,8 +71,11 @@ DATA = {
     "seaplayer/assets/image-not-found.png": "seaplayer/assets/"
 }
 
-def localize(path: str) -> str: return os.path.join(LOCALDIR, path.replace('/', os.sep).replace('\\', os.sep))
-def add_datas(data: Dict[str, str]) -> List[str]: return [f"--add-data \"{localize(path)}{ds}{data[path]}\"" for path in data]
+def localize(path: str) -> str:
+    return os.path.join(LOCALDIR, path.replace('/', os.sep).replace('\\', os.sep))
+
+def add_datas(data: Dict[str, str]) -> List[str]:
+    return [f"--add-data \"{localize(path)}{ds}{data[path]}\"" for path in data]
 
 COMMAND_LINE = [
     "pyinstaller", "--noconfirm", "--console", "--clean", "--onefile",
