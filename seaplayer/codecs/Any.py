@@ -68,5 +68,5 @@ class AnyCodec(CodecBase):
     def unpause(self) -> None: self._sound.unpause()
     def get_volume(self) -> float: return self._sound.get_volume()
     def set_volume(self, value: float) -> None: self._sound.set_volume(value)
-    def get_pos(self) -> float: return self._sound.get_pos()
-    def set_pos(self, value: float) -> None: self._sound.set_pos(value)
+    def get_pos(self) -> float: return self._sound.get_position()
+    def set_pos(self, value: float) -> None: self._sound.set_position(value)

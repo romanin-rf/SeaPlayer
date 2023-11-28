@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.7.0"
+version = "0.7.1.post1"
 description = "SeaPlayer is a player that works in the terminal."
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
@@ -34,7 +34,7 @@ seaplug = "seaplayer.plug.__main__:run"
 python = ">=3.9,<3.12"
 
 ripix = ">=2.2.3"
-playsoundsimple-py = "0.7.0"
+playsoundsimple-py = "0.8.1.post1"
 properties-py = "1.1.0"
 urlopen2 = ">=1.1.0"
 
