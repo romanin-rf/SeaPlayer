@@ -4,6 +4,7 @@ import glob
 import asyncio
 from pathlib import Path
 from pydantic import BaseModel
+from rich.console import Console
 # > ImportLib
 from importlib.util import spec_from_file_location, module_from_spec
 # > Typing
@@ -20,6 +21,9 @@ from ..units import (
     GLOB_PLUGINS_INIT_SEARCH,
     GLOB_PLUGINS_DEPS_SEARCH
 )
+
+# ! Vars
+console = Console()
 
 # ! Types
 class PluginModuleType(ModuleType):
@@ -123,7 +127,7 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.2.0"
+    __version__: str = "0.2.6"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
 
@@ -205,44 +209,45 @@ class PluginLoader:
         return PluginInfo.model_validate_json(data)
     
     def on_init(self) -> None:
-        self.app.info(f"{self.__title__} [#00ffee]v{self.__version__}[/#00ffee] from {self.__author__} ({self.__email__})")
+        self.app.info(f"{self.__title__} [#00ffee]v{self.__version__}[/#00ffee] from {self.__author__} ({self.__email__})", in_console=True)
         plugins_paths = list(self.search_plugins_paths())
-        self.app.info(f"Found plugins        : {repr([os.path.basename(os.path.dirname(i[0])) for i in plugins_paths])}")
-        self.app.info(f"Initialization plugins...")
+        self.app.info(f"Found plugins        : {repr([os.path.basename(os.path.dirname(i[0])) for i in plugins_paths])}", in_console=True)
+        self.app.info(f"Initialization plugins...", in_console=True)
         for init_path, info_path, deps_path in plugins_paths:
             info = None
             try:
                 info = self.load_plugin_info(info_path)
                 if not self.config.exists_plugin(info):
                     self.config.add_plugin(info)
-                    self.app.info(f"{info.name} ({repr(info.name_id)}) > New plugin added to config!")
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > New plugin added to config!", in_console=True)
                 if self.config.is_enable_plugin(info):
-                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Plugin is [green]enabled[/green]!")
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Plugin is [green]enabled[/green]!", in_console=True)
                     if deps_path is not None:
-                        self.app.info(f"{info.name} ({repr(info.name_id)}) > Installing plugin dependencies...")
-                        self.app.info(f"[#8700af]pip.install[/#8700af]:\n{pip.install_requirements(deps_path, True)}")
-                        self.app.info(f"{info.name} ({repr(info.name_id)}) > Installed!")
-                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Importing in SeaPlayer...")
+                        self.app.info(f"{info.name} ({repr(info.name_id)}) > Installing plugin dependencies...", in_console=True)
+                        pip.install_requirements(deps_path, True)
+                        self.app.info(f"{info.name} ({repr(info.name_id)}) > Installed!", in_console=True)
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Importing in SeaPlayer...", in_console=True)
                     plugin_module = load_module(init_path)
                     plugin = plugin_from_module(self.app, self, info, plugin_module)
-                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Imported!")
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Imported!", in_console=True)
                     try:
                         plugin.on_init()
                     except:
-                        self.app.error(f"Failed to do [green]`on_init`[/green] in: {plugin.info}")
+                        self.app.error(f"Failed to do [green]`on_init`[/green] in: {plugin.info}", in_console=True)
                     self.on_plugins.append(plugin)
                 else:
-                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Plugin is [red]disabled[/red]!")
+                    self.app.info(f"{info.name} ({repr(info.name_id)}) > Plugin is [red]disabled[/red]!", in_console=True)
                     self.off_plugins.append(info)
             except Exception as e:
                 self.error_plugins.append( (info_path, init_path) )
                 if info is not None:
-                    self.app.error(f"Failed to load plugin: {repr(info)}")
+                    self.app.error(f"Failed to load plugin: {repr(info)}", in_console=True)
                 else:
-                    self.app.error(f"Failed to load plugin: {repr(os.path.basename(os.path.dirname(info_path)))}")
+                    self.app.error(f"Failed to load plugin: {repr(os.path.basename(os.path.dirname(info_path)))}", in_console=True)
                 raise e
-        self.app.info(f"Plugins loaded ([green]ON [/green]) : {repr(self.on_plugins)}")
-        self.app.info(f"Plugins loaded ([red]OFF[/red]) : {repr(self.off_plugins)}")
+        self.app.info(f"Plugins loaded ([green]ON [/green]) : {repr(self.on_plugins)}", in_console=True)
+        self.app.info(f"Plugins loaded ([red]OFF[/red]) : {repr(self.off_plugins)}", in_console=True)
+        self.app.info(f"---", in_console=True)
     
     def on_run(self) -> None:
         for i in self.on_plugins:
