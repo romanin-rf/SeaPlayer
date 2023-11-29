@@ -21,7 +21,7 @@ from .functions import (
     aiter,
     check_status,
     image_from_bytes,
-    get_sound_basename
+    get_sound_basename, aio_check_status_code
 )
 from .objects import (
     Nofy,
@@ -93,7 +93,7 @@ class SeaPlayer(App):
     currect_sound_uuid: Optional[str] = None
     currect_sound: Optional[CodecBase] = None
     currect_volume = cache.var("currect_volume", 1.0)
-    last_playback_status: Optional[Literal["Stoped", "Playing", "Paused"]] = None
+    last_playback_status: Optional[Literal[0, 1, 2]] = None
     playback_mode: int = cache.var("playback_mode", 0)
     playback_mode_blocked: bool = False
     last_paths_globalized: List[str] = []
@@ -168,7 +168,7 @@ class SeaPlayer(App):
         cn = CallNofy(text, dosk)
         await self.screen.mount(cn)
         return cn
-
+    
     # ! Get Current Sound
     def gcs(self) -> Optional[CodecBase]:
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
@@ -179,7 +179,7 @@ class SeaPlayer(App):
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
             self.currect_sound = await self.music_list_view.music_list.aio_get(self.currect_sound_uuid)
         return self.currect_sound
-
+    
     # ! Get Current Sound Status Text
     def get_sound_selected_label_text(self, sound: Optional[CodecBase]=None) -> str:
         if sound is None:
@@ -205,7 +205,7 @@ class SeaPlayer(App):
     # ! Switch Mode Button
     def gpms(self, modes: Tuple[str, str, str]=("(MODE): PLAY", "(MODE): REPLAY SOUND", "(MODE): REPLAY LIST")) -> str:
         return modes[self.playback_mode]
-
+    
     def switch_playback_mode(self) -> None:
         if self.playback_mode == 2:
             self.playback_mode = 0
@@ -224,11 +224,10 @@ class SeaPlayer(App):
     async def update_loop_playback(self) -> None:
         while self.started:
             if (sound:=await self.aio_gcs()) is not None:
-                status = check_status(sound)
+                status = await aio_check_status_code(sound)
                 if (self.last_playback_status is not None) and (self.last_playback_status != status):
                     await self.aio_update_select_label(sound)
-                
-                if (status == "Stoped") and (self.last_playback_status == "Playing"):
+                if (status == 0) and (self.last_playback_status == 1):
                     if self.playback_mode == 1:
                         sound.play()
                         self.info(f"Replay sound: {repr(sound)}")
@@ -240,9 +239,8 @@ class SeaPlayer(App):
                             await self.music_list_view.aio_select_list_item_from_sound_uuid(sound_uuid)
                             sound.play()
                             self.info(f"Playing the next sound: {repr(sound)}")
-                
                 self.last_playback_status = status
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.1)
     
     # ! Mounting Function
     def compose(self) -> ComposeResult:
@@ -283,6 +281,7 @@ class SeaPlayer(App):
         
         async def _spm(input: InputField, value: Any) -> None:
             await self.submit_plus_sound(value)
+        
         self.music_list_add_input = InputField(
             submit=_spm,
             placeholder="Filepath / Search Mask / URL",
@@ -407,8 +406,10 @@ class SeaPlayer(App):
                 except FileNotFoundError:
                     self.error(f"The file does not exist or is a directory: {repr(path)}")
                     break
-                except OSError: pass
-                except Exception as e: self.exception(e)
+                except OSError:
+                    pass
+                except Exception as e:
+                    self.exception(e)
             if sound is None:
                 self.error(f"The sound could not be loaded: {repr(path)}")
         await loading_nofy.remove()
