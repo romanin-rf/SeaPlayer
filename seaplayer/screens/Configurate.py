@@ -99,7 +99,7 @@ class Configurate(Screen):
         async def an_uac(input: InputField, value: str) -> None:
             await self._uac(attr_name, input, value)
         return an_uac
-
+    
     # ! Configurator Generators
     def create_configurator_type(
         self,

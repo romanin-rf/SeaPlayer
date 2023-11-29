@@ -5,7 +5,7 @@ import asyncio
 from textual import on
 from textual.binding import Binding, _Bindings
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, Vertical, Container
 from textual.widgets import Header, Footer, Static, Label, Button
 # > Image Works
 from PIL import Image
@@ -255,7 +255,7 @@ class SeaPlayer(App):
         self.info(f"Codecs Kwargs   : {repr(self.CODECS_KWARGS)}")
         
         # * Play Screen
-        self.music_play_screen = Static(classes="screen-box")
+        self.music_play_screen = Container(classes="screen-box")
         self.music_play_screen.border_title = "Player"
         
         # * Image Object Init
@@ -274,7 +274,7 @@ class SeaPlayer(App):
         self.info(f"The picture from the media file is rendered using the {repr(self.config.image_update_method)} method.")
         
         # * Compositions Screen
-        self.music_list_screen = Static(classes="screen-box")
+        self.music_list_screen = Container(classes="screen-box")
         self.music_list_screen.border_title = "Playlist"
         
         self.music_list_view = MusicListView()
@@ -292,9 +292,9 @@ class SeaPlayer(App):
         yield Header()
         with self.music_play_screen:
             with Vertical():
-                with Static(classes="player-visual-panel"):
+                with Container(classes="player-visual-panel"):
                     yield self.music_image
-                with Static(classes="player-contol-panel"):
+                with Container(classes="player-contol-panel"):
                     yield self.music_selected_label
                     yield IndeterminateProgress(getfunc=self.get_sound_seek)
                     with Horizontal(classes="box-buttons-sound-control"):
