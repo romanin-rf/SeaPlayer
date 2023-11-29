@@ -1,13 +1,17 @@
 from rich.progress import Progress, BarColumn, TextColumn
 from textual.widgets import Static
 # > Typing
-from typing import Optional
+from typing import Optional, Callable, Coroutine, Tuple, Any
 # > Local Import's
 from ..functions import get_bar_status
 
 
 class IndeterminateProgress(Static):
-    def __init__(self, getfunc=get_bar_status, fps: int=15):
+    def __init__(
+        self,
+        getfunc: Callable[[], Coroutine[Any, Any, Tuple[str, Optional[float], Optional[float]]]]=get_bar_status,
+        fps: int=10
+    ) -> None:
         super().__init__("", classes="indeterminate-progress-bar")
         self._bar = Progress(BarColumn(), TextColumn("{task.description}"))
         self._task_id = self._bar.add_task("", total=None)
@@ -24,6 +28,5 @@ class IndeterminateProgress(Static):
         d, c, t = await self._getfunc()
         if self._bar.columns[0].bar_width != (self.size[0]-len(d)-1):
             self._bar.columns[0].bar_width = self.size[0]-len(d)-1
-        
         await self.upgrade_task(completed=c, total=t, description=d)
         self.update(self._bar)
