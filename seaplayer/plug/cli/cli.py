@@ -95,7 +95,7 @@ def creating(dirpath: str, recreate: bool, **kwargs: str):
             info = PluginInfo(**kwargs)
             
             with open(os.path.join(dirpath, "info.json"), "w", encoding="utf-8") as file:
-                file.write(info.json())
+                file.write(info.model_dump_json())
             with open(os.path.join(dirpath, "__init__.py"), "w", encoding="utf-8") as file:
                 file.write(CREATE_DEFAULT_CODE)
             

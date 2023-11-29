@@ -34,9 +34,11 @@ def add_plugins(
 
 def get_plugins_info() -> List[PluginInfo]:
     plugins_infos = []
-    for plugin_info_path, plugin_init_path in PluginLoader.search_plugins_paths():
-        try: plugins_infos.append(PluginLoader.load_plugin_info(plugin_info_path))
-        except: pass
+    for plugin_init_path, plugin_info_path, plugin_deps_path in PluginLoader.search_plugins_paths():
+        try:
+            plugins_infos.append(PluginLoader.load_plugin_info(plugin_info_path))
+        except:
+            pass
     return plugins_infos
 
 def is_plugin_dirpath(dirpath: str) -> bool:
@@ -44,7 +46,7 @@ def is_plugin_dirpath(dirpath: str) -> bool:
         assert os.path.exists(dirpath)
         assert os.path.exists(os.path.join(dirpath, "info.json"))
         assert os.path.exists(os.path.join(dirpath, "__init__.py"))
-        PluginInfo.parse_file(os.path.join(dirpath, "info.json"))
+        PluginInfo.model_validate_json(open(os.path.join(dirpath, "info.json"), "rb").read())
     except:
         return False
     return True

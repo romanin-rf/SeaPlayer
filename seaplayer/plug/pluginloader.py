@@ -220,7 +220,7 @@ class PluginLoader:
                     self.app.info(f"{info.name} ({repr(info.name_id)}) > Plugin is [green]enabled[/green]!")
                     if deps_path is not None:
                         self.app.info(f"{info.name} ({repr(info.name_id)}) > Installing plugin dependencies...")
-                        pip.install("-U", "-r", deps_path)
+                        self.app.info(f"[#8700af]pip.install[/#8700af]:\n{pip.install_requirements(deps_path, True)}")
                         self.app.info(f"{info.name} ({repr(info.name_id)}) > Installed!")
                     self.app.info(f"{info.name} ({repr(info.name_id)}) > Importing in SeaPlayer...")
                     plugin_module = load_module(init_path)
