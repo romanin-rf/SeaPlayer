@@ -40,8 +40,9 @@ In order to play MIDI files you need to install FluidSynth:
         ```
 
 ## Using
+
 ```shell
 python -m seaplayer # Method for `downloaded repository` or `installed via pip`
 ```
-![MainScreen-v0.5.4](https://github.com/romanin-rf/SeaPlayer/assets/60302782/5be6c2cb-5602-4c85-a3be-ae36a90e71e4)
-![ConfigurateScreen-v0.5.4](https://github.com/romanin-rf/SeaPlayer/assets/60302782/922c7112-2259-47d1-9619-488855e14c2c)
+![MainScreen-v0 7 2](https://github.com/romanin-rf/SeaPlayer/assets/60302782/f836ac9e-fb9e-44e4-9bc3-44b2d13fc873)
+![ConfigurateScreen-v0 7 2](https://github.com/romanin-rf/SeaPlayer/assets/60302782/7568c059-dea2-4fb5-9333-e02a3a636499)
