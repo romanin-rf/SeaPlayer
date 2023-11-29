@@ -8,10 +8,7 @@ class PIPManager:
         self.python_path = sys.executable
     
     def __call__(self, *args: str) -> str:
-        return subprocess.check_output(
-            [self.python_path, "-m", "pip", *args],
-            stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        ).decode(errors="ignore")
+        return subprocess.check_output([self.python_path, "-m", "pip", *args]).decode(errors="ignore")
     
     def install(self, *args: str) -> str:
         return self.__call__("install", *args)

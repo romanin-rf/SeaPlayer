@@ -1,8 +1,12 @@
+from rich.console import Console
 from textual.widgets import RichLog
 # > Typing
 from typing import TypeVar
 # > Local Import's
 from ..functions import rich_exception
+
+# ! Vars
+console = Console()
 
 # ! Types
 RETURN = TypeVar('RETURN')
@@ -20,11 +24,21 @@ class LogMenu(RichLog):
         
         super().__init__(**kwargs)
     
-    def write_log(self, chap: str, msg: str, *, chap_color: str="green") -> None:
+    def write_log(self, chap: str, msg: str, *, chap_color: str="green", in_console: bool=False) -> None:
         if self.enable_logging:
-            self.write(f"[[{chap_color}]{chap.center(self.chap_max_width)}[/]]: {msg}", shrink=False)
+            text = f"[[{chap_color}]{chap.center(self.chap_max_width)}[/]]: {msg}"
+            self.write(text, shrink=False)
+            if in_console:
+                console.print(text)
     
-    def info(self, msg: str) -> None: self.write_log("INFO", msg, chap_color="green")
-    def error(self, msg: str) -> None: self.write_log("ERROR", msg, chap_color="red")
-    def warn(self, msg: str) -> None: self.write_log("WARN", msg, chap_color="orange")
-    def exception(self, e: Exception) -> None: self.write_log("ERROR", rich_exception(e), chap_color="red")
+    def info(self, msg: str, *, in_console: bool=False) -> None:
+        self.write_log("INFO", msg, chap_color="green", in_console=in_console)
+    
+    def error(self, msg: str, *, in_console: bool=False) -> None:
+        self.write_log("ERROR", msg, chap_color="red", in_console=in_console)
+    
+    def warn(self, msg: str, *, in_console: bool=False) -> None:
+        self.write_log("WARN", msg, chap_color="orange", in_console=in_console)
+    
+    def exception(self, e: Exception, *, in_console: bool=False) -> None:
+        self.write_log("ERROR", rich_exception(e), chap_color="red", in_console=in_console)
