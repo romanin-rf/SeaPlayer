@@ -16,6 +16,10 @@ SeaPlayer is a player that works in the terminal. Works with `MP3`, `OGG`, `WAV`
 ### For MIDI playback
 In order to play MIDI files you need to install FluidSynth:
 - **Windows**: https://github.com/FluidSynth/fluidsynth/releases
+    1. **Download** a zip file suitable for your version of Windows.
+    1. **Unpack the archive** anywhere, *but it is recommended to put it in a folder `C:\Program Files\FluidSynth`*
+    1. **Next**, open `Settings` > `System` > `About the system` > `Additional system parameters` > `Environment variables` > `[Double click on Path]` > `Create` > `[Enter the full path to the folder with FluidSynth]`
+    1. **That's it, FluidSynth is installed!**
 - **Linux**:
     - **Ubuntu/Debian**:
         ```shell
