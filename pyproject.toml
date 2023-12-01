@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.7.2.post7"
+version = "0.7.3"
 description = "SeaPlayer is a player that works in the terminal."
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
@@ -32,23 +32,23 @@ seaplug = "seaplayer.plug.__main__:run"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-
-ripix = ">=2.2.3"
-playsoundsimple-py = "0.8.1.post1"
+# Custom modules
+ripix = "2.4.0"
+playsoundsimple-py = "0.8.1.post2"
 properties-py = "1.1.0"
-urlopen2 = ">=1.1.0"
-
-pillow = ">=9.5"
+urlopen2 = "1.2.0.post1"
+# Main Modules
+pillow = ">=10"
 aiofiles = ">=23.1"
-rich = ">=13.3.5"
-mutagen = ">=1.45.1"
+rich = ">=13"
+mutagen = ">=1.45"
 textual = ">=0.43"
 typing-inspect = ">=0.9"
-platformdirs = ">=3.5.1"
+platformdirs = ">=3.5"
 pydantic = ">=2.5"
-click = ">=8.1.3"
+click = ">=8"
 validators = ">=0.20"
-
+# Optional Modules
 poetry = {version = ">=1.5", optional = true}
 pyinstaller = {version = ">=5.11", optional = true}
 

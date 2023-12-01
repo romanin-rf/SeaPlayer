@@ -127,10 +127,10 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.2.6"
+    __version__: str = "0.2.7"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
-
+    
     def __init__(
         self,
         app,
@@ -255,7 +255,7 @@ class PluginLoader:
                 i.on_run()
             except:
                 self.app.error(f"Failed to do [green]`on_run`[/green] in: {i}")
-
+    
     async def on_compose(self) -> None:
         async for i in aiter(self.on_plugins):
             try:
