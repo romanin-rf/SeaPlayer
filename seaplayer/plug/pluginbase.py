@@ -23,7 +23,15 @@ class PluginBase:
         # > Logs
         self.app.info(self.__init_repr__())
     
-    def on_init(self): pass
-    def on_run(self): pass
-    async def on_compose(self): pass
-    async def on_quit(self): pass
+    # ! Dev Functions
+    def on_init(self):
+        pass
+    
+    def on_run(self):
+        pass
+    
+    async def on_compose(self):
+        pass
+    
+    async def on_quit(self):
+        pass

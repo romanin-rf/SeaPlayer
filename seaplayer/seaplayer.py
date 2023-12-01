@@ -117,7 +117,7 @@ class SeaPlayer(App):
     error = log_menu.error
     warn = log_menu.warn
     exception = log_menu.exception
-
+    
     # ! App Init
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
