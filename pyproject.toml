@@ -25,6 +25,8 @@ include = [
     "seaplayer/css/seaplayer.css",
     "seaplayer/css/unknown.css"
 ]
+[tool.poetry.urls]
+"Changelog" = "https://github.com/romanin-rf/SeaPlayer/blob/main/changelog.md"
 
 [tool.poetry.scripts]
 seaplayer = "seaplayer.__main__:run"
