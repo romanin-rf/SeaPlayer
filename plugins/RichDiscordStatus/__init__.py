@@ -2,11 +2,8 @@ import os
 import time
 import asyncio
 import nest_asyncio
-from pypresence import Presence, DiscordNotFound
+from pypresence import Presence, DiscordNotFound, PipeClosed, ResponseTimeout
 from seaplayer.plug import PluginBase
-
-# ! Vars
-AD_ENABLE = True
 
 # ! Initialization
 nest_asyncio.apply()
@@ -47,7 +44,7 @@ class RichDiscordStatus(PluginBase):
                 while self.running:
                     rpc.update(**self.get_status())
                     await asyncio.sleep(1)
-            except DiscordNotFound:
+            except (DiscordNotFound, PipeClosed, ResponseTimeout):
                 await asyncio.sleep(3)
     
     def on_init(self) -> None:
@@ -62,12 +59,12 @@ class RichDiscordStatus(PluginBase):
             self.__status__,
             "Rich Discord Status",
             "seaplayer.plugins.discord.status",
-            thread=True,
-            exit_on_error=False
+            thread=True
         )
     
     async def on_quit(self) -> None:
         self.running = False
+        await self.thread.wait()
 
 # ! Registration Plugin Class
 plugin_main = RichDiscordStatus
