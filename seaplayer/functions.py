@@ -36,6 +36,9 @@ def rich_exception(exc: Exception) -> str:
     return f"[red]{exc.__class__.__name__}[/red]: {exc.__str__()}"
 
 # ! Functions
+def formater(**kwargs) -> str:
+    return ", ".join([f"{key}={repr(value)}" for key, value in kwargs.items()])
+
 def check_status(sound: CodecBase) -> Literal["Stoped", "Playing", "Paused"]:
     if sound.playing:
         if sound.paused:

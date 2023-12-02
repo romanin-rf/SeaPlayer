@@ -1,5 +1,6 @@
 from pathlib import Path
 from pydantic import BaseModel
+from textual.binding import Binding
 # > Typing
 from types import ModuleType
 from typing import (
@@ -79,6 +80,10 @@ class PluginLoader:
     @staticmethod
     def load_plugin_info(path: str) -> PluginInfo: ...
     
+    # ! App Specific Methods
+    def on_bindings(self) -> Generator[Binding, Any, None]: ...
+    
+    # ! App On Methods
     def on_init(self) -> None: ...
     def on_run(self) -> None: ...
     async def on_compose(self) -> None: ...

@@ -5,11 +5,12 @@ import asyncio
 from pathlib import Path
 from pydantic import BaseModel
 from rich.console import Console
+from textual.binding import Binding
 # > ImportLib
 from importlib.util import spec_from_file_location, module_from_spec
 # > Typing
 from types import ModuleType
-from typing import Optional, Dict, Union, Any, List, Tuple, Type
+from typing import Optional, Dict, Union, Any, List, Tuple, Type, Generator
 # > Local Import's
 from .pipw import pip
 from .pluginbase import PluginInfo, PluginBase
@@ -47,7 +48,7 @@ def load_module(init_path: str) -> PluginModuleType:
     )
     module = module_from_spec(module_spec)
     
-    sys.modules[module_spec.name] = module 
+    sys.modules[module_spec.name] = module
     # TODO: Temporary option as there is a risk of replacing existing modules
     # TODO: Make an environment-module to surround all these modules for security
     
@@ -127,7 +128,7 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.2.7"
+    __version__: str = "0.3.0"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
     
@@ -208,8 +209,9 @@ class PluginLoader:
             data = file.read()
         return PluginInfo.model_validate_json(data)
     
+    # ! On Init Method
     def on_init(self) -> None:
-        self.app.info(f"{self.__title__} [#00ffee]v{self.__version__}[/#00ffee] from {self.__author__} ({self.__email__})", in_console=True)
+        self.app.info(f"{self.__title__} [#60fdff]v{self.__version__}[/#60fdff] from {self.__author__} ({self.__email__})", in_console=True)
         plugins_paths = list(self.search_plugins_paths())
         self.app.info(f"Found plugins        : {repr([os.path.basename(os.path.dirname(i[0])) for i in plugins_paths])}", in_console=True)
         self.app.info(f"Initialization plugins...", in_console=True)
@@ -249,6 +251,15 @@ class PluginLoader:
         self.app.info(f"Plugins loaded ([red]OFF[/red]) : {repr(self.off_plugins)}", in_console=True)
         self.app.info(f"---", in_console=True)
     
+    # ! App Specific Methods
+    def on_bindings(self) -> Generator[Binding, Any, None]:
+        yield None
+        for plugin in self.on_plugins:
+            for binding in plugin.on_bindings():
+                if binding is not None:
+                    yield binding
+    
+    # ! On Methods
     def on_run(self) -> None:
         for i in self.on_plugins:
             try:

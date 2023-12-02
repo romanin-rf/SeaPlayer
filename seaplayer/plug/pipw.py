@@ -1,6 +1,5 @@
 import sys
 import subprocess
-from typing import Tuple
 
 # ! Main Class
 class PIPManager:

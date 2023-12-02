@@ -1,4 +1,5 @@
 import os
+import time
 import glob
 import asyncio
 # > Graphics
@@ -21,7 +22,8 @@ from .functions import (
     aiter,
     check_status,
     image_from_bytes,
-    get_sound_basename, aio_check_status_code
+    get_sound_basename,
+    aio_check_status_code
 )
 from .objects import (
     Nofy,
@@ -80,13 +82,14 @@ class SeaPlayer(App):
         "unknown": Unknown(id="screen_unknown"),
         "configurate": Configurate(id="screen_configurate")
     }
+    ENABLE_COMMAND_PALETTE = False
     
     # ! SeaPlayer Configuration
     cache = Cacher(CACHE_DIRPATH)
     config = SeaPlayerConfig(CONFIG_FILEPATH)
     image_type: Optional[Union[Type[AsyncImageLabel], Type[StandartImageLabel]]] = None
     
-    # ! Textual Keys Configuration
+    # ! Bindings
     BINDINGS = list(build_bindings(config))
     
     # ! Template Configuration
@@ -124,9 +127,17 @@ class SeaPlayer(App):
         if ENABLE_PLUGIN_SYSTEM:
             self.plugin_loader = PluginLoader(self)
             self.plugin_loader.on_init()
+            for _binding in self.plugin_loader.on_bindings():
+                if _binding is not None:
+                    self.BINDINGS.append(_binding)
     
     def update_bindings(self) -> None:
-        self._bindings = _Bindings(list(build_bindings(self.config)))
+        bindings = list(build_bindings(self.config))
+        if ENABLE_PLUGIN_SYSTEM:
+            for _binding in self.plugin_loader.on_bindings():
+                if _binding is not None:
+                    bindings.append(_binding)
+        self._bindings = _Bindings(bindings)
     
     # ! Inherited Functions
     async def action_push_screen(self, screen: str) -> None:
@@ -158,6 +169,7 @@ class SeaPlayer(App):
     ) -> CallNofy:
         cn = CallNofy(text, dosk)
         self.screen.mount(cn)
+        self.install_screen
         return cn
     
     async def aio_callnofy(
@@ -246,7 +258,7 @@ class SeaPlayer(App):
     def compose(self) -> ComposeResult:
         # * Other
         self.info("---")
-        self.info(f"{__title__} [#00ffee]v{__version__}[/#00ffee] from {__author__} ({__email__})")
+        self.info(f"{__title__} [#60fdff]v{__version__}[/#60fdff] from {__author__} ({__email__})")
         self.info(f"Source          : {__url__}")
         self.info(f"Codecs          : {repr(self.CODECS)}")
         self.info(f"Config Path     : {repr(self.config.filepath)}")
@@ -309,7 +321,6 @@ class SeaPlayer(App):
         if self.config.log_menu_enable:
             yield self.log_menu
         yield Footer()
-        
         self.run_worker(
             self.update_loop_playback,
             name="PLAYBACK_CONTROLLER",
@@ -379,7 +390,6 @@ class SeaPlayer(App):
     async def add_sounds_to_list(self) -> None:
         added_oks = 0
         loading_nofy = await self.aio_callnofy(f"Found [cyan]{len(self.last_paths_globalized)}[/cyan] values. Loading...")
-        
         async for path in aiter(self.last_paths_globalized):
             sound = None
             async for codec in aiter(self.CODECS):
@@ -499,7 +509,7 @@ class SeaPlayer(App):
             sound.unpause()
             sound.stop()
         return await super().action_quit()
-
+    
     # ! Other
     def run(self, *args, **kwargs):
         if ENABLE_PLUGIN_SYSTEM:

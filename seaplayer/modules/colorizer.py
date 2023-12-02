@@ -64,4 +64,5 @@ def pullyper(tp: type) -> str:
     else:
         return tp.__name__
 
-def richefication(tp: type) -> str: return replaces(pullyper(tp), REPLACE_TYPES)
+def richefication(tp: type) -> str:
+    return replaces(pullyper(tp), REPLACE_TYPES)
