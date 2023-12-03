@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.7.5.post1"
+version = "0.8.0.post1"
 description = "SeaPlayer is a player that works in the terminal."
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
@@ -20,10 +20,10 @@ classifiers = [
 packages = [{ include = "seaplayer" }]
 include = [
     "seaplayer/assets/image-not-found.png",
-    "seaplayer/css/configurate.css",
-    "seaplayer/css/objects.css",
-    "seaplayer/css/seaplayer.css",
-    "seaplayer/css/unknown.css"
+    "seaplayer/css/configurate.tcss",
+    "seaplayer/css/objects.tcss",
+    "seaplayer/css/seaplayer.tcss",
+    "seaplayer/css/unknown.tcss"
 ]
 [tool.poetry.urls]
 "Changelog" = "https://github.com/romanin-rf/SeaPlayer/blob/main/changelog.md"

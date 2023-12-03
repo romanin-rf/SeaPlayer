@@ -28,6 +28,14 @@
 /* ! IndeterminateProgress */
 .indeterminate-progress-bar { height: 1; }
 
+/* ! Rheostat */
+.rheostat-bar { height: 1; }
+.rheostat { height: 4; }
+.rheostat-horizontal {
+    align-horizontal: center;
+    width: 1fr;
+}
+
 /* ! Image Label */
 .image-label {
     height: 1fr;

@@ -1,5 +1,5 @@
 from rich.progress import Progress, BarColumn, TextColumn
-from textual.widgets import Static
+from textual.widgets import Static, Label
 # > Typing
 from typing import Optional, Callable, Coroutine, Tuple, Any
 # > Local Import's
@@ -30,3 +30,5 @@ class IndeterminateProgress(Static):
             self._bar.columns[0].bar_width = self.size[0]-len(d)-1
         await self.upgrade_task(completed=c, total=t, description=d)
         self.update(self._bar)
+
+

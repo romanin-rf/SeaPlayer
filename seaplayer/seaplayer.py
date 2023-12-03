@@ -73,10 +73,10 @@ class SeaPlayer(App):
     # ! Textual Configuration
     TITLE = f"{__title__} v{__version__}"
     CSS_PATH = [
-        os.path.join(CSS_LOCALDIR, "seaplayer.css"),
-        os.path.join(CSS_LOCALDIR, "configurate.css"),
-        os.path.join(CSS_LOCALDIR, "unknown.css"),
-        os.path.join(CSS_LOCALDIR, "objects.css")
+        os.path.join(CSS_LOCALDIR, "seaplayer.tcss"),
+        os.path.join(CSS_LOCALDIR, "configurate.tcss"),
+        os.path.join(CSS_LOCALDIR, "unknown.tcss"),
+        os.path.join(CSS_LOCALDIR, "objects.tcss")
     ]
     SCREENS = {
         "unknown": Unknown(id="screen_unknown"),

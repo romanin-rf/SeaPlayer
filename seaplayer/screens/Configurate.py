@@ -7,17 +7,16 @@ try:
     INIT_SOUNDDEVICE = True
 except:
     INIT_SOUNDDEVICE = False
-from typing import Optional, Literal, Dict, Any, List
+from typing import Optional, Literal, Union, Tuple, Dict, List, Any
 # > Local Imports
 from ..types import Converter
 from ..modules.colorizer import richefication
 from ..objects import (
     Nofy,
     InputField,
-    DataOption,
-    DataOptionList,
-    ConfigurateList,
-    ConfigurateListItem
+    DataOptionList, DataOption,
+    DataRadioSet, DataRadioButton,
+    ConfigurateList, ConfigurateListItem
 )
 
 # ! Vars
@@ -83,10 +82,18 @@ class Configurate(Screen):
         return lambda: self._upfif(attr_name)
     
     # ! Update App Config
-    async def _uac(self, attr_name: str, input: InputField, value: str) -> None:
+    async def _auac(self, attr_name: str, input: InputField, value: str) -> None:
         exec(f"self.{attr_name} = value")
         self.app.update_bindings()
         await self.aio_nofy("Saved!")
+    
+    def _caa(self, attr_name: str, value: str) -> None:
+        exec(f"self.{attr_name} = value")
+        self.app.update_bindings()
+        self.nofy("Saved!")
+    
+    def _gaa(self, attr_name: str) -> Any:
+        return eval(f"self.{attr_name}")
     
     if INIT_SOUNDDEVICE:
         def gucsdi(self):
@@ -97,7 +104,7 @@ class Configurate(Screen):
     
     def guac(self, attr_name: str):
         async def an_uac(input: InputField, value: str) -> None:
-            await self._uac(attr_name, input, value)
+            await self._auac(attr_name, input, value)
         return an_uac
     
     # ! Configurator Generators
@@ -139,10 +146,36 @@ class Configurate(Screen):
             height=5
         )
     
+    def create_configurator_literal(
+        self,
+        attr_name: str,
+        values: List[Union[Any, Tuple[Any, str]]],
+        group: str="Option",
+        title: str="",
+        desc: str="",
+        restart_required: bool=True
+    ) -> ConfigurateListItem:
+        on_changed_method = lambda v: self._caa(attr_name, v)
+        default_value = [v[0] if isinstance(v, tuple) else v for v in values].index(self._gaa(attr_name))
+        buttons = []
+        for idx, d in enumerate(values):
+            drb = \
+                DataRadioButton(d[0], idx==default_value, d[1]) \
+            if isinstance(d, tuple) else \
+                DataRadioButton(d, idx==default_value)
+            buttons.append(drb)
+        return ConfigurateListItem(
+            DataRadioSet(on_changed_method, *buttons),
+            title="[red]{"+group+"}[/red]: "+title,
+            desc=desc + " [red](restart required)[/red]" if restart_required else "",
+            height=len(values)+4
+        )
+    
     if INIT_SOUNDDEVICE:
         def create_configurator_sound_devices(self):
+            dos = generate_devices_options(self.app.config.output_sound_device_id)
             options_list = DataOptionList(
-                *generate_devices_options(self.app.config.output_sound_device_id),
+                *dos,
                 group="SoundDevicesSelect",
                 after_selected=self.gucsdi()
             )
@@ -150,7 +183,7 @@ class Configurate(Screen):
                 options_list,
                 title="[red]{Sound}[/]: Output Sound Device",
                 desc="Select the device that SeaPlayer will work with. [red](restart required)[/red]",
-                height=8
+                height=len(dos)+4
             )
     
     # ! Configurate Main Functions
@@ -165,18 +198,27 @@ class Configurate(Screen):
             )
             if INIT_SOUNDDEVICE:
                 yield self.create_configurator_sound_devices()
-            yield self.create_configurator_type(
+            yield self.create_configurator_literal(
                 "app.config.image_update_method",
+                [
+                    ("sync", "Synchronously"),
+                    ("async", "Asynchronously")
+                ],
                 "Image", "Image Update Method",
-                "The name of the picture update option.",
-                conv.literal_string("sync", "async"), Literal["sync", "async"]
+                "The name of the picture update option."
             )
-            yield self.create_configurator_type(
+            yield self.create_configurator_literal(
                 "app.config.image_resample_method",
+                [
+                    ("nearest", "Nearest"),
+                    ("bilinear", "Bilinear"),
+                    ("bicubic", "Bicubic"),
+                    ("lanczos", "Lanczos"),
+                    ("hamming", "Hamming"),
+                    ("box", "Boxing"),
+                ],
                 "Image", "Image Resample Method",
-                "Method for reducing/increasing the number of pixels.",
-                conv.literal_string("nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"),
-                Literal["nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"]
+                "Method for reducing/increasing the number of pixels."
             )
             yield self.create_configurator_type(
                 "app.config.volume_change_percent",
@@ -196,17 +238,17 @@ class Configurate(Screen):
                 "Maximum volume value.",
                 float, float, False
             )
-            yield self.create_configurator_type(
+            yield self.create_configurator_literal(
                 "app.config.recursive_search",
+                [(True, "On"), (False, "Off")],
                 "Playlist", "Recursive Search",
-                "Recursive file search.",
-                conv.boolean, bool, False
+                "Recursive file search.", False
             )
-            yield self.create_configurator_type(
+            yield self.create_configurator_literal(
                 "app.config.log_menu_enable",
+                [(True, "On"), (False, "Off")],
                 "Debag", "Log Menu Enable",
-                "Menu with logs for the current session.",
-                conv.boolean, bool, False
+                "Menu with logs for the current session.", False
             )
             yield self.create_configurator_keys("app.config.key_quit", "Quit", "Сlose the app.", False)
             yield self.create_configurator_keys("app.config.key_rewind_forward", "Rewind Forward", "Forwards rewinding.", False)
