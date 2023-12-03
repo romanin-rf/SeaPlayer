@@ -1,4 +1,4 @@
-[submodule "Secrets"]
-	path = Secrets
+[submodule "secrets"]
+	path = secrets
 	url = https://github.com/romanin-rf/SeaPlayer-secrets.git
 	branch = main
