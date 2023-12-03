@@ -7,7 +7,7 @@ __pycache__/
 __clean.py
 
 # Poetry
-
+poetry.lock
 
 # C extensions
 *.so
