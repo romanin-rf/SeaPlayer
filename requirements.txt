@@ -1,0 +1,15 @@
+ripix==2.4.2
+playsoundsimple-py==0.8.1.post2
+properties-py==1.1.0
+urlopen2==1.2.0.post1
+
+pillow>=10
+aiofiles>=23.1
+rich>=13
+mutagen>=1.45
+textual>=0.43
+typing-inspect>=0.9
+platformdirs>=3.5
+pydantic>=2.5
+click>=8
+validators>=0.20
