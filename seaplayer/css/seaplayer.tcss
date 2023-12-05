@@ -1,5 +1,5 @@
 /* ! Main Screen */
-#_default  {
+#_default {
     layout: horizontal;
 }
 

@@ -27,14 +27,17 @@ DATA = {
     # * 1.1) Objects
     "seaplayer/objects": "seaplayer/objects/",
     "seaplayer/objects/__init__.py": "seaplayer/objects/",
+    "seaplayer/objects/Buttons.py": "seaplayer/objects/",
     "seaplayer/objects/Configurate.py": "seaplayer/objects/",
+    "seaplayer/objects/DataOptions.py": "seaplayer/objects/",
+    "seaplayer/objects/FullLabel.py": "seaplayer/objects/",
     "seaplayer/objects/Image.py": "seaplayer/objects/",
     "seaplayer/objects/Input.py": "seaplayer/objects/",
     "seaplayer/objects/Log.py": "seaplayer/objects/",
     "seaplayer/objects/MusicList.py": "seaplayer/objects/",
     "seaplayer/objects/Notification.py": "seaplayer/objects/",
     "seaplayer/objects/ProgressBar.py": "seaplayer/objects/",
-    "seaplayer/objects/DataOptions.py": "seaplayer/objects/",
+    "seaplayer/objects/Radio.py": "seaplayer/objects/",
     # * 1.2) Types
     "seaplayer/types": "seaplayer/types/",
     "seaplayer/types/__init__.py": "seaplayer/types/",

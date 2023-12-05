@@ -12,7 +12,8 @@ __email__ = "semina054@gmail.com"
 __url__ = "https://github.com/romanin-rf/SeaPlayer"
 
 # ! Paths
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+IM_BINARY = (bool(getattr(sys, 'frozen', False)) and hasattr(sys, '_MEIPASS'))
+if IM_BINARY:
     LOCALDIR = os.path.dirname(sys.executable)
     ENABLE_PLUGIN_SYSTEM = False
 else:

@@ -63,7 +63,7 @@
 .pass-one-width { width: 1; }
 
 /* ! Log Menu */
-.log-menu {
+LogMenu {
     background: $surface;
     color: $text;
     height: 50vh;
@@ -75,11 +75,11 @@
     padding: 0 1 1 1;
 }
 
-.log-menu:focus {
+LogMenu:focus {
     offset: 0 0 !important;
 }
 
-.log-menu.-hidden {
+LogMenu.--hidden {
     offset-y: 100%;
 }
 
@@ -100,6 +100,17 @@ CallNofy {
     padding: 1 2;
     width: auto;
     height: auto;
+}
+
+/* ! PopUp */
+PopUp {
+    layer: popups;
+    background: $background;
+    align: center middle;
+    content-align: center middle;
+    width: auto;
+    height: auto;
+    padding: 1 2 1 2;
 }
 
 /* ! FullLabel */

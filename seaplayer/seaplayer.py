@@ -1,5 +1,4 @@
 import os
-import time
 import glob
 import asyncio
 # > Graphics
@@ -60,7 +59,7 @@ def build_bindings(config: SeaPlayerConfig):
     yield Binding(config.key_quit, "quit", "Quit")
     yield Binding("c,с", "push_screen('configurate')", "Configurate")
     if config.log_menu_enable:
-        yield Binding("l,д", "app.toggle_class('.log-menu', '-hidden')", 'Logs')
+        yield Binding("l,д", "app.toggle_class('LogMenu', '--hidden')", "Logs")
     yield Binding(config.key_rewind_back, "minus_rewind", f"Rewind -{config.rewind_count_seconds} sec")
     yield Binding(config.key_rewind_forward, "plus_rewind", f"Rewind +{config.rewind_count_seconds} sec")
     yield Binding(config.key_volume_down, "minus_volume", f"Volume -{round(config.volume_change_percent*100)}%")
@@ -99,7 +98,7 @@ class SeaPlayer(App):
     last_playback_status: Optional[Literal[0, 1, 2]] = None
     playback_mode: int = cache.var("playback_mode", 0)
     playback_mode_blocked: bool = False
-    last_paths_globalized: List[str] = []
+    last_handlered_values: List[str] = []
     started: bool = True
     
     # ! Codecs Configuration
@@ -288,7 +287,6 @@ class SeaPlayer(App):
         # * Compositions Screen
         self.music_list_screen = Container(classes="screen-box")
         self.music_list_screen.border_title = "Playlist"
-        
         self.music_list_view = MusicListView()
         
         async def _spm(input: InputField, value: Any) -> None:
@@ -389,8 +387,8 @@ class SeaPlayer(App):
     
     async def add_sounds_to_list(self) -> None:
         added_oks = 0
-        loading_nofy = await self.aio_callnofy(f"Found [cyan]{len(self.last_paths_globalized)}[/cyan] values. Loading...")
-        async for path in aiter(self.last_paths_globalized):
+        loading_nofy = await self.aio_callnofy(f"Found [cyan]{len(self.last_handlered_values)}[/cyan] values. Loading...")
+        async for path in aiter(self.last_handlered_values):
             sound = None
             async for codec in aiter(self.CODECS):
                 try:
@@ -454,13 +452,13 @@ class SeaPlayer(App):
     async def submit_plus_sound(self, value: str) -> None:
         if value.replace(" ", "") != "":
             try:
-                self.last_paths_globalized = glob.glob(value, recursive=self.config.recursive_search)
+                self.last_handlered_values = glob.glob(value, recursive=self.config.recursive_search)
             except:
-                self.last_paths_globalized = [ value ]
-            if len(self.last_paths_globalized) == 0:
-                self.last_paths_globalized = [ value ]
-            self.info(f"Submit 'plus_sound' values: {repr(self.last_paths_globalized)}")
-            if len(self.last_paths_globalized) > 0:
+                self.last_handlered_values = [ value ]
+            if len(self.last_handlered_values) == 0:
+                self.last_handlered_values = [ value ]
+            self.info(f"Submit 'plus_sound' values: {repr(self.last_handlered_values)}")
+            if len(self.last_handlered_values) > 0:
                 self.run_worker(
                     self.add_sounds_to_list,
                     name="ADD_SOUND",
