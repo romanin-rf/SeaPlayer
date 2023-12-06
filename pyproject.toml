@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.8.0.post1"
+version = "0.8.0.post2"
 description = "SeaPlayer is a player that works in the terminal."
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
@@ -23,7 +23,9 @@ include = [
     "seaplayer/css/configurate.tcss",
     "seaplayer/css/objects.tcss",
     "seaplayer/css/seaplayer.tcss",
-    "seaplayer/css/unknown.tcss"
+    "seaplayer/css/unknown.tcss",
+    "seaplayer/langs/en-eng.properties",
+    "seaplayer/langs/ru-rus.properties"
 ]
 [tool.poetry.urls]
 "Changelog" = "https://github.com/romanin-rf/SeaPlayer/blob/main/changelog.md"
@@ -45,19 +47,18 @@ aiofiles = ">=23.1"
 rich = ">=13"
 mutagen = ">=1.45"
 textual = ">=0.43"
-typing-inspect = ">=0.9"
 platformdirs = ">=3.5"
 pydantic = ">=2.5"
 click = ">=8"
 validators = ">=0.20"
+typing-inspect = ">=0.9"
+typing-extensions = ">=4.6"
 # Optional Modules
 poetry = {version = ">=1.5", optional = true}
 pyinstaller = {version = ">=5.11", optional = true}
 
-
 [tool.poetry.extras]
 build = ["poetry", "pyinstaller"]
-
 
 [build-system]
 requires = ["poetry-core"]

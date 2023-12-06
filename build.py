@@ -24,17 +24,21 @@ DATA = {
     "seaplayer/exceptions.py": "seaplayer/",
     "seaplayer/codeсbase.py": "seaplayer/",
     "seaplayer/units.py": "seaplayer/",
+    "seaplayer/languages.py": "seaplayer/",
     # * 1.1) Objects
     "seaplayer/objects": "seaplayer/objects/",
     "seaplayer/objects/__init__.py": "seaplayer/objects/",
+    "seaplayer/objects/Buttons.py": "seaplayer/objects/",
     "seaplayer/objects/Configurate.py": "seaplayer/objects/",
+    "seaplayer/objects/DataOptions.py": "seaplayer/objects/",
+    "seaplayer/objects/FullLabel.py": "seaplayer/objects/",
     "seaplayer/objects/Image.py": "seaplayer/objects/",
     "seaplayer/objects/Input.py": "seaplayer/objects/",
     "seaplayer/objects/Log.py": "seaplayer/objects/",
     "seaplayer/objects/MusicList.py": "seaplayer/objects/",
     "seaplayer/objects/Notification.py": "seaplayer/objects/",
     "seaplayer/objects/ProgressBar.py": "seaplayer/objects/",
-    "seaplayer/objects/DataOptions.py": "seaplayer/objects/",
+    "seaplayer/objects/Radio.py": "seaplayer/objects/",
     # * 1.2) Types
     "seaplayer/types": "seaplayer/types/",
     "seaplayer/types/__init__.py": "seaplayer/types/",
@@ -66,7 +70,11 @@ DATA = {
     "seaplayer/css/seaplayer.css": "seaplayer/css/",
     "seaplayer/css/configurate.css": "seaplayer/css/",
     "seaplayer/css/unknown.css": "seaplayer/css/",
-    # * 4) Assets Files
+    # * 4) Language Files
+    "seaplayer/langs": "seaplayer/langs/",
+    "seaplayer/langs/en-eng.properties": "seaplayer/langs/",
+    "seaplayer/langs/ru-rus.properties": "seaplayer/langs/",
+    # * 5) Assets Files
     "seaplayer/assets": "seaplayer/assets/",
     "seaplayer/assets/image-not-found.png": "seaplayer/assets/"
 }

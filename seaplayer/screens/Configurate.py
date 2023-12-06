@@ -9,6 +9,7 @@ except:
     INIT_SOUNDDEVICE = False
 from typing import Optional, Literal, Union, Tuple, Dict, List, Any
 # > Local Imports
+from ..languages import LanguageLoader
 from ..types import Converter
 from ..modules.colorizer import richefication
 from ..objects import (
@@ -55,6 +56,12 @@ if INIT_SOUNDDEVICE:
 # ! Main Class
 class Configurate(Screen):
     """This Configurate Menu screen."""
+    # ! Propertyes
+    @property
+    def ll(self) -> LanguageLoader:
+        return self.app.ll
+    
+    # ! Textual Settings
     BINDINGS = [("escape", "app.pop_screen", "Back")]
     
     # ! Nofy Functions
@@ -76,7 +83,7 @@ class Configurate(Screen):
     
     # ! Update Placeholder from InputField
     def _upfif(self, attr_name: str) -> str:
-        return "Currect: " + str(eval(f"self.{attr_name}"))
+        return self.ll.get("words.currect")+": " + str(eval(f"self.{attr_name}"))
     
     def gupfif(self, attr_name: str):
         return lambda: self._upfif(attr_name)
@@ -125,7 +132,7 @@ class Configurate(Screen):
                 update_placeholder=self.gupfif(attr_name)
             ),
             title="[red]{"+group+"}[/red]: "+f"{title} ({richefication(type_alias)})",
-            desc=desc+(" [red](restart required)[/red]" if restart_required else ""),
+            desc=desc+(f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else ""),
             height=5
         )
     
@@ -141,8 +148,8 @@ class Configurate(Screen):
                 submit=self.guac(attr_name),
                 update_placeholder=self.gupfif(attr_name)
             ),
-            title="[red]{Key}[/red]: "+f"{title} ({richefication(str)})",
-            desc=desc+(" [red](restart required)[/red]" if restart_required else ""),
+            title="[red]{Keys}[/red]: "+f"{title} ({richefication(str)})",
+            desc=desc+(f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else ""),
             height=5
         )
     
@@ -167,7 +174,7 @@ class Configurate(Screen):
         return ConfigurateListItem(
             DataRadioSet(on_changed_method, *buttons),
             title="[red]{"+group+"}[/red]: "+title,
-            desc=desc + " [red](restart required)[/red]" if restart_required else "",
+            desc=desc + f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else "",
             height=len(values)+4
         )
     
@@ -181,19 +188,29 @@ class Configurate(Screen):
             )
             return ConfigurateListItem(
                 options_list,
-                title="[red]{Sound}[/]: Output Sound Device",
-                desc="Select the device that SeaPlayer will work with. [red](restart required)[/red]",
+                title="[red]{"+self.ll.get("configurate.sound")+"}[/]: "+self.ll.get("configurate.sound.output_device"),
+                desc=self.ll.get("configurate.sound.output_device.desc"),
                 height=len(dos)+4
             )
     
     # ! Configurate Main Functions
     def compose(self) -> ComposeResult:
+        self.congigurate_list = ConfigurateList()
+        self.congigurate_list.border_title = self.ll.get("configurate")
         yield Header()
-        with ConfigurateList():
+        with self.congigurate_list:
+            yield self.create_configurator_literal(
+                "app.config.lang",
+                [(lang.mark, lang.title) for lang in self.ll.langs],
+                self.ll.get("configurate.main"),
+                self.ll.get("configurate.main.lang"),
+                self.ll.get("configurate.main.lang.desc")
+            )
             yield self.create_configurator_type(
                 "app.config.sound_font_path",
-                "Sound", "Sound Font Path",
-                "Path to SF2-file.",
+                self.ll.get("configurate.sound"),
+                self.ll.get("configurate.sound.font_path"),
+                self.ll.get("configurate.sound.font_path.desc"),
                 conv.optional(conv.filepath), Optional[str], False
             )
             if INIT_SOUNDDEVICE:
@@ -201,58 +218,99 @@ class Configurate(Screen):
             yield self.create_configurator_literal(
                 "app.config.image_update_method",
                 [
-                    ("sync", "Synchronously"),
-                    ("async", "Asynchronously")
+                    ("sync", self.ll.get("configurate.image.update_method.sync")),
+                    ("async", self.ll.get("configurate.image.update_method.async"))
                 ],
-                "Image", "Image Update Method",
-                "The name of the picture update option."
+                self.ll.get("configurate.image"),
+                self.ll.get("configurate.image.update_method"),
+                self.ll.get("configurate.image.update_method.desc")
             )
             yield self.create_configurator_literal(
                 "app.config.image_resample_method",
                 [
-                    ("nearest", "Nearest"),
-                    ("bilinear", "Bilinear"),
-                    ("bicubic", "Bicubic"),
-                    ("lanczos", "Lanczos"),
-                    ("hamming", "Hamming"),
-                    ("box", "Boxing"),
+                    ("nearest", self.ll.get("configurate.image.resample_method.nearest")),
+                    ("bilinear", self.ll.get("configurate.image.resample_method.bilinear")),
+                    ("bicubic", self.ll.get("configurate.image.resample_method.bicubic")),
+                    ("lanczos", self.ll.get("configurate.image.resample_method.lanczos")),
+                    ("hamming", self.ll.get("configurate.image.resample_method.hamming")),
+                    ("box", self.ll.get("configurate.image.resample_method.box")),
                 ],
-                "Image", "Image Resample Method",
-                "Method for reducing/increasing the number of pixels."
+                self.ll.get("configurate.image"),
+                self.ll.get("configurate.image.resample_method"),
+                self.ll.get("configurate.image.resample_method.desc")
             )
             yield self.create_configurator_type(
                 "app.config.volume_change_percent",
-                "Playback", "Volume Change Percent",
-                "Percentage by which the volume changes when the special keys are pressed.",
+                self.ll.get("configurate.playback"),
+                self.ll.get("configurate.playback.volume_change_percent"),
+                self.ll.get("configurate.playback.volume_change_percent.desc"),
                 float, float, False
             )
             yield self.create_configurator_type(
                 "app.config.rewind_count_seconds",
-                "Playback", "Rewind Count Seconds",
-                "The value of the seconds by which the current sound will be rewound.",
+                self.ll.get("configurate.playback"),
+                self.ll.get("configurate.playback.rewind_count_seconds"),
+                self.ll.get("configurate.playback.rewind_count_seconds.desc"),
                 int, int, False
             )
             yield self.create_configurator_type(
                 "app.config.max_volume_percent",
-                "Playback", "Max Volume Percent",
-                "Maximum volume value.",
+                self.ll.get("configurate.playback"),
+                self.ll.get("configurate.playback.max_volume_percent"),
+                self.ll.get("configurate.playback.max_volume_percent.desc"),
                 float, float, False
             )
             yield self.create_configurator_literal(
                 "app.config.recursive_search",
-                [(True, "On"), (False, "Off")],
-                "Playlist", "Recursive Search",
-                "Recursive file search.", False
+                [
+                    (True, self.ll.get("words.on")),
+                    (False, self.ll.get("words.off"))
+                ],
+                self.ll.get("configurate.playlist"),
+                self.ll.get("configurate.playlist.recursive_search"),
+                self.ll.get("configurate.playlist.recursive_search.desc"),
+                False
             )
             yield self.create_configurator_literal(
                 "app.config.log_menu_enable",
-                [(True, "On"), (False, "Off")],
-                "Debag", "Log Menu Enable",
-                "Menu with logs for the current session.", False
+                [
+                    (True, self.ll.get("words.on")),
+                    (False, self.ll.get("words.off"))
+                ],
+                self.ll.get("configurate.debug"),
+                self.ll.get("configurate.debug.log_menu_enable"),
+                self.ll.get("configurate.debug.log_menu_enable.desc"),
+                False
             )
-            yield self.create_configurator_keys("app.config.key_quit", "Quit", "Сlose the app.", False)
-            yield self.create_configurator_keys("app.config.key_rewind_forward", "Rewind Forward", "Forwards rewinding.", False)
-            yield self.create_configurator_keys("app.config.key_rewind_back", "Rewind Back", "Backwards rewinding.", False)
-            yield self.create_configurator_keys("app.config.key_volume_up", "Volume +", "Turn up the volume.", False)
-            yield self.create_configurator_keys("app.config.key_volume_down", "Volume -", "Turn down the volume.", False)
+            # ! Keys
+            yield self.create_configurator_keys(
+                "app.config.key_quit",
+                self.ll.get("configurate.keys.quit"),
+                self.ll.get("configurate.keys.quit.desc"),
+                False
+            )
+            yield self.create_configurator_keys(
+                "app.config.key_rewind_forward",
+                self.ll.get("configurate.keys.rewind_forward"),
+                self.ll.get("configurate.keys.rewind_forward.desc"),
+                False
+            )
+            yield self.create_configurator_keys(
+                "app.config.key_rewind_back",
+                self.ll.get("configurate.keys.rewind_back"),
+                self.ll.get("configurate.keys.rewind_back.desc"),
+                False
+            )
+            yield self.create_configurator_keys(
+                "app.config.key_volume_up",
+                self.ll.get("configurate.keys.volume_plus"),
+                self.ll.get("configurate.keys.volume_plus.desc"),
+                False
+            )
+            yield self.create_configurator_keys(
+                "app.config.key_volume_down",
+                self.ll.get("configurate.keys.volume_minus"),
+                self.ll.get("configurate.keys.volume_minus.desc"),
+                False
+            )
         yield Footer()

@@ -16,12 +16,10 @@ class LogMenu(RichLog):
     def __init__(self, chap_max_width: int=8, enable_logging: bool=True, **kwargs):
         self.enable_logging = enable_logging
         self.chap_max_width = chap_max_width
-        
-        if kwargs.get("classes", None) is not None:
-            kwargs["classes"] = kwargs["classes"] + " log-menu -hidden"
+        if (classes:=kwargs.get("classes", None)) is None:
+            kwargs["classes"] = "--hidden"
         else:
-            kwargs["classes"] = "log-menu -hidden"
-        
+            kwargs["classes"] = f"{classes} --hidden"
         super().__init__(**kwargs)
     
     def write_log(self, chap: str, msg: str, *, chap_color: str="green", in_console: bool=False) -> None:

@@ -1,4 +1,4 @@
-from textual.widgets import Header, Footer, OptionList
+from textual.widgets import OptionList
 from textual.widgets.option_list import Option
 # > Typing
 from typing import Optional, Callable

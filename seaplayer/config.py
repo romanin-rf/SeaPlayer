@@ -2,9 +2,14 @@ import properties
 from pathlib import Path
 from typing import Dict, Any, Optional, TypeVar, Union, Literal
 
+# ! Types
 T = TypeVar("T")
 
+# ! Vars
 DEFAULT_CONFIG_DATA = {
+    "main": {
+        "lang": "en-eng"
+    },
     "sound": {
         "sound_font_path": None,                # * Optional[str]
         "output_sound_device_id": None,         # * Optional[int]
@@ -33,6 +38,7 @@ DEFAULT_CONFIG_DATA = {
     }
 }
 
+# ! Main Class
 class SeaPlayerConfig:
     @staticmethod
     def dump(filepath: Path, data: Dict[str, Any]) -> None:
@@ -42,13 +48,16 @@ class SeaPlayerConfig:
     @staticmethod
     def load(filepath: Path, default: Dict[str, Any]) -> Dict[str, Any]:
         with open(filepath, "r", encoding="utf-8", errors="ignore") as file:
-            try: return properties.load_tree(file)
-            except: pass
+            try:
+                return properties.load_tree(file)
+            except:
+                pass
         with open(filepath, "w", encoding="utf-8", errors="ignore") as file:
             properties.dump_tree(default, file)
         return default
     
-    def refresh(self) -> None: self.dump(self.filepath, self.config)
+    def refresh(self) -> None:
+        self.dump(self.filepath, self.config)
     
     def __init__(
         self,
@@ -71,12 +80,25 @@ class SeaPlayerConfig:
     @staticmethod
     def tevey(key_path: str, *, sep: str=".") -> str:
         return "".join([f"[{repr(key)}]" for key in key_path.split(sep)])
+    
     def get(self, key: str, default: T=None) -> Union[Any, T]:
-        try: return eval(f"self.config{self.tevey(key)}")
-        except: return default
+        try:
+            return eval(f"self.config{self.tevey(key)}")
+        except:
+            return default
+    
     def set(self, key: str, value: Any) -> None:
-        try: exec(f"self.config{self.tevey(key)} = value") ; self.refresh()
-        except: pass
+        try:
+            exec(f"self.config{self.tevey(key)} = value")
+            self.refresh()
+        except:
+            pass
+    
+    # ! Main
+    @property
+    def lang(self) -> Union[Literal['en-eng'], str]: return self.get("main.lang")
+    @lang.setter
+    def lang(self, value: Union[Literal['en-eng'], str]) -> None: self.set("main.lang", value)
     
     # ! Sound
     @property

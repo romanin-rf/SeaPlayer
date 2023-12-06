@@ -2,7 +2,7 @@ from textual.widgets import Static
 # > Typing
 from typing import Literal
 
-
+# ! Nofys Classes
 class Nofy(Static):
     def __init__(
         self,
@@ -15,8 +15,11 @@ class Nofy(Static):
         self.life_time = life_time
         self.styles.dock = dosk
     
-    def on_mount(self) -> None: self.set_timer(self.life_time, self.remove)
-    async def on_click(self) -> None: await self.remove()
+    def on_mount(self) -> None:
+        self.set_timer(self.life_time, self.remove)
+    
+    async def on_click(self) -> None:
+        await self.remove()
 
 class CallNofy(Static):
     def __init__(

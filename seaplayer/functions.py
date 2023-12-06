@@ -5,6 +5,7 @@ from io import BytesIO
 # > Image Works
 from PIL import Image
 # > Typing
+from typing_extensions import deprecated
 from typing import Literal, Tuple, Optional, Iterable, TypeVar, AsyncGenerator, Any
 # > Local Imports
 from .codeсbase import CodecBase
@@ -39,6 +40,7 @@ def rich_exception(exc: Exception) -> str:
 def formater(**kwargs) -> str:
     return ", ".join([f"{key}={repr(value)}" for key, value in kwargs.items()])
 
+@deprecated("Use `seaplayer.seaplayer.SeaPlayer.get_sound_tstatus`.")
 def check_status(sound: CodecBase) -> Literal["Stoped", "Playing", "Paused"]:
     if sound.playing:
         if sound.paused:
