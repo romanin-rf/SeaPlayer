@@ -24,6 +24,7 @@ DATA = {
     "seaplayer/exceptions.py": "seaplayer/",
     "seaplayer/codeсbase.py": "seaplayer/",
     "seaplayer/units.py": "seaplayer/",
+    "seaplayer/languages.py": "seaplayer/",
     # * 1.1) Objects
     "seaplayer/objects": "seaplayer/objects/",
     "seaplayer/objects/__init__.py": "seaplayer/objects/",
@@ -69,7 +70,11 @@ DATA = {
     "seaplayer/css/seaplayer.css": "seaplayer/css/",
     "seaplayer/css/configurate.css": "seaplayer/css/",
     "seaplayer/css/unknown.css": "seaplayer/css/",
-    # * 4) Assets Files
+    # * 4) Language Files
+    "seaplayer/langs": "seaplayer/langs/",
+    "seaplayer/langs/en-eng.properties": "seaplayer/langs/",
+    "seaplayer/langs/ru-rus.properties": "seaplayer/langs/",
+    # * 5) Assets Files
     "seaplayer/assets": "seaplayer/assets/",
     "seaplayer/assets/image-not-found.png": "seaplayer/assets/"
 }
