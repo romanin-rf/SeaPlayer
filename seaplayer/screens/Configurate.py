@@ -184,6 +184,22 @@ class Configurate(Screen):
             height=len(values)+4
         )
     
+    def create_configurator_language(self) -> ConfigurateListItem:
+        languages = []
+        for lang in self.ll.langs:
+            if lang.author_url is not None:
+                text = f"{lang.title} ({lang.words['from']} [link={lang.author_url}]{lang.author}[/link])"
+            else:
+                text = f"{lang.title} ({lang.words['from']} {lang.author})"
+            languages.append((lang.mark, text))
+        return self.create_configurator_literal(
+            "app.config.lang",
+            languages,
+            self.ll.get("configurate.main"),
+            self.ll.get("configurate.main.lang"),
+            self.ll.get("configurate.main.lang.desc")
+        )
+    
     if INIT_SOUNDDEVICE:
         def create_configurator_sound_devices(self):
             dos = generate_devices_options(self.app.config.output_sound_device_id)
@@ -203,13 +219,7 @@ class Configurate(Screen):
         self.congigurate_list.border_title = self.ll.get("configurate")
         yield Header()
         with self.congigurate_list:
-            yield self.create_configurator_literal(
-                "app.config.lang",
-                [(lang.mark, lang.title) for lang in self.ll.langs],
-                self.ll.get("configurate.main"),
-                self.ll.get("configurate.main.lang"),
-                self.ll.get("configurate.main.lang.desc")
-            )
+            yield self.create_configurator_language()
             yield self.create_configurator_type(
                 "app.config.sound_font_path",
                 self.ll.get("configurate.sound"),
