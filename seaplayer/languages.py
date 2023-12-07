@@ -13,8 +13,15 @@ class Language:
         with open(filepath, 'r', errors='ignore', encoding='utf-8') as file:
             return properties.load(file)
     
-    def __get_title(self) -> str:
-        return self.__load_file(self.__name).get("language.title", f"<LTNF:{self.__mark}>")
+    def __get_metadata(self) -> Tuple[str, str, Optional[str], Dict[str, str]]:
+        data = self.__load_file(self.__name)
+        return \
+            data.get("language.metadata.title", f"<LTNF:{self.__mark}>"), \
+            data.get("language.metadata.author", "<unknown>"), \
+            data.get("language.metadata.author.url", None), \
+            {
+                "from": data.get("language.metadata.words.from", "from")
+            }
     
     # ? Initialization
     def __init__(self, language_filepath: str) -> None:
@@ -25,11 +32,11 @@ class Language:
             raise FileNotFoundError
         # * Metadata Loading
         self.__mark = os.path.splitext(os.path.basename(self.__name))[0].lower()
-        self.__title = self.__get_title()
+        self.__title, self.__author, self.__author_url, self.__words = self.__get_metadata()
     
     # ? Magic Methods
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}({formater(name=self.__name, mark=self.__mark)})"
+        return f"{self.__class__.__name__}({formater(name=self.__name, title=self.__title, mark=self.__mark)})"
     
     def __repr__(self) -> str:
         return self.__str__()
@@ -46,6 +53,18 @@ class Language:
     @property
     def title(self) -> str:
         return self.__title
+    
+    @property
+    def author(self) -> str:
+        return self.__author
+    
+    @property
+    def author_url(self) -> str:
+        return self.__author_url
+    
+    @property
+    def words(self) -> Dict[str, str]:
+        return self.__words
     
     @property
     def loaded(self) -> bool:

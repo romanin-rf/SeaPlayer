@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.8.0"
+version = "0.8.1"
 description = "SeaPlayer is a player that works in the terminal."
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
@@ -25,7 +25,8 @@ include = [
     "seaplayer/css/seaplayer.tcss",
     "seaplayer/css/unknown.tcss",
     "seaplayer/langs/en-eng.properties",
-    "seaplayer/langs/ru-rus.properties"
+    "seaplayer/langs/ru-rus.properties",
+    "seaplayer/langs/uk-ukr.properties"
 ]
 [tool.poetry.urls]
 "Changelog" = "https://github.com/romanin-rf/SeaPlayer/blob/main/changelog.md"
