@@ -74,6 +74,7 @@ DATA = {
     "seaplayer/langs": "seaplayer/langs/",
     "seaplayer/langs/en-eng.properties": "seaplayer/langs/",
     "seaplayer/langs/ru-rus.properties": "seaplayer/langs/",
+    "seaplayer/langs/uk-ukr.properties": "seaplayer/langs/",
     # * 5) Assets Files
     "seaplayer/assets": "seaplayer/assets/",
     "seaplayer/assets/image-not-found.png": "seaplayer/assets/"
