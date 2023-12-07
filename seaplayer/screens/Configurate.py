@@ -1,6 +1,7 @@
 from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Header, Footer
+from textual.binding import BindingType, Binding, _Bindings
 # > Typing
 try:
     from sounddevice import query_devices, query_hostapis
@@ -61,8 +62,13 @@ class Configurate(Screen):
     def ll(self) -> LanguageLoader:
         return self.app.ll
     
-    # ! Textual Settings
-    BINDINGS = [("escape", "app.pop_screen", "Back")]
+    @property
+    def bindings(self) -> List[Binding]:
+        return self._bindings.shown_keys
+    @bindings.setter
+    def bindings(self, value: List[BindingType]) -> None:
+        self.BINDINGS = value
+        self._bindings = _Bindings(value)
     
     # ! Nofy Functions
     def nofy(
@@ -148,7 +154,7 @@ class Configurate(Screen):
                 submit=self.guac(attr_name),
                 update_placeholder=self.gupfif(attr_name)
             ),
-            title="[red]{Keys}[/red]: "+f"{title} ({richefication(str)})",
+            title="[red]{"+self.ll.get("configurate.keys")+"}[/red]: "+f"{title} ({richefication(str)})",
             desc=desc+(f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else ""),
             height=5
         )
@@ -181,11 +187,7 @@ class Configurate(Screen):
     if INIT_SOUNDDEVICE:
         def create_configurator_sound_devices(self):
             dos = generate_devices_options(self.app.config.output_sound_device_id)
-            options_list = DataOptionList(
-                *dos,
-                group="SoundDevicesSelect",
-                after_selected=self.gucsdi()
-            )
+            options_list = DataOptionList(*dos, group="SoundDevicesSelect", after_selected=self.gucsdi())
             return ConfigurateListItem(
                 options_list,
                 title="[red]{"+self.ll.get("configurate.sound")+"}[/]: "+self.ll.get("configurate.sound.output_device"),
@@ -195,6 +197,8 @@ class Configurate(Screen):
     
     # ! Configurate Main Functions
     def compose(self) -> ComposeResult:
+        self.bindings = [Binding("escape", "app.pop_screen", self.ll.get("configurate.footer.back"))]
+        # ? Compose
         self.congigurate_list = ConfigurateList()
         self.congigurate_list.border_title = self.ll.get("configurate")
         yield Header()
