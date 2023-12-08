@@ -281,6 +281,7 @@ class SeaPlayer(App):
         self.info(f"CSS Dirpath     : {repr(CSS_LOCALDIR)}")
         self.info(f"Assets Dirpath  : {repr(ASSETS_DIRPATH)}")
         self.info(f"Codecs Kwargs   : {repr(self.CODECS_KWARGS)}")
+        self.info(f"Language Loader : {repr(self.ll)}")
         
         # * Play Screen
         self.music_play_screen = Container(classes="screen-box")

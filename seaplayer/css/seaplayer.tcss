@@ -38,3 +38,12 @@
     align: center middle;
     text-align: center;
 }
+
+/* Playlist */
+.music-list-screen-add-box {
+    height: 3;
+}
+
+.music-list-screen-add-input {
+    width: 1fr;
+}

@@ -2,7 +2,7 @@ from textual.widgets import Label, ListItem, ListView
 # > Typing
 from typing import Optional
 # > Local Import's
-from .FullLabel import FullLabel
+from .Labels import FillLabel
 from ..types import MusicList
 from ..codeсbase import CodecBase
 from ..functions import get_sound_basename, aiter
@@ -16,16 +16,16 @@ class MusicListViewItem(ListItem):
         second_subtitle: str="",
         sound_uuid: Optional[str]=None
     ) -> None:
-        super().__init__(classes="music-list-view-item")
-        self.title_label = Label(title, classes="music-list-view-item-title-label")
-        self.first_subtitle_label = Label(f" {first_subtitle}", classes="music-list-view-item-subtitle-label")
-        self.second_subtitle_label = Label(f" {second_subtitle}", classes="music-list-view-item-subtitle-label")
+        super().__init__()
+        self.title_label = Label(title, classes="title-label")
+        self.first_subtitle_label = Label(f" {first_subtitle}", classes="subtitle-label")
+        self.second_subtitle_label = Label(f" {second_subtitle}", classes="subtitle-label")
         self.sound_uuid = sound_uuid
         
         self.compose_add_child(self.title_label)
         self.compose_add_child(self.first_subtitle_label)
         self.compose_add_child(self.second_subtitle_label)
-        self.compose_add_child(FullLabel())
+        self.compose_add_child(FillLabel())
     
     async def update_labels(
         self,
@@ -39,9 +39,8 @@ class MusicListViewItem(ListItem):
 
 # ! Main Class
 class MusicListView(ListView):
-    def __init__(self, **kwargs) -> None:
-        kwargs["classes"] = "music-list-view"
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.music_list: MusicList = MusicList()
     
     def add_sound(self, sound: CodecBase) -> str:
@@ -85,8 +84,12 @@ class MusicListView(ListView):
         )
         return sound_uuid
     
-    def get_items_count(self) -> int: return len(self.children)
-    def exists_item_index(self, index: int) -> bool: return 0 >= index < self.get_items_count()
+    def get_items_count(self) -> int:
+        return len(self.children)
+    
+    def exists_item_index(self, index: int) -> bool:
+        return 0 >= index < self.get_items_count()
+    
     def get_item_index_from_sound_uuid(self, sound_uuid: str) -> Optional[int]:
         item: MusicListViewItem
         for idx, item in enumerate(self.children):
@@ -94,10 +97,13 @@ class MusicListView(ListView):
                 return idx
     
     def get_item_from_index(self, index: int) -> Optional[MusicListViewItem]:
-        try: return self.children[index]
+        try:
+            return self.children[index]
         except:
-            try: return self.children[0]
-            except: pass
+            try:
+                return self.children[0]
+            except:
+                pass
     
     def get_next_sound_uuid(self, sound_uuid: str) -> Optional[str]:
         if (index:=self.get_item_index_from_sound_uuid(sound_uuid)) is not None:
@@ -137,4 +143,5 @@ class MusicListView(ListView):
                     self.children[await self.aio_get_item_index_from_sound_uuid(sound_uuid)]
                 )
             )
-        except: pass
+        except:
+            pass

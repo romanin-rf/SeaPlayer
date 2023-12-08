@@ -180,7 +180,7 @@ class Configurate(Screen):
         return ConfigurateListItem(
             DataRadioSet(on_changed_method, *buttons),
             title="[red]{"+group+"}[/red]: "+title,
-            desc=desc + f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else "",
+            desc=desc+(f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else ""),
             height=len(values)+4
         )
     

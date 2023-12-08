@@ -5,14 +5,14 @@ from typing import Optional, Callable, Coroutine, Tuple, Any
 # > Local Import's
 from ..functions import get_bar_status
 
-
+# ! Main Class
 class IndeterminateProgress(Static):
     def __init__(
         self,
         getfunc: Callable[[], Coroutine[Any, Any, Tuple[str, Optional[float], Optional[float]]]]=get_bar_status,
         fps: int=10
     ) -> None:
-        super().__init__("", classes="indeterminate-progress-bar")
+        super().__init__()
         self._bar = Progress(BarColumn(), TextColumn("{task.description}"))
         self._task_id = self._bar.add_task("", total=None)
         self._fps = fps
