@@ -1,4 +1,5 @@
 from .Log import LogMenu
+from .Labels import FillLabel
 from .Input import InputField
 from .Notification import Nofy, CallNofy
 from .ProgressBar import IndeterminateProgress

@@ -5,6 +5,7 @@ from ..codeсbase import CodecBase
 
 # ! Main Class
 class MusicList:
+    # ? Preload Methods
     @staticmethod
     def get_file_sha1(sound: CodecBase, buffer_size: int=65536) -> str:
         return sound.__sha1__(buffer_size)
@@ -13,12 +14,14 @@ class MusicList:
     async def aio_get_file_sha1(sound: CodecBase, buffer_size: int=65536) -> str:
         return await sound.__aio_sha1__(buffer_size)
     
+    # ? Initialization
     def __init__(self, **child_sounds: CodecBase) -> None:
         self.sounds: Dict[str, CodecBase] = {}
         for key in child_sounds:
             if isinstance(child_sounds[key], CodecBase):
                 self.sounds[key] = child_sounds[key]
     
+    # ? Main Sync Methods
     def exists(self, sound_uuid: str) -> bool:
         return sound_uuid in self.sounds.keys()
     
@@ -32,6 +35,7 @@ class MusicList:
     def exists_sha1(self, sound: CodecBase) -> bool:
         return self.get_file_sha1(sound) in self.sounds.keys()
     
+    # ? Main Async Methods
     async def aio_exists(self, sound_uuid: str):
         return sound_uuid in self.sounds.keys()
     

@@ -7,6 +7,7 @@ from ..exceptions import (
     NotBooleanError
 )
 
+# ! Main Class
 class Converter:
     def __init__(self, *args, **kwargs) -> None:
         self.args = args
@@ -19,17 +20,17 @@ class Converter:
         except:
             return False, None
     
+    def gen_conv(self, tp: type):
+        def conv_wrapper(value: str) -> Tuple[bool, Optional[Any]]:
+            return self.conv(tp, value)
+        return conv_wrapper
+    
     @staticmethod
     async def aio_conv(tp: type, value: str) -> Tuple[bool, Optional[Any]]:
         try:
             return True, tp(value)
         except:
             return False, None
-    
-    def gen_conv(self, tp: type):
-        def conv_wrapper(value: str) -> Tuple[bool, Optional[Any]]:
-            return self.conv(tp, value)
-        return conv_wrapper
     
     def gen_aio_conv(self, tp: type):
         async def aio_conv_wrapper(value: str) -> Tuple[bool, Optional[Any]]:

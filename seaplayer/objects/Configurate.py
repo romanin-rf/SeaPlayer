@@ -12,8 +12,7 @@ class ConfigurateListItem(Container):
         width: Union[int, str]="1fr",
         height: Union[int, str]="1fr",
         **kwargs
-    ):
-        kwargs["classes"] = "configurate-list-view-item"
+    ) -> None:
         super().__init__(*children, **kwargs)
         self.border_title = title
         self.border_subtitle = desc
@@ -26,6 +25,5 @@ class ConfigurateListItem(Container):
 
 # ! Main Class
 class ConfigurateList(ScrollableContainer):
-    def __init__(self, *children, **kwargs):
-        kwargs["classes"] = "configurate-list-view"
+    def __init__(self, *children, **kwargs) -> None:
         super().__init__(*children, **kwargs)

@@ -116,8 +116,7 @@ class Rheostat(Vertical):
             Horizontal(
                 ClikableButton("-", self.__click_minus),
                 self.label,
-                ClikableButton("+", self.__click_plus),
-                classes="rheostat-horizontal"
+                ClikableButton("+", self.__click_plus)
             ),
             classes="rheostat"
         )

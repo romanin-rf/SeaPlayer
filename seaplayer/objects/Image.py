@@ -15,8 +15,8 @@ class StandartImageLabel(Label):
         image: Optional[Image.Image]=None,
         *,
         resample: Resampling=Resampling.NEAREST
-    ):
-        super().__init__("<image not found>", classes="image-label")
+    ) -> None:
+        super().__init__("<image not found>")
         self.image_resample = resample
         self.default_image: Image.Image = default_image
         self.image: Optional[Image.Image] = image
@@ -51,7 +51,7 @@ class AsyncImageLabel(Label):
         self.image: Optional[Image.Image] = image
         self.image_text: Union[str, AsyncPixels] = "<image not found>"
         self.last_image_size: Optional[Tuple[int, int]] = None
-        super().__init__("<image not found>", classes="image-label")
+        super().__init__("<image not found>")
     
     async def on_resize(self) -> None:
         image, resample = (self.default_image, Resampling.NEAREST) if (self.image is None) else (self.image, self.image_resample)

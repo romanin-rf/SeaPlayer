@@ -1,43 +1,42 @@
 /* ! Music List */
-.music-list-view {
+MusicListView {
     height: 1fr;
 }
 
-.music-list-view-item {
+MusicListViewItem {
     height: 4;
 }
 
-.music-list-view-item-title-label {
+MusicListViewItem .title-label {
     height: 1;
     color: #cacaca;
 }
 
-.music-list-view-item-subtitle-label {
+MusicListViewItem .subtitle-label {
     height: 1;
     color: #a9a9a9;
 }
 
-.music-list-screen-add-box {
-    height: 3;
-}
-
-.music-list-screen-add-input {
-    width: 1fr;
-}
-
 /* ! IndeterminateProgress */
-.indeterminate-progress-bar { height: 1; }
+IndeterminateProgress { height: 1; }
 
 /* ! Rheostat */
-.rheostat-bar { height: 1; }
-.rheostat { height: 4; }
-.rheostat-horizontal {
+RheostatBar { height: 1; }
+Rheostat { height: 4; }
+Rheostat Horizontal {
     align-horizontal: center;
     width: 1fr;
 }
 
 /* ! Image Label */
-.image-label {
+StandartImageLabel {
+    height: 1fr;
+    width: 1fr;
+    align: center middle;
+    text-align: center;
+}
+
+AsyncImageLabel {
     height: 1fr;
     width: 1fr;
     align: center middle;
@@ -45,22 +44,19 @@
 }
 
 /* ! Configurate List */
-.configurate-list-view {
+ConfigurateList {
     border: solid cadetblue;
     height: 1fr;
     width: 1fr;
 }
 
-.configurate-list-view-item {
+ConfigurateListItem {
     border: solid dodgerblue;
     background: #0000;
     border-title-color: #aaaaaa;
     border-subtitle-color: #6b6b6b;
     height: auto;
 }
-
-/* ! Any Elements CSS */
-.pass-one-width { width: 1; }
 
 /* ! Log Menu */
 LogMenu {
@@ -114,7 +110,10 @@ PopUp {
 }
 
 /* ! FullLabel */
-.full-label {
+FillLabel {
     height: 1fr;
     width: 1fr;
 }
+
+/* ! Any Elements CSS */
+.pass-one-width { width: 1; }

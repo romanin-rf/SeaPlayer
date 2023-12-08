@@ -1,7 +1,7 @@
 import os
 import glob
 import properties
-from typing import Dict, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
 # > Local Imports
 from .functions import formater
 from .exceptions import LanguageNotExistError, LanguageNotLoadedError
@@ -36,7 +36,8 @@ class Language:
     
     # ? Magic Methods
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}({formater(name=self.__name, title=self.__title, mark=self.__mark)})"
+        form = formater(name=self.__name, title=self.__title, mark=self.__mark, loaded=self.__loaded)
+        return f"{self.__class__.__name__}({form})"
     
     def __repr__(self) -> str:
         return self.__str__()
@@ -85,17 +86,18 @@ class Language:
 # ! Main Class
 class LanguageLoader:
     # ? Main Methods
-    def __search_langs(self, dlm: str, mlm: str) -> Tuple[Language, Language]:
+    def __search_langs(self, dlm: str, mlm: str) -> Tuple[Language, Optional[Language]]:
         dl, ml = None, None
         for lang in self.langs:
             if lang.mark == dlm:
                 dl = lang
             if lang.mark == mlm:
                 ml = lang
-        if (dl is None) or (ml is None):
-            raise LanguageNotExistError([dlm, mlm])
+        if dl is None:
+            raise LanguageNotExistError([dl])
         dl.load()
-        ml.load()
+        if ml is not None:
+            ml.load()
         return dl, ml
     
     # ? Initialization
@@ -108,12 +110,73 @@ class LanguageLoader:
         self.__name = os.path.abspath(langs_dirpath)
         self.__mlm = main_lang_mark.lower()
         self.__dlm = default_lang_mark.lower()
+        self.__alangs: List[LanguageLoader] = []
         # * Checking
         if not os.path.isdir(self.__name):
             raise FileNotFoundError
-        # * Searching Languages
-        self.langs = [Language(lp) for lp in glob.glob(os.path.join(self.__name, "??-???.properties"))]
-        self.dlang, self.mlang = self.__search_langs(self.__dlm, self.__mlm)
+        # * Searching and loading languages
+        self.__langs: List[Language] = [Language(lp) for lp in glob.glob(os.path.join(self.__name, "??-???.properties"))]
+        self.__dlang, self.__mlang = self.__search_langs(self.__dlm, self.__mlm)
     
+    # ? Magic Methods
+    def __str__(self) -> str:
+        form = formater(
+            name=self.__name,
+            default_lang_mark=self.__dlm,
+            main_lang_mark=self.__mlm,
+            langs=self.__langs,
+            alangs=self.__alangs
+        )
+        return f"{self.__class__.__name__}({form})"
+    
+    def __repr__(self) -> str:
+        return self.__str__()
+    
+    # ? Propertys
+    @property
+    def name(self) -> str:
+        return self.__name
+    
+    @property
+    def main_lang_mark(self) -> str:
+        return self.__mlm
+    
+    @property
+    def default_lang_mark(self) -> str:
+        return self.__dlm
+    
+    @property
+    def langs(self) -> List[Language]:
+        return self.__langs
+    
+    @property
+    def default_lang(self) -> Language:
+        return self.__dlang
+    
+    @property
+    def main_lang(self) -> Optional[Language]:
+        return self.__mlang
+    
+    @property
+    def alangs(self):
+        """Additional languages, for example, translation of plugins.
+        
+        Returns:
+            List[LanguageLoader]: A language loader with its own list of languages, which is the last thing to get from.
+        """
+        return self.__alangs
+    
+    # ? Public Methods
     def get(self, key: str) -> str:
-        return self.mlang.get(key, self.dlang.get(key, "<LTNF>"))
+        if self.__mlang is None:
+            data = self.__dlang.get(key)
+        data = self.__mlang.get(key, self.__dlang.get(key))
+        if data is None:
+            for alang in self.__alangs:
+                if (data:=alang.get(key)) is not None:
+                    break
+        return data if data is not None else "<LTNF>"
+    
+    def merge(self, ll) -> None:
+        assert isinstance(ll, LanguageLoader)
+        self.__alangs.append(ll)
