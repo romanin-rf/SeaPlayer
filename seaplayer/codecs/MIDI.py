@@ -9,6 +9,7 @@ from .AnySound import AnySound
 # ! Codec
 class MIDICodec(AnyCodec):
     codec_name: str = "MIDI"
+    codec_priority: float=5.0
     
     # ! Testing
     @staticmethod

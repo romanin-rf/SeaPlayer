@@ -5,6 +5,7 @@ from .Any import AnyCodec
 # ! Main Class
 class MP3Codec(AnyCodec):
     codec_name: str = "MP3"
+    codec_priority: float=1.0
     
     # ! Testing
     @staticmethod

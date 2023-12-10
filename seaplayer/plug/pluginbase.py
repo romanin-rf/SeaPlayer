@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from textual.binding import Binding
 from textual.screen import Screen
 # > Typing
-from typing import Optional, Generator, Type, Any
+from typing import Optional, Generator, Type, Callable, List, Any
 # > Local Import's
 from ..codeсbase import CodecBase
 from ..functions import formater
@@ -41,6 +41,9 @@ class PluginBase:
     
     def add_codecs(self, *codecs: Type[CodecBase]) -> None:
         self.app.CODECS += [ *codecs ]
+    
+    def add_value_handlers(self, *handlers: Callable[[str], List[str]]) -> None:
+        self.pl.value_handlers += list(handlers)
     
     # ! Dev Functions
     def on_bindings(self) -> Generator[Binding, Any, None]:

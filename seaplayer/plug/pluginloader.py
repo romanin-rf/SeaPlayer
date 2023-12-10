@@ -10,7 +10,7 @@ from textual.binding import Binding
 from importlib.util import spec_from_file_location, module_from_spec
 # > Typing
 from types import ModuleType
-from typing import Optional, Dict, Union, Any, List, Tuple, Type, Generator
+from typing import Optional, Dict, Union, Any, List, Tuple, Type, Generator, Callable
 # > Local Import's
 from .pipw import pip
 from .pluginbase import PluginInfo, PluginBase
@@ -28,7 +28,7 @@ console = Console()
 
 # ! Types
 class PluginModuleType(ModuleType):
-    plugin_main: Type[PluginBase]
+    __plugin__: Type[PluginBase]
 
 # ! Functions
 def get_module_info(path: str):
@@ -56,7 +56,7 @@ def load_module(init_path: str) -> PluginModuleType:
     return module
 
 def plugin_from_module(app, pl, info: PluginInfo, module: PluginModuleType) -> PluginBase:
-    return module.plugin_main(app, pl, info)
+    return module.__plugin__(app, pl, info)
 
 # ! Plugin Loader Config
 class PluginLoaderConfigModel(BaseModel):
@@ -128,7 +128,7 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.3.0"
+    __version__: str = "0.4.0"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
     
@@ -154,6 +154,8 @@ class PluginLoader:
         self.on_plugins: List[PluginBase] = []
         self.off_plugins: List[PluginInfo] = []
         self.error_plugins: List[Tuple[str, str]] = []
+        # * Plugin Vars
+        self.value_handlers: List[Callable[[str], List[str]]] = []
         
         # * Logging
         self.app.info("---")

@@ -11,7 +11,8 @@ from typing import (
     Tuple,
     Union,
     Optional,
-    Generator, 
+    Callable,
+    Generator,
     AsyncGenerator
 )
 # > Local Import's
@@ -62,7 +63,8 @@ class PluginLoader:
     on_plugins: List[PluginBase]
     off_plugins: List[PluginInfo]
     error_plugins: List[Tuple[str, str]]
-
+    value_handlers: List[Callable[[str], List[str]]]
+    
     def __init__(
         self,
         app: SeaPlayer,

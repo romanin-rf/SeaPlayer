@@ -67,4 +67,4 @@ class RichDiscordStatus(PluginBase):
         await self.thread.wait()
 
 # ! Registration Plugin Class
-plugin_main = RichDiscordStatus
+__plugin__ = RichDiscordStatus
