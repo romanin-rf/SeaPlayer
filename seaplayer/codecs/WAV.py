@@ -5,6 +5,7 @@ from .Any import AnyCodec
 
 class WAVECodec(AnyCodec):
     codec_name: str = "WAVE"
+    codec_priority: float=2.0
     
     # ! Testing
     @staticmethod

@@ -5,6 +5,7 @@ from .Any import AnyCodec
 
 class FLACCodec(AnyCodec):
     codec_name: str = "FLAC"
+    codec_priority: float=4.0
     
     # ! Testing
     @staticmethod

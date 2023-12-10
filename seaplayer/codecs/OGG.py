@@ -5,6 +5,7 @@ from .Any import AnyCodec
 
 class OGGCodec(AnyCodec):
     codec_name: str = "OGG"
+    codec_priority: float=3.0
     
     # ! Testing
     @staticmethod

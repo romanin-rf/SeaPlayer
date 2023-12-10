@@ -31,7 +31,7 @@ DATA = {
     "seaplayer/objects/Buttons.py": "seaplayer/objects/",
     "seaplayer/objects/Configurate.py": "seaplayer/objects/",
     "seaplayer/objects/DataOptions.py": "seaplayer/objects/",
-    "seaplayer/objects/FullLabel.py": "seaplayer/objects/",
+    "seaplayer/objects/Labels.py": "seaplayer/objects/",
     "seaplayer/objects/Image.py": "seaplayer/objects/",
     "seaplayer/objects/Input.py": "seaplayer/objects/",
     "seaplayer/objects/Log.py": "seaplayer/objects/",
@@ -67,9 +67,10 @@ DATA = {
     "seaplayer/modules/colorizer.py": "seaplayer/modules/",
     # * 3) CSS Files
     "seaplayer/css": "seaplayer/css/",
-    "seaplayer/css/seaplayer.css": "seaplayer/css/",
-    "seaplayer/css/configurate.css": "seaplayer/css/",
-    "seaplayer/css/unknown.css": "seaplayer/css/",
+    "seaplayer/css/seaplayer.tcss": "seaplayer/css/",
+    "seaplayer/css/configurate.tcss": "seaplayer/css/",
+    "seaplayer/css/unknown.tcss": "seaplayer/css/",
+    "seaplayer/css/objects.tcss": "seaplayer/css/",
     # * 4) Language Files
     "seaplayer/langs": "seaplayer/langs/",
     "seaplayer/langs/en-eng.properties": "seaplayer/langs/",

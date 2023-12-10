@@ -11,7 +11,8 @@ from typing import (
     Tuple,
     Union,
     Optional,
-    Generator, 
+    Callable,
+    Generator,
     AsyncGenerator
 )
 # > Local Import's
@@ -30,6 +31,7 @@ DEPS_FILE_PATH = str
 def get_module_info(path: str) -> Tuple[str, str]: ...
 def load_module(path: str) -> PluginModuleType: ...
 def plugin_from_module(app: SeaPlayer, pl: PluginLoader, info: PluginInfo, module: PluginModuleType) -> PluginBase: ...
+def load_plugin_info(path: str) -> PluginInfo: ...
 
 # ! Plugin Loader Config
 class PluginLoaderConfigModel(BaseModel):
@@ -62,7 +64,8 @@ class PluginLoader:
     on_plugins: List[PluginBase]
     off_plugins: List[PluginInfo]
     error_plugins: List[Tuple[str, str]]
-
+    value_handlers: List[Callable[[str], List[str]]]
+    
     def __init__(
         self,
         app: SeaPlayer,
@@ -77,8 +80,6 @@ class PluginLoader:
     async def aio_search_plugins_paths() -> AsyncGenerator[Tuple[INIT_FILE_PATH, INFO_FILE_PATH, DEPS_FILE_PATH]]: ...
     @staticmethod
     def search_plugins_paths() -> Generator[Tuple[INIT_FILE_PATH, INFO_FILE_PATH, DEPS_FILE_PATH], Any, None]: ...
-    @staticmethod
-    def load_plugin_info(path: str) -> PluginInfo: ...
     
     # ! App Specific Methods
     def on_bindings(self) -> Generator[Binding, Any, None]: ...

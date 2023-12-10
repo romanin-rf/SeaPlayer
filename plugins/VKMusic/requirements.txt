@@ -1,0 +1,2 @@
+vkpymusic>=2.2.4
+vbml>=1.1

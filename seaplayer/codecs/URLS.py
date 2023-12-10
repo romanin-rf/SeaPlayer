@@ -20,6 +20,7 @@ SIGNATURES = {
 # ! Any URL Sound File
 class URLSoundCodec(AnyCodec):
     codec_name: str = "URLS"
+    codec_priority: float=6.0
     
     # ! Codec Test
     @staticmethod

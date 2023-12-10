@@ -87,8 +87,8 @@ class SeaPlayer(App):
     # ! SeaPlayer Configuration
     cache = Cacher(CACHE_DIRPATH)
     config = SeaPlayerConfig(CONFIG_FILEPATH)
-    image_type: Optional[Union[Type[AsyncImageLabel], Type[StandartImageLabel]]] = None
     ll = LanguageLoader(LANGUAGES_DIRPATH, config.lang)
+    image_type: Optional[Union[Type[AsyncImageLabel], Type[StandartImageLabel]]] = None
     
     # ! Bindings
     BINDINGS = list(build_bindings(config, ll))
@@ -472,7 +472,10 @@ class SeaPlayer(App):
             try:
                 self.last_handlered_values = glob.glob(value, recursive=self.config.recursive_search)
             except:
-                self.last_handlered_values = [ value ]
+                self.last_handlered_values = []
+            if ENABLE_PLUGIN_SYSTEM:
+                for vhr in self.plugin_loader.value_handlers:
+                    self.last_handlered_values += vhr(value)
             if len(self.last_handlered_values) == 0:
                 self.last_handlered_values = [ value ]
             self.info(f"Submit 'plus_sound' values: {repr(self.last_handlered_values)}")
@@ -530,5 +533,6 @@ class SeaPlayer(App):
     def run(self, *args, **kwargs):
         if ENABLE_PLUGIN_SYSTEM:
             self.plugin_loader.on_run()
+        self.CODECS.sort(key=lambda x: x.codec_priority)
         super().run(*args, **kwargs)
 

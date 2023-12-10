@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from textual.screen import Screen
 from textual.binding import Binding
 # > Typing
-from typing import Optional, Generator, Type, Any
+from typing import Optional, Generator, Type, Callable, List, Any
 # > Local Import's
 from ..seaplayer import SeaPlayer
 from ..codeсbase import CodecBase
@@ -28,6 +28,7 @@ class PluginBase:
     # ! App Specific Methods
     def install_screen(self, name: str, screen: Screen) -> None: ...
     def add_codecs(self, *codecs: Type[CodecBase]) -> None: ...
+    def add_value_handlers(self, *handlers: Callable[[str], List[str]]) -> None: ...
     def on_bindings(self) -> Generator[Binding, Any, None]: ...
     # ! App On Methods
     def on_init(self) -> None: ...

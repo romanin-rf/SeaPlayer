@@ -10,7 +10,7 @@ from textual.binding import Binding
 from importlib.util import spec_from_file_location, module_from_spec
 # > Typing
 from types import ModuleType
-from typing import Optional, Dict, Union, Any, List, Tuple, Type, Generator
+from typing import Optional, Dict, Union, Any, List, Tuple, Type, Generator, Callable
 # > Local Import's
 from .pipw import pip
 from .pluginbase import PluginInfo, PluginBase
@@ -28,7 +28,7 @@ console = Console()
 
 # ! Types
 class PluginModuleType(ModuleType):
-    plugin_main: Type[PluginBase]
+    __plugin__: Type[PluginBase]
 
 # ! Functions
 def get_module_info(path: str):
@@ -56,7 +56,12 @@ def load_module(init_path: str) -> PluginModuleType:
     return module
 
 def plugin_from_module(app, pl, info: PluginInfo, module: PluginModuleType) -> PluginBase:
-    return module.plugin_main(app, pl, info)
+    return module.__plugin__(app, pl, info)
+
+def load_plugin_info(path: str) -> PluginInfo:
+    with open(path, 'rb') as file:
+        data = file.read()
+    return PluginInfo.model_validate_json(data)
 
 # ! Plugin Loader Config
 class PluginLoaderConfigModel(BaseModel):
@@ -128,7 +133,7 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     __title__: str = "PluginLoader"
-    __version__: str = "0.3.0"
+    __version__: str = "0.4.0"
     __author__: str = "Romanin"
     __email__: str = "semina054@gmail.com"
     
@@ -154,6 +159,8 @@ class PluginLoader:
         self.on_plugins: List[PluginBase] = []
         self.off_plugins: List[PluginInfo] = []
         self.error_plugins: List[Tuple[str, str]] = []
+        # * Plugin Vars
+        self.value_handlers: List[Callable[[str], List[str]]] = []
         
         # * Logging
         self.app.info("---")
@@ -203,12 +210,6 @@ class PluginLoader:
             if info_path is not None:
                 yield init_path, info_path, deps_path
     
-    @staticmethod
-    def load_plugin_info(path: str) -> PluginInfo:
-        with open(path, 'rb') as file:
-            data = file.read()
-        return PluginInfo.model_validate_json(data)
-    
     # ! On Init Method
     def on_init(self) -> None:
         self.app.info(f"{self.__title__} [#60fdff]v{self.__version__}[/#60fdff] from {self.__author__} ({self.__email__})", in_console=True)
@@ -218,7 +219,7 @@ class PluginLoader:
         for init_path, info_path, deps_path in plugins_paths:
             info = None
             try:
-                info = self.load_plugin_info(info_path)
+                info = load_plugin_info(info_path)
                 if not self.config.exists_plugin(info):
                     self.config.add_plugin(info)
                     self.app.info(f"{info.name} ({repr(info.name_id)}) > New plugin added to config!", in_console=True)

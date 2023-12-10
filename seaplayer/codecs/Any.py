@@ -11,6 +11,7 @@ from ..codeсbase import CodecBase
 
 class AnyCodec(CodecBase):
     codec_name: str = "Any"
+    codec_priority: float=1024
     
     # ! Initialized
     def __init__(self, path: str, sound_device_id: Optional[int]=None, **kwargs) -> None:

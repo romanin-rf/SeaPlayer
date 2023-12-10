@@ -7,7 +7,8 @@ def formater(**kwargs) -> str:
 # ! Codecs Base
 class CodecBase:
     # * Codec Info
-    codec_name: str = "None"
+    codec_name: str="None"
+    codec_priority: float=0.0
     
     # * Info
     name: str
