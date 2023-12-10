@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.8.3.dev1"
+version = "0.8.3.dev2"
 description = "SeaPlayer is a player that works in the terminal."
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
@@ -57,9 +57,10 @@ typing-extensions = ">=4.6"
 # Optional Modules
 poetry = {version = ">=1.5", optional = true}
 pyinstaller = {version = ">=5.11", optional = true}
+wget = {version = ">=3.2", optional = true}
 
 [tool.poetry.extras]
-build = ["poetry", "pyinstaller"]
+build = ["poetry", "pyinstaller", "wget"]
 
 [build-system]
 requires = ["poetry-core"]
