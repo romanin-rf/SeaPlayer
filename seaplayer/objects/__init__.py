@@ -9,6 +9,4 @@ from .MusicList import MusicListView, MusicListViewItem
 from .Configurate import ConfigurateListItem, ConfigurateList
 from .Radio import DataRadioSet, DataRadioButton
 from .Rheostat import Rheostat
-
-# ? In development
-#from .PopUp import PopUp
+from .PopUp import PopUp

@@ -14,9 +14,6 @@ class DataRadioButton(RadioButton, Generic[DT]):
 
 # ! Data Radio Set Class
 class DataRadioSet(RadioSet, Generic[DT]):
-    pressed_index: int
-    pressed_button: Optional[DataRadioButton[DT]]
-    
     def __init__(
         self,
         on_changed: Callable[[DT], None],

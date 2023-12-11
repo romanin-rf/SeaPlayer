@@ -4,6 +4,17 @@ from typing import Literal
 
 # ! Nofys Classes
 class Nofy(Static):
+    DEFAULT_CSS = """
+    Nofy {
+        layer: nofys;
+        background: $background;
+        margin: 2 4;
+        padding: 1 2;
+        width: auto;
+        height: auto;
+    }
+    """
+    
     def __init__(
         self,
         text: str,
@@ -21,7 +32,19 @@ class Nofy(Static):
     async def on_click(self) -> None:
         await self.remove()
 
+# ! Variant Nofy
 class CallNofy(Static):
+    DEFAULT_CSS = """
+    CallNofy {
+        layer: nofys;
+        background: $background;
+        margin: 2 4;
+        padding: 1 2;
+        width: auto;
+        height: auto;
+    }
+    """
+    
     def __init__(
         self,
         text: str,

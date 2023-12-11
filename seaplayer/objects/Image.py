@@ -9,6 +9,15 @@ from typing import Optional, Union, Tuple
 
 # ! Main Class
 class StandartImageLabel(Label):
+    DEFAULT_CSS = """
+    StandartImageLabel {
+        height: 1fr;
+        width: 1fr;
+        align: center middle;
+        text-align: center;
+    }
+    """
+    
     def __init__(
         self,
         default_image: Image.Image,
@@ -38,6 +47,15 @@ class StandartImageLabel(Label):
         self.update(self.image_text)
 
 class AsyncImageLabel(Label):
+    DEFAULT_CSS = """
+    AsyncImageLabel {
+        height: 1fr;
+        width: 1fr;
+        align: center middle;
+        text-align: center;
+    }
+    """
+    
     def __init__(
         self,
         default_image: Image.Image,

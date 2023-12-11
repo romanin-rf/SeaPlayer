@@ -8,11 +8,28 @@ from ..functions import rich_exception
 # ! Vars
 console = Console()
 
-# ! Types
-RETURN = TypeVar('RETURN')
-
 # ! Main Class
 class LogMenu(RichLog):
+    DEFAULT_CSS = """
+    LogMenu {
+        background: $surface;
+        color: $text;
+        height: 75vh;
+        dock: bottom;
+        layer: notes;
+        border-top: hkey $primary;
+        offset-y: 0;
+        transition: offset 400ms in_out_cubic;
+        padding: 0 1 1 1;
+    }
+    LogMenu:focus {
+        offset: 0 0 !important;
+    }
+    LogMenu.--hidden {
+        offset-y: 100%;
+    }
+    """
+    
     def __init__(self, chap_max_width: int=8, enable_logging: bool=True, **kwargs):
         self.enable_logging = enable_logging
         self.chap_max_width = chap_max_width

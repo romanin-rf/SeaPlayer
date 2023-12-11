@@ -8,6 +8,12 @@ from .Labels import ClickableLabel
 
 # ! RheostatBar Class
 class RheostatBar(Label):
+    DEFAULT_CSS = """
+    RheostatBar {
+        height: 1;
+    }
+    """
+    
     def __match_bar_width(self) -> int:
         bar_size = self.size[0] - (len(f"{self.__min_value}{self.__max_value}")+(len(self.__mark)*2)+2)
         if bar_size <= 0:
@@ -86,6 +92,21 @@ class RheostatBar(Label):
         self.update(self.__process)
 
 class Rheostat(Vertical):
+    DEFAULT_CSS = """
+    Rheostat {
+        height: 2;
+        align-vertical: middle;
+    }
+    Rheostat Horizontal {
+        align-horizontal: center;
+        width: 1fr;
+    }
+    Rheostat Horizontal ClickableLabel {
+        width: 1;
+        height: 1;
+    }
+    """
+    
     async def __click_plus(self) -> None:
         if (self.bar.value + self.__advance_value) <= self.bar.max_value:
             self.bar.value = self.bar.value + self.__advance_value

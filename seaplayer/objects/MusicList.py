@@ -9,6 +9,20 @@ from ..functions import get_sound_basename, aiter
 
 # ! Children Classes
 class MusicListViewItem(ListItem):
+    DEFAULT_CSS = """
+    MusicListViewItem {
+        height: 4;
+    }
+    MusicListViewItem .title-label {
+        height: 1;
+        color: #cacaca;
+    }
+    MusicListViewItem .subtitle-label {
+        height: 1;
+        color: #a9a9a9;
+    }
+    """
+    
     def __init__(
         self,
         title: str="",
@@ -39,6 +53,12 @@ class MusicListViewItem(ListItem):
 
 # ! Main Class
 class MusicListView(ListView):
+    DEFAULT_CSS = """
+    MusicListView {
+        height: 1fr;
+    }
+    """
+    
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.music_list: MusicList = MusicList()

@@ -1,6 +1,8 @@
 /* ! Main Screen */
 #_default {
     layout: horizontal;
+    align-horizontal: center;
+    align-vertical: middle;
 }
 
 .screen-box {

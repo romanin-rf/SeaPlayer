@@ -8,6 +8,13 @@ from inspect import iscoroutinefunction
 
 # ! Fill Label Class
 class FillLabel(Label):
+    DEFAULT_CSS = """
+    FillLabel {
+        height: 1fr;
+        width: 1fr;
+    }
+    """
+    
     def _gen(self) -> Segments:
         return Segments([Segment(self.__chr, self.__style) for i in range((self.size[0] * self.size[1]))])
     
@@ -27,6 +34,27 @@ class FillLabel(Label):
 
 # ! Clickable Label Class
 class ClickableLabel(Label, Button, can_focus=True):
+    DEFAULT_CSS = """
+    ClickableLabel {
+        width: auto;
+        min-width: 1;
+        height: auto;
+        min-height: 1;
+        color: $text;
+        text-style: bold;
+        text-align: center;
+        content-align: center middle;
+    }
+    ClickableLabel:focus {
+        text-style: bold reverse;
+    }
+    ClickableLabel:hover {
+        color: $text;
+    }
+    ClickableLabel.-active {
+        tint: $background 30%;
+    }
+    """
     def __init__(
         self,
         renderable: RenderableType="",

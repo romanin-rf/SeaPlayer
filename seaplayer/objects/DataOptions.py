@@ -3,6 +3,7 @@ from textual.widgets.option_list import Option
 # > Typing
 from typing import Optional, Callable
 
+# ! Child Class
 class DataOption(Option):
     def __init__(
         self,
@@ -17,6 +18,7 @@ class DataOption(Option):
         self.selected = selected
         self.data = data
 
+# ! Main Class
 class DataOptionList(OptionList):
     def __init__(
         self,
