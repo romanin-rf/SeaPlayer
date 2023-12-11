@@ -33,7 +33,6 @@ class StandartImageLabel(Label):
     
     async def update_image(self, image: Optional[Image.Image]=None) -> None:
         self.image = image
-        
         image, resample = (self.default_image, Resampling.NEAREST) if (self.image is None) else (self.image, self.image_resample)
         self.image_text = await asyncio.to_thread(Pixels.from_image, image, (self.size[0], self.size[1]), resample)
         self.update(self.image_text)

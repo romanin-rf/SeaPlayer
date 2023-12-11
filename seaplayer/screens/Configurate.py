@@ -304,7 +304,7 @@ class Configurate(Screen):
             )
             yield self.create_configurator_integer(
                 "app.config.rewind_count_seconds",
-                1, 1, 30, " s",
+                1, 1, 30, f" {self.ll.get('words.second.char')}",
                 self.ll.get("configurate.playback"),
                 self.ll.get("configurate.playback.rewind_count_seconds"),
                 self.ll.get("configurate.playback.rewind_count_seconds.desc"),
