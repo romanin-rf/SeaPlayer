@@ -22,10 +22,17 @@ IndeterminateProgress { height: 1; }
 
 /* ! Rheostat */
 RheostatBar { height: 1; }
-Rheostat { height: 4; }
+Rheostat {
+    height: 2;
+    align-vertical: middle;
+}
 Rheostat Horizontal {
     align-horizontal: center;
     width: 1fr;
+}
+Rheostat Horizontal ClickableLabel {
+    width: 1;
+    height: 1;
 }
 
 /* ! Image Label */
@@ -113,6 +120,32 @@ PopUp {
 FillLabel {
     height: 1fr;
     width: 1fr;
+}
+
+/* Clickable Label */
+ClickableLabel {
+    width: auto;
+    min-width: 1;
+    height: auto;
+    min-height: 1;
+    color: $text;
+    background: $panel;
+    text-style: bold;
+    text-align: center;
+    content-align: center middle;
+}
+
+ClickableLabel:focus {
+    text-style: bold reverse;
+}
+
+ClickableLabel:hover {
+    color: $text;
+}
+
+ClickableLabel.-active {
+    background: $panel;
+    tint: $background 30%;
 }
 
 /* ! Any Elements CSS */

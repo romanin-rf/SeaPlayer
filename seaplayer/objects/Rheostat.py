@@ -4,7 +4,7 @@ from rich.progress import Progress, BarColumn, TextColumn
 # > Typing
 from typing import Callable
 # > Local Imports
-from .Buttons import ClikableButton
+from .Labels import ClickableLabel
 
 # ! RheostatBar Class
 class RheostatBar(Label):
@@ -114,9 +114,8 @@ class Rheostat(Vertical):
         super().__init__(
             Center(self.bar),
             Horizontal(
-                ClikableButton("-", self.__click_minus),
+                ClickableLabel("-", self.__click_minus),
                 self.label,
-                ClikableButton("+", self.__click_plus)
-            ),
-            classes="rheostat"
+                ClickableLabel("+", self.__click_plus)
+            )
         )
