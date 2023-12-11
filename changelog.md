@@ -3,6 +3,7 @@
 
 | Version | Date | Tag | Changelog |
 | ------- | ---- | --- | --------- |
+| [v0.8.4](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.4) | 11.12.2023 | **STABLE** | - Added widgets: `Rheostat`, `ClickableLabel`<br>- Added widget: Rheostat<br>- Added a new widget: `PopUp`<br>- Fixed all language<br>- More attempts to make `Confiturate` screen clearer<br>- Moved all `CSS` from `objects.tcss` to `DEFAULT_CSS` separately for each widget |
 | [v0.8.3](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.3) | 10.12.2023 | **STABLE** | - Added plugin `VKMusic`<br>- Added priority system for codecs<br>- Added system handhers of value<br>- Fixed `build.py`<br>- Moved method `load_plugin_info` in `seaplayer.plug.pluginloader` |
 | [v0.8.2](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.2) | 08.12.2023 | **STABLE** | - Added language merge (for translating plugins)<br>- Fixed in translation files (`Log Menu Enable` -> `Logging` )<br>- Changed `object.css` (classes will no longer be used to specify standard properties)<br>- Improved widget `FillLabel` |
 | [v0.8.1](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.1) | 07.12.2023 | **STABLE** | - Revisioned of the LanguageLoader<br>- Added new language: `Українська` |

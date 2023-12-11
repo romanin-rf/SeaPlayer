@@ -1,0 +1,4 @@
+Configurate {
+    align-vertical: middle;
+    align-horizontal: center;
+}

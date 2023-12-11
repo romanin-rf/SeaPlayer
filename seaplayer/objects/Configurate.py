@@ -4,6 +4,16 @@ from typing import Optional, Union
 
 # ! Child Class
 class ConfigurateListItem(Container):
+    DEFAULT_CSS = """
+    ConfigurateListItem {
+        border: solid dodgerblue;
+        background: #0000;
+        border-title-color: #aaaaaa;
+        border-subtitle-color: #6b6b6b;
+        height: auto;
+    }
+    """
+    
     def __init__(
         self,
         *children,
@@ -25,5 +35,13 @@ class ConfigurateListItem(Container):
 
 # ! Main Class
 class ConfigurateList(ScrollableContainer):
+    DEFAULT_CSS = """
+    ConfigurateList {
+        border: solid cadetblue;
+        height: 1fr;
+        width: 1fr;
+    }
+    """
+    
     def __init__(self, *children, **kwargs) -> None:
         super().__init__(*children, **kwargs)

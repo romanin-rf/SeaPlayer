@@ -8,7 +8,5 @@ from .Image import AsyncImageLabel, StandartImageLabel
 from .MusicList import MusicListView, MusicListViewItem
 from .Configurate import ConfigurateListItem, ConfigurateList
 from .Radio import DataRadioSet, DataRadioButton
-
-# ? In development
-#from .PopUp import PopUp
-#from .Rheostat import Rheostat
+from .Rheostat import Rheostat
+from .PopUp import PopUp

@@ -7,6 +7,12 @@ from ..functions import get_bar_status
 
 # ! Main Class
 class IndeterminateProgress(Static):
+    DEFAULT_CSS = """
+    IndeterminateProgress {
+        height: 1;
+    }
+    """
+    
     def __init__(
         self,
         getfunc: Callable[[], Coroutine[Any, Any, Tuple[str, Optional[float], Optional[float]]]]=get_bar_status,

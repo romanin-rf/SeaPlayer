@@ -9,6 +9,15 @@ from typing import Optional, Union, Tuple
 
 # ! Main Class
 class StandartImageLabel(Label):
+    DEFAULT_CSS = """
+    StandartImageLabel {
+        height: 1fr;
+        width: 1fr;
+        align: center middle;
+        text-align: center;
+    }
+    """
+    
     def __init__(
         self,
         default_image: Image.Image,
@@ -33,12 +42,20 @@ class StandartImageLabel(Label):
     
     async def update_image(self, image: Optional[Image.Image]=None) -> None:
         self.image = image
-        
         image, resample = (self.default_image, Resampling.NEAREST) if (self.image is None) else (self.image, self.image_resample)
         self.image_text = await asyncio.to_thread(Pixels.from_image, image, (self.size[0], self.size[1]), resample)
         self.update(self.image_text)
 
 class AsyncImageLabel(Label):
+    DEFAULT_CSS = """
+    AsyncImageLabel {
+        height: 1fr;
+        width: 1fr;
+        align: center middle;
+        text-align: center;
+    }
+    """
+    
     def __init__(
         self,
         default_image: Image.Image,

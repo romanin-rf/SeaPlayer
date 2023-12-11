@@ -15,6 +15,7 @@ from ..types import Converter
 from ..modules.colorizer import richefication
 from ..objects import (
     Nofy,
+    Rheostat,
     InputField,
     DataOptionList, DataOption,
     DataRadioSet, DataRadioButton,
@@ -94,19 +95,22 @@ class Configurate(Screen):
     def gupfif(self, attr_name: str):
         return lambda: self._upfif(attr_name)
     
-    # ! Update App Config
+    # ! Update App Vars
+    def sattr(self, attr_name: str, value: Any) -> None:
+        exec(f"self.{attr_name}=value")
+
+    def gattr(self, attr_name: str) -> Any:
+        return eval(f"self.{attr_name}")
+
     async def _auac(self, attr_name: str, input: InputField, value: str) -> None:
-        exec(f"self.{attr_name} = value")
+        self.sattr(attr_name, value)
         self.app.update_bindings()
         await self.aio_nofy("Saved!")
     
     def _caa(self, attr_name: str, value: str) -> None:
-        exec(f"self.{attr_name} = value")
+        self.sattr(attr_name, value)
         self.app.update_bindings()
         self.nofy("Saved!")
-    
-    def _gaa(self, attr_name: str) -> Any:
-        return eval(f"self.{attr_name}")
     
     if INIT_SOUNDDEVICE:
         def gucsdi(self):
@@ -169,7 +173,7 @@ class Configurate(Screen):
         restart_required: bool=True
     ) -> ConfigurateListItem:
         on_changed_method = lambda v: self._caa(attr_name, v)
-        default_value = [v[0] if isinstance(v, tuple) else v for v in values].index(self._gaa(attr_name))
+        default_value = [v[0] if isinstance(v, tuple) else v for v in values].index(self.gattr(attr_name))
         buttons = []
         for idx, d in enumerate(values):
             drb = \
@@ -182,6 +186,43 @@ class Configurate(Screen):
             title="[red]{"+group+"}[/red]: "+title,
             desc=desc+(f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else ""),
             height=len(values)+4
+        )
+
+    def create_configurator_integer(
+        self,
+        attr_name: str,
+        advance_value: int=1,
+        min_value: int=0,
+        max_value: int=100,
+        mark: str="",
+        group: str="Option",
+        title: str="",
+        desc: str="",
+        restart_required: bool=True
+    ):
+        return ConfigurateListItem(
+            Rheostat(lambda value: self.sattr(attr_name, value), self.gattr(attr_name), advance_value, min_value, max_value, mark),
+            title="[red]{"+group+"}[/red]: "+title,
+            desc=desc+(f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else ""),
+            height=4
+        )
+
+    def create_configurator_percent(
+        self,
+        attr_name: str,
+        advance_value: int=1,
+        min_value: int=0,
+        max_value: int=100,
+        group: str="Option",
+        title: str="",
+        desc: str="",
+        restart_required: bool=True
+    ):
+        return ConfigurateListItem(
+            Rheostat(lambda value: self.sattr(attr_name, value/100), int(self.gattr(attr_name)*100), advance_value, min_value, max_value, "%"),
+            title="[red]{"+group+"}[/red]: "+title,
+            desc=desc+(f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else ""),
+            height=4
         )
     
     def create_configurator_language(self) -> ConfigurateListItem:
@@ -253,26 +294,29 @@ class Configurate(Screen):
                 self.ll.get("configurate.image.resample_method"),
                 self.ll.get("configurate.image.resample_method.desc")
             )
-            yield self.create_configurator_type(
+            yield self.create_configurator_percent(
                 "app.config.volume_change_percent",
+                1, 1, 10,
                 self.ll.get("configurate.playback"),
                 self.ll.get("configurate.playback.volume_change_percent"),
                 self.ll.get("configurate.playback.volume_change_percent.desc"),
-                float, float, False
+                False
             )
-            yield self.create_configurator_type(
+            yield self.create_configurator_integer(
                 "app.config.rewind_count_seconds",
+                1, 1, 30, f" {self.ll.get('words.second.char')}",
                 self.ll.get("configurate.playback"),
                 self.ll.get("configurate.playback.rewind_count_seconds"),
                 self.ll.get("configurate.playback.rewind_count_seconds.desc"),
-                int, int, False
+                False
             )
-            yield self.create_configurator_type(
+            yield self.create_configurator_percent(
                 "app.config.max_volume_percent",
+                10, 10, 300,
                 self.ll.get("configurate.playback"),
                 self.ll.get("configurate.playback.max_volume_percent"),
                 self.ll.get("configurate.playback.max_volume_percent.desc"),
-                float, float, False
+                False
             )
             yield self.create_configurator_literal(
                 "app.config.recursive_search",
