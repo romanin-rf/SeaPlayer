@@ -129,7 +129,6 @@ ClickableLabel {
     height: auto;
     min-height: 1;
     color: $text;
-    background: $panel;
     text-style: bold;
     text-align: center;
     content-align: center middle;
@@ -144,7 +143,6 @@ ClickableLabel:hover {
 }
 
 ClickableLabel.-active {
-    background: $panel;
     tint: $background 30%;
 }
 
