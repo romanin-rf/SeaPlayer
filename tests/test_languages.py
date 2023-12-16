@@ -4,7 +4,7 @@ from seaplayer.languages import LanguageLoader
 from seaplayer.units import LANGUAGES_DIRPATH
 
 # ! Vars
-ll = LanguageLoader(LANGUAGES_DIRPATH)
+ll = LanguageLoader(LANGUAGES_DIRPATH, "en-eng")
 
 # ! Tests
 def test_language_count_loaded():
