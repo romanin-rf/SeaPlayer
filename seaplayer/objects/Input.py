@@ -1,33 +1,34 @@
 from textual.widgets import Input
 # > Typing
-from typing import Optional, Tuple, Any
+from typing import Optional, Tuple, Callable, Awaitable, Any
 
 # ! InputFiles functions
-async def _conv(value: str) -> Tuple[bool, Optional[Any]]: return True, value
-async def _submit(input: Input, value: Any) -> None: ...
-def _update_placeholder() -> Optional[str]: ...
+async def conv(value: str) -> Tuple[bool, Optional[Any]]: return True, value
+async def submit(input: Input, value: Any) -> None: ...
+def update_placeholder() -> Optional[str]: ...
 
 # ! InputField class
 class InputField(Input):
     def __init__(
         self,
-        conv=_conv,
-        submit=_submit,
-        update_placeholder=_update_placeholder,
+        conv: Callable[[str], Awaitable[Tuple[bool, Optional[Any]]]]=conv,
+        submit: Callable[[Input, Any], Awaitable[None]]=submit,
+        update_placeholder: Callable[[], Optional[str]]=update_placeholder,
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
-        self._conv = conv
-        self._submit = submit
-        self._update_placeholder = update_placeholder
-        if (placeholder:=self._update_placeholder()) is not None:
+        self.__conv = conv
+        self.__submit = submit
+        self.__update_placeholder = update_placeholder
+        if (placeholder:=self.__update_placeholder()) is not None:
             self.placeholder = placeholder
     
     async def action_submit(self):
         value = self.value
         self.value = ""
         if value.replace(" ", "") != "":
-            ok, c_value = await self._conv(value)
-            if ok: await self._submit(self, c_value)
-        if (placeholder:=self._update_placeholder()) is not None:
+            ok, c_value = await self.__conv(value)
+            if ok:
+                await self.__submit(self, c_value)
+        if (placeholder:=self.__update_placeholder()) is not None:
             self.placeholder = placeholder

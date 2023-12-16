@@ -82,7 +82,7 @@ class AnySound(Sound):
                 while len(data:=urlfile.read(download_buffer_size)) != 0:
                     tempfile.write(data)
         
-        return AnySound(path, **{"is_temp": True, **kwargs})
+        return AnySound(path, is_temp=True, **kwargs)
     
     @staticmethod
     async def aio_from_url(
@@ -97,4 +97,4 @@ class AnySound(Sound):
                 while len(data:=urlfile.read(download_buffer_size)) != 0:
                     await tempfile.write(data)
         
-        return AnySound(path, **{"is_temp": True, **kwargs})
+        return AnySound(path, is_temp=True, **kwargs)

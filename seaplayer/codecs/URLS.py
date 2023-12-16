@@ -70,10 +70,10 @@ class URLSoundCodec(AnyCodec):
     def __init__(self, url: str, sound_device_id: Optional[int]=None, aio_init: bool=False, **kwargs) -> None:
         self.name = url
         if not aio_init:
-            self._sound = AnySound.from_url(self.name, device_id=sound_device_id)
+            self._sound = AnySound.from_url(self.name, device_id=sound_device_id, **kwargs)
     
     @staticmethod
     async def __aio_init__(url: str, sound_device_id: Optional[int]=None, **kwargs):
         self = URLSoundCodec(url, aio_init=True)
-        self._sound = await asyncio.to_thread(AnySound.from_url, url, device_id=sound_device_id)
+        self._sound = await asyncio.to_thread(AnySound.from_url, url, device_id=sound_device_id, **kwargs)
         return self

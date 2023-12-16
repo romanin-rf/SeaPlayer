@@ -343,36 +343,33 @@ class SeaPlayer(App):
             group="CONTROL_UPDATER-LOOP",
             description="Control of playback modes and status updates."
         )
-        if ENABLE_PLUGIN_SYSTEM:
-            self.run_worker(
-                self.plugin_loader.on_compose,
-                name="ON_COMPOSE",
-                group="PluginLoader",
-                description="<method PluginLoader.on_compose>"
-            )
         self.info("---")
     
     # ! Currect Sound Controls
     async def currect_sound_stop(self, sound: Optional[CodecBase]=None):
-        if sound is None: sound = await self.aio_gcs()
+        if sound is None:
+            sound = await self.aio_gcs()
         if sound is not None:
             self.last_playback_status = 0
             sound.stop()
     
     async def currect_sound_play(self, sound: Optional[CodecBase]=None):
-        if sound is None: sound = await self.aio_gcs()
+        if sound is None:
+            sound = await self.aio_gcs()
         if sound is not None:
             self.last_playback_status = 1
             sound.play()
     
     async def currect_sound_pause(self, sound: Optional[CodecBase]=None):
-        if sound is None: sound = await self.aio_gcs()
+        if sound is None:
+            sound = await self.aio_gcs()
         if sound is not None:
             self.last_playback_status = 3
             sound.pause()
     
     async def currect_sound_unpause(self, sound: Optional[CodecBase]=None):
-        if sound is None: sound = await self.aio_gcs()
+        if sound is None:
+            sound = await self.aio_gcs()
         if sound is not None:
             self.last_playback_status = 1
             sound.unpause()
@@ -406,20 +403,26 @@ class SeaPlayer(App):
     async def add_sounds_to_list(self) -> None:
         added_oks = 0
         loading_nofy = await self.aio_callnofy(self.ll.get("nofys.sound.found").format(count=len(self.last_handlered_values)))
-        async for path in aiter(self.last_handlered_values):
+        self.CODECS.sort(key=lambda x: x.codec_priority)
+        async for value in aiter(self.last_handlered_values):
             sound = None
             async for codec in aiter(self.CODECS):
+                self.info(f"Attempt to load via {repr(codec)}")
                 try:
-                    if await codec.aio_is_this_codec(path):
-                        if not hasattr(codec, "__aio_init__"):
+                    if hasattr(codec, "aio_is_this_codec"):
+                        this_codec = await codec.aio_is_this_codec(value)
+                    else:
+                        this_codec = codec.is_this_codec(value)
+                    if this_codec:
+                        if hasattr(codec, "__aio_init__"):
                             try:
-                                sound: CodecBase = codec(path, **self.CODECS_KWARGS)
+                                sound: CodecBase = await codec.__aio_init__(value, **self.CODECS_KWARGS)
                             except Exception as e:
                                 self.exception(e)
                                 sound = None
                         else:
                             try:
-                                sound: CodecBase = await codec.__aio_init__(path, **self.CODECS_KWARGS)
+                                sound: CodecBase = codec(value, **self.CODECS_KWARGS)
                             except Exception as e:
                                 self.exception(e)
                                 sound = None
@@ -430,14 +433,14 @@ class SeaPlayer(App):
                                 added_oks += 1
                                 break
                 except FileNotFoundError:
-                    self.error(f"The file does not exist or is a directory: {repr(path)}")
+                    self.error(f"The file does not exist or is a directory: {repr(value)}")
                     break
                 except OSError:
                     pass
                 except Exception as e:
                     self.exception(e)
             if sound is None:
-                self.error(f"The sound could not be loaded: {repr(path)}")
+                self.error(f"The sound could not be loaded: {repr(value)}")
         await loading_nofy.remove()
         self.info(f"Added [cyan]{added_oks}[/cyan] songs!")
         await self.aio_nofy(self.ll.get("nofys.sound.added").format(count=added_oks))
@@ -451,7 +454,8 @@ class SeaPlayer(App):
     @on(Button.Pressed, "#button-pause")
     async def bp_pause_unpause(self) -> None:
         if (sound:=await self.aio_gcs()) is not None:
-            if sound.playing: await self.currect_sound_pause(sound)
+            if sound.playing:
+                await self.currect_sound_pause(sound)
             await self.aio_update_select_label(sound)
     
     @on(Button.Pressed, "#button-play-stop")
@@ -529,10 +533,27 @@ class SeaPlayer(App):
             sound.stop()
         return await super().action_quit()
     
+    # ! On Functions
+    async def on_compose(self) -> None:
+        if ENABLE_PLUGIN_SYSTEM:
+            self.run_worker(
+                self.plugin_loader.on_compose,
+                name="ON_COMPOSE",
+                group="PluginLoader",
+                description="<method PluginLoader.on_compose>"
+            )
+    
+    def on_ready(self, *args, **kwargs) -> None:
+        if ENABLE_PLUGIN_SYSTEM:
+            self.run_worker(
+                self.plugin_loader.on_ready,
+                name="ON_READY",
+                group="PluginLoader",
+                description="<method PluginLoader.on_ready>"
+            )
+    
     # ! Other
     def run(self, *args, **kwargs):
         if ENABLE_PLUGIN_SYSTEM:
             self.plugin_loader.on_run()
-        self.CODECS.sort(key=lambda x: x.codec_priority)
         super().run(*args, **kwargs)
-

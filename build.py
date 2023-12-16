@@ -39,6 +39,7 @@ DATA = {
     "seaplayer/objects/Notification.py": "seaplayer/objects/",
     "seaplayer/objects/ProgressBar.py": "seaplayer/objects/",
     "seaplayer/objects/Radio.py": "seaplayer/objects/",
+    "seaplayer/objects/PopUp.py": "seaplayer/objects/",
     # * 1.2) Types
     "seaplayer/types": "seaplayer/types/",
     "seaplayer/types/__init__.py": "seaplayer/types/",

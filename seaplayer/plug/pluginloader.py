@@ -275,6 +275,13 @@ class PluginLoader:
             except:
                 self.app.error(f"Failed to do [green]`await on_compose`[/green] in: {i}")
     
+    async def on_ready(self) -> None:
+        async for i in aiter(self.on_plugins):
+            try:
+                await i.on_ready()
+            except:
+                self.app.error(f"Failed to do [green]`await on_compose`[/green] in: {i}")
+    
     async def on_quit(self) -> None:
         async for i in aiter(self.on_plugins):
             try:

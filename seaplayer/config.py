@@ -7,35 +7,21 @@ T = TypeVar("T")
 
 # ! Vars
 DEFAULT_CONFIG_DATA = {
-    "main": {
-        "lang": "en-eng"
-    },
-    "sound": {
-        "sound_font_path": None,                # * Optional[str]
-        "output_sound_device_id": None,         # * Optional[int]
-    },
-    "image": {
-        "image_update_method": "sync",          # * Literal["sync", "async"]
-        "image_resample_method": "bilinear",    # * Literal["nearest", "bilinear", "bicubic", "lanczos", "hamming", "box"]
-    },
-    "playback": {
-        "volume_change_percent": 0.05,
-        "rewind_count_seconds": 5,
-        "max_volume_percent": 2.0
-    },
-    "playlist": {
-        "recursive_search": False
-    },
-    "keys": {
-        "quit": "q,й",
-        "rewind_forward": "*",
-        "rewind_back": "/",
-        "volume_up": "+",
-        "volume_down": "-"
-    },
-    "debag": {
-        "log_menu_enable": False
-    }
+    "main.lang": "en-eng",
+    "sound.sound_font_path": None,
+    "sound.output_sound_device_id": None,
+    "image.image_update_method": "sync",
+    "image.image_resample_method": "bilinear",
+    "playback.rewind_count_seconds": 5,
+    "playback.volume_change_percent": 0.05,
+    "playback.max_volume_percent": 2.0,
+    "playlist.recursive_search": False,
+    "keys.quit": "q,й",
+    "keys.rewind_forward": "*",
+    "keys.rewind_back": "/",
+    "keys.volume_up": "+",
+    "keys.volume_down": "-",
+    "debag.log_menu_enable": False
 }
 
 # ! Main Class
@@ -43,17 +29,17 @@ class SeaPlayerConfig:
     @staticmethod
     def dump(filepath: Path, data: Dict[str, Any]) -> None:
         with open(filepath, "w", encoding="utf-8", errors="ignore") as file:
-            properties.dump_tree(data, file)
+            properties.dump(data, file)
     
     @staticmethod
     def load(filepath: Path, default: Dict[str, Any]) -> Dict[str, Any]:
         with open(filepath, "r", encoding="utf-8", errors="ignore") as file:
             try:
-                return properties.load_tree(file)
+                return properties.load(file)
             except:
                 pass
         with open(filepath, "w", encoding="utf-8", errors="ignore") as file:
-            properties.dump_tree(default, file)
+            properties.dump(default, file)
         return default
     
     def refresh(self) -> None:
@@ -77,22 +63,12 @@ class SeaPlayerConfig:
             self.config = default_data.copy()
         self.refresh()
     
-    @staticmethod
-    def tevey(key_path: str, *, sep: str=".") -> str:
-        return "".join([f"[{repr(key)}]" for key in key_path.split(sep)])
-    
     def get(self, key: str, default: T=None) -> Union[Any, T]:
-        try:
-            return eval(f"self.config{self.tevey(key)}")
-        except:
-            return default
+        return self.config.get(key, default)
     
     def set(self, key: str, value: Any) -> None:
-        try:
-            exec(f"self.config{self.tevey(key)} = value")
-            self.refresh()
-        except:
-            pass
+        self.config[key] = value
+        self.refresh()
     
     # ! Main
     @property

@@ -46,7 +46,7 @@ def listing():
         for n, info in enumerate(get_plugins_info(), 1):
             status = "[green]Enabled[/green]" if plugin_config.is_enable_plugin(info) else "[red]Disabled[/red]"
             console.print(
-                f"[cyan]{n}[/cyan]. [green]{info.name}[/green] ([green]{info.name_id}[/green]) [cyan]v{info.version}[/cyan] from [yellow]{info.author}[/yellow] ({status})"
+                f"[cyan]{n}[/cyan]. [green]{info.name}[/green] ([green]{info.name_id}[/green]) [#60fdff]v{info.version}[/#60fdff] from [yellow]{info.author}[/yellow] ({status})"
             )
     else:
         console.print(f"[yellow]The list of plugins is [blue]empty[/blue].[/yellow]")

@@ -1,3 +1,4 @@
+import random
 from textual.widgets import Label, Button
 from rich.style import Style
 from rich.console import RenderableType
@@ -14,23 +15,31 @@ class FillLabel(Label):
         width: 1fr;
     }
     """
+    def __gen_random_color(self) -> None:
+        return f"#{hex(random.randint(0,16777215))[2:]}"
     
-    def _gen(self) -> Segments:
-        return Segments([Segment(self.__chr, self.__style) for i in range((self.size[0] * self.size[1]))])
+    def __gen_segments(self) -> Segments:
+        segments = []
+        for i in range(self.size[0]*self.size[1]):
+            s = Style.parse(self.__gen_random_color()) if self.__rainbow else self.__style
+            segments.append(Segment(self.__chr, s))
+        return Segments(segments)
     
     def __init__(
         self,
         char: str="-",
         style: Optional[Style]=None,
+        rainbow: bool=False,
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
         self.__chr = char[:1]
+        self.__rainbow = rainbow
         self.__style = style
-        self.update(self._gen())
+        self.update(self.__gen_segments())
     
     async def on_resize(self) -> None:
-        self.update(self._gen())
+        self.update(self.__gen_segments())
 
 # ! Clickable Label Class
 class ClickableLabel(Label, Button, can_focus=True):
