@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: read,write
 
 jobs:
   build:
@@ -26,6 +26,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest pyinstaller
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Install libs
+      run: |
+        apt-get install fluidsynth
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
