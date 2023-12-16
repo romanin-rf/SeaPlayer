@@ -58,5 +58,8 @@ class PluginBase:
     async def on_compose(self):
         pass
     
+    async def on_ready(self):
+        pass
+    
     async def on_quit(self):
         pass

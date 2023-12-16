@@ -5,8 +5,11 @@ from typing import List
 # > Local Import's
 from .functions import *
 from ..pluginbase import PluginInfo
-from ..pluginloader import PluginLoaderConfigManager, PluginLoader
+from ..pluginloader import PluginLoaderConfigManager, PluginLoader, load_plugin_info
 from ...units import PLUGINS_CONFIG_PATH, PLUGINS_DIRPATH
+
+# ! Vars
+console = Console()
 
 # ! Functions
 def init_config() -> None:
@@ -36,9 +39,9 @@ def get_plugins_info() -> List[PluginInfo]:
     plugins_infos = []
     for plugin_init_path, plugin_info_path, plugin_deps_path in PluginLoader.search_plugins_paths():
         try:
-            plugins_infos.append(PluginLoader.load_plugin_info(plugin_info_path))
+            plugins_infos.append(load_plugin_info(plugin_info_path))
         except:
-            pass
+            console.print_exception()
     return plugins_infos
 
 def is_plugin_dirpath(dirpath: str) -> bool:

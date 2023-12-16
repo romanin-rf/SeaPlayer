@@ -1,9 +1,9 @@
-ripix==2.4.2
-playsoundsimple-py==0.8.1.post2
-properties-py==1.1.0
-urlopen2==1.2.0.post1
+ripix==2.5.0
+playsoundsimple-py==0.8.4
+properties-py==1.2.1
+urlopen2==1.4.0
 
-pillow>=10
+pillow>=9.5
 aiofiles>=23.1
 rich>=13
 mutagen>=1.45
