@@ -108,6 +108,14 @@ class PluginLoaderConfigManager:
         self.config.plugins_enable[info.name_id] = True
         self.refresh()
     
+    def remove_plugin(self, info: PluginInfo) -> None:
+        del self.config.plugins_enable[info.name_id]
+        self.refresh()
+    
+    def remove_plugin_by_name_id(self, name_id: str) -> None:
+        del self.config.plugins_enable[name_id]
+        self.refresh()
+    
     def is_enable_plugin(self, info: PluginInfo) -> bool:
         for name_id, enable in self.config.plugins_enable.items():
             if name_id == info.name_id:
