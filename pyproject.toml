@@ -2,6 +2,7 @@
 name = "SeaPlayer"
 version = "0.8.6"
 description = "SeaPlayer is a player that works in the terminal."
+homepage = "https://romanin-rf.github.io/SeaPlayer/home"
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
 keywords = ["textual", "tui", "player", "seaplayer", "wav", "mp3", "ogg", "midi"]
