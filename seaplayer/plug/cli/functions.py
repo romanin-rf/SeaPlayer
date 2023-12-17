@@ -1,7 +1,7 @@
 import os
 from rich.console import Console
 # > Typing
-from typing import List
+from typing import List, Optional
 # > Local Import's
 from .functions import *
 from ..pluginbase import PluginInfo
@@ -43,6 +43,20 @@ def get_plugins_info() -> List[PluginInfo]:
         except:
             console.print_exception()
     return plugins_infos
+
+def search_plugin_info(name_id: str) -> Optional[PluginInfo]:
+    for plugin_info in get_plugins_info():
+        if plugin_info.name_id == name_id:
+            return plugin_info
+
+def get_plugin_dirpath_by_name_id(name_id: str) -> Optional[str]:
+    for plugin_init_path, plugin_info_path, plugin_deps_path in PluginLoader.search_plugins_paths():
+        try:
+            plugin_info = load_plugin_info(plugin_info_path)
+            if plugin_info.name_id == name_id:
+                return os.path.dirname(plugin_init_path)
+        except:
+            console.print_exception()
 
 def is_plugin_dirpath(dirpath: str) -> bool:
     try:
