@@ -86,8 +86,11 @@ class SeaPlayer(App):
     
     # ! SeaPlayer Configuration
     cache = Cacher(CACHE_DIRPATH)
+    """An image of a class for caching variables."""
     config = SeaPlayerConfig(CONFIG_FILEPATH)
+    """The image of the SeaPlayer configuration file."""
     ll = LanguageLoader(LANGUAGES_DIRPATH, config.lang)
+    """An image of the class for receiving the loaded SeaPlayer translation. With the translation uploaded from the `seaplayer/langs/` directory."""
     image_type: Optional[Union[Type[AsyncImageLabel], Type[StandartImageLabel]]] = None
     
     # ! Bindings
@@ -105,10 +108,12 @@ class SeaPlayer(App):
     
     # ! Codecs Configuration
     CODECS: List[Type[CodecBase]] = [ *codecs ]
+    """The list of codec types, can be supplemented while SeaPlayer is running."""
     CODECS_KWARGS: Dict[str, Any] = {
         "sound_fonts_path": config.sound_font_path,
         "sound_device_id": config.output_sound_device_id
     }
+    """The values that are given to each codec type during initialization (`codec(**CODEC_KWARGS)`)."""
     
     # ! Init Objects
     log_menu = LogMenu(
@@ -157,7 +162,7 @@ class SeaPlayer(App):
         Args:
             text (str): The text of the notification.
             life_time (float, optional): The time in seconds after which the notification will disappear. Defaults to 3.
-            dosk (Literal[&quot;bottom&quot;, &quot;left&quot;, &quot;right&quot;, &quot;top&quot;], optional): Regarding the screen. Defaults to "top".
+            dosk (Literal['bottom', 'left', 'right', 'top'], optional): Regarding the screen. Defaults to "top".
         """
         self.screen.mount(Nofy(text, life_time, dosk))
     
@@ -172,7 +177,7 @@ class SeaPlayer(App):
         Args:
             text (str): The text of the notification.
             life_time (float, optional): The time in seconds after which the notification will disappear. Defaults to 3.
-            dosk (Literal[&quot;bottom&quot;, &quot;left&quot;, &quot;right&quot;, &quot;top&quot;], optional): Regarding the screen. Defaults to "top".
+            dosk (Literal['bottom', 'left', 'right', 'top'], optional): Regarding the screen. Defaults to "top".
         """
         await self.screen.mount(Nofy(text, life_time, dosk))
     
@@ -185,7 +190,7 @@ class SeaPlayer(App):
         
         Args:
             text (str): The text of the notification.
-            dosk (Literal[&quot;bottom&quot;, &quot;left&quot;, &quot;right&quot;, &quot;top&quot;], optional): Regarding the screen. Defaults to "top".
+            dosk (Literal['bottom', 'left', 'right', 'top'], optional): Regarding the screen. Defaults to "top".
         
         Returns:
             CallNofy: To delete the notification image, use the `CallNofy.remove()` method.
@@ -204,7 +209,7 @@ class SeaPlayer(App):
         
         Args:
             text (str): The text of the notification.
-            dosk (Literal[&quot;bottom&quot;, &quot;left&quot;, &quot;right&quot;, &quot;top&quot;], optional): Regarding the screen. Defaults to "top".
+            dosk (Literal['bottom', 'left', 'right', 'top'], optional): Regarding the screen. Defaults to "top".
         
         Returns:
             CallNofy: To delete the notification image, use the `CallNofy.remove()` method.
@@ -218,17 +223,17 @@ class SeaPlayer(App):
         """Getting the currently selected sound.
         
         Returns:
-            Optional[CodecBase]: The image of the codex in which the sound is wrapped.
+            Optional[CodecBase]: The image of the codec in which the sound is wrapped.
         """
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
             self.currect_sound = self.music_list_view.music_list.get(self.currect_sound_uuid)
         return self.currect_sound
     
-    async def aio_gcs(self):
+    async def aio_gcs(self) -> Optional[CodecBase]:
         """Getting the currently selected sound.
         
         Returns:
-            Optional[CodecBase]: The image of the codeс in which the sound is wrapped.
+            Optional[CodecBase]: The image of the codec in which the sound is wrapped.
         """
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
             self.currect_sound = await self.music_list_view.music_list.aio_get(self.currect_sound_uuid)
@@ -422,6 +427,11 @@ class SeaPlayer(App):
     
     # ! Currect Sound Controls
     async def currect_sound_stop(self, sound: Optional[CodecBase]=None):
+        """Stops playback of the currently selected sound.
+        
+        Args:
+            sound (Optional[CodecBase], optional): Сurrently selected sound. Defaults to None.
+        """
         if sound is None:
             sound = await self.aio_gcs()
         if sound is not None:
@@ -429,6 +439,11 @@ class SeaPlayer(App):
             sound.stop()
     
     async def currect_sound_play(self, sound: Optional[CodecBase]=None):
+        """Plays playback of the currently selected sound.
+        
+        Args:
+            sound (Optional[CodecBase], optional): Сurrently selected sound. Defaults to None.
+        """
         if sound is None:
             sound = await self.aio_gcs()
         if sound is not None:
@@ -436,6 +451,11 @@ class SeaPlayer(App):
             sound.play()
     
     async def currect_sound_pause(self, sound: Optional[CodecBase]=None):
+        """Pauses the currently selected sound.
+        
+        Args:
+            sound (Optional[CodecBase], optional): Сurrently selected sound. Defaults to None.
+        """
         if sound is None:
             sound = await self.aio_gcs()
         if sound is not None:
@@ -443,6 +463,11 @@ class SeaPlayer(App):
             sound.pause()
     
     async def currect_sound_unpause(self, sound: Optional[CodecBase]=None):
+        """Unpauses the currently selected sound.
+        
+        Args:
+            sound (Optional[CodecBase], optional): Сurrently selected sound. Defaults to None.
+        """
         if sound is None:
             sound = await self.aio_gcs()
         if sound is not None:
@@ -599,7 +624,8 @@ class SeaPlayer(App):
         self.info(f"Screenshot saved to: {repr(path)}")
         await self.aio_nofy(self.ll.get("nofys.screenshot.saved").format(path=repr(path)))
     
-    async def action_quit(self):
+    async def action_quit(self) -> None:
+        """The function called by our when the SeaPlayer stops working."""
         self.started = False
         if ENABLE_PLUGIN_SYSTEM:
             await self.plugin_loader.on_quit()
@@ -619,6 +645,7 @@ class SeaPlayer(App):
             )
     
     def on_ready(self, *args, **kwargs) -> None:
+        """A function called when the SeaPlayer is completely confused."""
         if ENABLE_PLUGIN_SYSTEM:
             self.run_worker(
                 self.plugin_loader.on_ready,

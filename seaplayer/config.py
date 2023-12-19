@@ -23,9 +23,11 @@ DEFAULT_CONFIG_DATA = {
     "keys.volume_down": "-",
     "debag.log_menu_enable": False
 }
+"""Default configuration values."""
 
 # ! Main Class
 class SeaPlayerConfig:
+    """The main configuration class of the SeaPlayer."""
     @staticmethod
     def dump(filepath: Path, data: Dict[str, Any]) -> None:
         with open(filepath, "w", encoding="utf-8", errors="ignore") as file:
@@ -43,6 +45,7 @@ class SeaPlayerConfig:
         return default
     
     def refresh(self) -> None:
+        """Overwriting configurations to a file."""
         self.dump(self.filepath, self.config)
     
     def __init__(
@@ -51,6 +54,12 @@ class SeaPlayerConfig:
         *,
         default_data: Dict[str, Any]=DEFAULT_CONFIG_DATA
     ) -> None:
+        """The main configuration class of the SeaPlayer.
+        
+        Args:
+            filepath (str): The path to the configuration file.
+            default_data (Dict[str, Any], optional): Default configuration values. Defaults to DEFAULT_CONFIG_DATA.
+        """
         self.filepath = Path(filepath)
         self.default_data = default_data
         if self.filepath.exists():
@@ -72,18 +81,24 @@ class SeaPlayerConfig:
     
     # ! Main
     @property
-    def lang(self) -> Union[Literal['en-eng'], str]: return self.get("main.lang")
+    def lang(self) -> Union[Literal['en-eng'], str]:
+        """The current language."""
+        return self.get("main.lang")
     @lang.setter
     def lang(self, value: Union[Literal['en-eng'], str]) -> None: self.set("main.lang", value)
     
     # ! Sound
     @property
-    def sound_font_path(self) -> Optional[str]: return self.get("sound.sound_font_path")
+    def sound_font_path(self) -> Optional[str]:
+        """The path to the file with the audio font."""
+        return self.get("sound.sound_font_path")
     @sound_font_path.setter
     def sound_font_path(self, value: Optional[str]): self.set("sound.sound_font_path", value)
     
     @property
-    def output_sound_device_id(self) -> Optional[int]: return self.get("sound.output_sound_device_id")
+    def output_sound_device_id(self) -> Optional[int]:
+        """ID of the audio output device."""
+        return self.get("sound.output_sound_device_id")
     @output_sound_device_id.setter
     def output_sound_device_id(self, value: Optional[int]): self.set("sound.output_sound_device_id", value)
     
@@ -102,54 +117,74 @@ class SeaPlayerConfig:
     
     # ! Playback
     @property
-    def volume_change_percent(self) -> float: return self.get("playback.volume_change_percent")
+    def volume_change_percent(self) -> float:
+        """Percentage by which the volume changes when the special keys are pressed."""
+        return self.get("playback.volume_change_percent")
     @volume_change_percent.setter
     def volume_change_percent(self, value: float): self.set("playback.volume_change_percent", value)
     
     @property
-    def rewind_count_seconds(self) -> int: return self.get("playback.rewind_count_seconds")
+    def rewind_count_seconds(self) -> int:
+        """The value of the seconds by which the current sound will be rewound."""
+        return self.get("playback.rewind_count_seconds")
     @rewind_count_seconds.setter
     def rewind_count_seconds(self, value: int): self.set("playback.rewind_count_seconds", value)
     
     @property
-    def max_volume_percent(self) -> float: return self.get("playback.max_volume_percent")
+    def max_volume_percent(self) -> float:
+        """Maximum volume value."""
+        return self.get("playback.max_volume_percent")
     @max_volume_percent.setter
     def max_volume_percent(self, value: float): self.set("playback.max_volume_percent", value)
     
     # ! Playlist
     @property
-    def recursive_search(self) -> bool: return self.get("playlist.recursive_search")
+    def recursive_search(self) -> bool:
+        """Recursive file search."""
+        return self.get("playlist.recursive_search")
     @recursive_search.setter
     def recursive_search(self, value: bool): self.set("playlist.recursive_search", value)
     
     # ! Keys
     @property
-    def key_quit(self) -> str: return self.get("keys.quit")
+    def key_quit(self) -> str:
+        """The key to exit the SeaPlayer."""
+        return self.get("keys.quit")
     @key_quit.setter
     def key_quit(self, value: str): self.set("keys.quit", value)
     
     @property
-    def key_rewind_forward(self) -> str: return self.get("keys.rewind_forward")
+    def key_rewind_forward(self) -> str:
+        """The rewind forward key."""
+        return self.get("keys.rewind_forward")
     @key_rewind_forward.setter
     def key_rewind_forward(self, value: str): self.set("keys.rewind_forward", value)
     
     @property
-    def key_rewind_back(self) -> str: return self.get("keys.rewind_back")
+    def key_rewind_back(self) -> str:
+        """The rewind back key."""
+        return self.get("keys.rewind_back")
     @key_rewind_back.setter
     def key_rewind_back(self, value: str): self.set("keys.rewind_back", value)
     
     @property
-    def key_volume_up(self) -> str: return self.get("keys.volume_up")
+    def key_volume_up(self) -> str:
+        """The volume up key."""
+        return self.get("keys.volume_up")
     @key_volume_up.setter
     def key_volume_up(self, value: str): self.set("keys.volume_up", value)
     
     @property
-    def key_volume_down(self) -> str: return self.get("keys.volume_down")
+    def key_volume_down(self) -> str:
+        """The volume down key."""
+        return self.get("keys.volume_down")
     @key_volume_down.setter
     def key_volume_down(self, value: str): self.set("keys.volume_down", value)
     
     # ! Debag
     @property
-    def log_menu_enable(self) -> bool: return self.get("debag.log_menu_enable")
+    def log_menu_enable(self) -> bool:
+        """Enabling and disabling logging."""
+        return self.get("debag.log_menu_enable")
     @log_menu_enable.setter
     def log_menu_enable(self, value: bool): self.set("debag.log_menu_enable", value)
