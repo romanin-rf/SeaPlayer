@@ -39,12 +39,31 @@ class PluginLoaderConfigModel(BaseModel):
 
 class PluginLoaderConfigManager:
     filepath: Path
+    """The path to the plugin configuration file."""
     config: PluginLoaderConfigModel
+    """Contains attributes from the plugin configuration file."""
     
     @staticmethod
-    def dump(path: str, data: PluginLoaderConfigModel) -> None: ...
+    def dump(path: str, data: PluginLoaderConfigModel) -> None:
+        """Overwriting configurations.
+        
+        Args:
+            path (str): The path to the plugin configuration file.
+            data (PluginLoaderConfigModel): Contains attributes from the plugin configuration file.
+        """
+        ...
     @staticmethod
-    def load(path: str, default_data: Dict[str, Any]) -> PluginLoaderConfigModel: ...
+    def load(path: str, default_data: Dict[str, Any]) -> PluginLoaderConfigModel:
+        """Loading configurations.
+        
+        Args:
+            path (str): The path to the plugin configuration file.
+            default_data (Dict[str, Any]): The standard values of the configuration file.
+        
+        Returns:
+            PluginLoaderConfigModel: Contains attributes from the plugin configuration file.
+        """
+        ...
     def refresh(self) -> None: ...
     def __init__(self, path: str) -> None: ...
     def exists_plugin(self, info: PluginInfo) -> bool: ...

@@ -152,7 +152,13 @@ class SeaPlayer(App):
         life_time: float=3,
         dosk: Literal["bottom", "left", "right", "top"]="top"
     ) -> None:
-        """"""
+        """Creating a temporary notification.
+        
+        Args:
+            text (str): The text of the notification.
+            life_time (float, optional): The time in seconds after which the notification will disappear. Defaults to 3.
+            dosk (Literal[&quot;bottom&quot;, &quot;left&quot;, &quot;right&quot;, &quot;top&quot;], optional): Regarding the screen. Defaults to "top".
+        """
         self.screen.mount(Nofy(text, life_time, dosk))
     
     async def aio_nofy(
@@ -161,6 +167,13 @@ class SeaPlayer(App):
         life_time: float=3,
         dosk: Literal["bottom", "left", "right", "top"]="top"
     ) -> None:
+        """Creating a temporary notification.
+        
+        Args:
+            text (str): The text of the notification.
+            life_time (float, optional): The time in seconds after which the notification will disappear. Defaults to 3.
+            dosk (Literal[&quot;bottom&quot;, &quot;left&quot;, &quot;right&quot;, &quot;top&quot;], optional): Regarding the screen. Defaults to "top".
+        """
         await self.screen.mount(Nofy(text, life_time, dosk))
     
     def callnofy(
@@ -168,6 +181,15 @@ class SeaPlayer(App):
         text: str,
         dosk: Literal["bottom", "left", "right", "top"]="top"
     ) -> CallNofy:
+        """Creating a notification.
+        
+        Args:
+            text (str): The text of the notification.
+            dosk (Literal[&quot;bottom&quot;, &quot;left&quot;, &quot;right&quot;, &quot;top&quot;], optional): Regarding the screen. Defaults to "top".
+        
+        Returns:
+            CallNofy: To delete the notification image, use the `CallNofy.remove()` method.
+        """
         cn = CallNofy(text, dosk)
         self.screen.mount(cn)
         self.install_screen
@@ -178,23 +200,50 @@ class SeaPlayer(App):
         text: str,
         dosk: Literal["bottom", "left", "right", "top"]="top"
     ) -> CallNofy:
+        """Creating a notification.
+        
+        Args:
+            text (str): The text of the notification.
+            dosk (Literal[&quot;bottom&quot;, &quot;left&quot;, &quot;right&quot;, &quot;top&quot;], optional): Regarding the screen. Defaults to "top".
+        
+        Returns:
+            CallNofy: To delete the notification image, use the `CallNofy.remove()` method.
+        """
         cn = CallNofy(text, dosk)
         await self.screen.mount(cn)
         return cn
     
     # ! Get Current Sound
     def gcs(self) -> Optional[CodecBase]:
+        """Getting the currently selected sound.
+        
+        Returns:
+            Optional[CodecBase]: The image of the codex in which the sound is wrapped.
+        """
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
             self.currect_sound = self.music_list_view.music_list.get(self.currect_sound_uuid)
         return self.currect_sound
     
     async def aio_gcs(self):
+        """Getting the currently selected sound.
+        
+        Returns:
+            Optional[CodecBase]: The image of the codeс in which the sound is wrapped.
+        """
         if (self.currect_sound is None) and (self.currect_sound_uuid is not None):
             self.currect_sound = await self.music_list_view.music_list.aio_get(self.currect_sound_uuid)
         return self.currect_sound
     
     # ! Get Current Sound Status Text
     def get_sound_tstatus(self, sound: CodecBase) -> str:
+        """Getting the audio status in text format in the language selected by the user.
+        
+        Args:
+            sound (CodecBase): The image of the codeс in which the sound is wrapped.
+        
+        Returns:
+            str: Audio status in text format in the language selected by the user.
+        """
         if sound.playing:
             if sound.paused:
                 return self.ll.get("sound.status.paused")
@@ -203,6 +252,14 @@ class SeaPlayer(App):
         return self.ll.get("sound.status.stopped")
     
     def get_sound_selected_label_text(self, sound: Optional[CodecBase]=None) -> str:
+        """Generating a string for `self.music_selected_label`.
+        
+        Args:
+            sound (Optional[CodecBase], optional): The image of the codeс in which the sound is wrapped. Defaults to None.
+        
+        Returns:
+            str: String for `self.music_selected_label`.
+        """
         if sound is None:
             sound = self.gcs()
         if sound is not None:
@@ -210,6 +267,14 @@ class SeaPlayer(App):
         return self.ll.get("player.bar.sound.none")
     
     async def aio_get_sound_selected_label_text(self, sound: Optional[CodecBase]=None) -> str:
+        """Generating a string for `self.music_selected_label`.
+        
+        Args:
+            sound (Optional[CodecBase], optional): The image of the codeс in which the sound is wrapped. Defaults to None.
+        
+        Returns:
+            str: String for `self.music_selected_label`.
+        """
         if sound is None:
             sound = await self.aio_gcs()
         if sound is not None:
@@ -218,9 +283,19 @@ class SeaPlayer(App):
     
     # ! Update Selected Label Text
     def update_select_label(self, sound: Optional[CodecBase]=None) -> None:
+        """Updating the string in `self.music_selected_label`.
+        
+        Args:
+            sound (Optional[CodecBase], optional): The image of the codeс in which the sound is wrapped. Defaults to None.
+        """
         self.music_selected_label.update(self.get_sound_selected_label_text(sound))
     
     async def aio_update_select_label(self, sound: Optional[CodecBase]=None) -> None:
+        """Updating the string in `self.music_selected_label`.
+        
+        Args:
+            sound (Optional[CodecBase], optional): The image of the codeс in which the sound is wrapped. Defaults to None.
+        """
         self.music_selected_label.update(await self.aio_get_sound_selected_label_text(sound))
     
     # ! Switch Mode Button
