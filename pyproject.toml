@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.8.7.post3"
+version = "0.8.7.post4"
 description = "SeaPlayer is a player that works in the terminal."
 homepage = "https://romanin-rf.github.io/SeaPlayer/home"
 repository = "https://github.com/romanin-rf/SeaPlayer"
@@ -15,7 +15,9 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS"
 ]
-packages = [{ include = "seaplayer" }]
+packages = [
+    { include = "src/seaplayer" }
+]
 include = [
     "seaplayer/assets/image-not-found.png",
     "seaplayer/css/configurate.tcss",
@@ -55,10 +57,25 @@ typing-extensions = ">=4.6"
 # Optional Modules
 poetry = {version = ">=1.5", optional = true}
 pyinstaller = {version = ">=5.11", optional = true}
-wget = {version = ">=3.2", optional = true}
 
 [tool.poetry.extras]
-build = ["poetry", "pyinstaller", "wget"]
+build = [
+    "poetry",
+    "pyinstaller",
+]
+docs = [
+    "rich",
+    "mkdocs",
+    "mkdocs-exclude",
+    "mkdocs-autorefs",
+    "mkdocs-rss-plugin",
+    "mkdocs-mermaid2-plugin",
+    "mkdocstrings",
+    "mkdocstrings-crystal",
+    "mkdocstrings-python",
+    "mkdocs-material",
+    "mkdocs-material-extensions",
+]
 
 [build-system]
 requires = ["poetry-core"]
