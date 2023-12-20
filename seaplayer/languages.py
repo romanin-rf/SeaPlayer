@@ -55,46 +55,82 @@ class Language:
     # ? Propertyes
     @property
     def name(self) -> str:
-        """The path to the file with the translation."""
+        """The path to the file with the translation.
+        
+        Returns:
+            str: The path to the file with the translation.
+        """
         return self.__name
     
     @property
     def mark(self) -> str:
-        """The name of the file without an extension."""
+        """The name of the file without an extension.
+        
+        Returns:
+            str: The name of the file without an extension.
+        """
         return self.__mark
     
     @property
     def title(self) -> str:
-        """The name of the translation language taken from the file."""
+        """The name of the translation language taken from the file.
+        
+        Returns:
+            str: The name of the translation language taken from the file.
+        """
         return self.__title
     
     @property
     def author(self) -> str:
-        """The author of the translation taken from the translation file."""
+        """The author of the translation taken from the translation file.
+        
+        Returns:
+            str: The author of the translation taken from the translation file.
+        """
         return self.__author
     
     @property
     def author_url(self) -> Optional[str]:
-        """The link to the author of the translation is taken from the translation file."""
+        """The link to the author of the translation is taken from the translation file.
+        
+        Returns:
+            Optional[str]: The link to the author of the translation is taken from the translation file.
+        """
         return self.__author_url
     
     @property
     def words(self) -> Dict[str, str]:
-        """Special values that you need to have even if the language is not loaded."""
+        """Special values that you need to have even if the language is not loaded.
+        
+        Returns:
+            Dict[str, str]: Special values that you need to have even if the language is not loaded.
+        """
         return self.__words
     
     @property
     def loaded(self) -> bool:
-        """If `True`, then the file with the translation is fully loaded in memory."""
+        """If `True`, then the file with the translation is fully loaded in memory.
+        
+        Returns:
+            bool: If `True`, then the file with the translation is fully loaded in memory.
+        """
         return self.__loaded
     
     # ? Main Methods
     def load(self) -> None:
-        """Full load of the file with the translation in memory."""
+        """Full load of the file with the translation in memory.
+        
+        Returns:
+            None: -
+        """
         self.__data, self.__loaded = self.__load_file(self.__name), True
     
     def unload(self) -> None:
-        """Unload a file with a translation from memory."""
+        """Unload a file with a translation from memory.
+        
+        Returns:
+            None: -
+        """
         self.__data, self.__loaded = None, False
     
     def get(self, key: str, default: Optional[str]=None) -> Optional[str]:
@@ -117,7 +153,6 @@ class Language:
 # ! Main Class
 class LanguageLoader:
     """The loader of files with translation."""
-    
     # ? Main Methods
     def __search_langs(self, dlm: str, mlm: str) -> Tuple[Language, Optional[Language]]:
         dl, ml = None, None
@@ -178,37 +213,65 @@ class LanguageLoader:
     # ? Propertys
     @property
     def name(self) -> str:
-        """The path to the folder with the translation files."""
+        """The path to the folder with the translation files.
+        
+        Returns:
+            str: The path to the folder with the translation files.
+        """
         return self.__name
     
     @property
     def main_lang_mark(self) -> str:
-        """The name of the file with the main translation without the extension."""
+        """The name of the file with the main translation without the extension.
+        
+        Returns:
+            str: The name of the file with the main translation without the extension.
+        """
         return self.__mlm
     
     @property
     def default_lang_mark(self) -> str:
-        """The name of the file with the default translation without an extension."""
+        """The name of the file with the default translation without an extension.
+        
+        Returns:
+            str: The name of the file with the default translation without an extension.
+        """
         return self.__dlm
     
     @property
     def langs(self) -> List[Language]:
-        """A list with images of the `Language` class, reflecting the files found in the folder with the translation files."""
+        """A list with images of the `Language` class, reflecting the files found in the folder with the translation files.
+        
+        Returns:
+            List[Language]: A list with images of the `Language` class, reflecting the files found in the folder with the translation files.
+        """
         return self.__langs
     
     @property
     def default_lang(self) -> Language:
-        """An image of the `Language` class reflecting the uploaded file with the default translation."""
+        """An image of the `Language` class reflecting the uploaded file with the default translation.
+        
+        Returns:
+            Language: An image of the `Language` class reflecting the uploaded file with the default translation.
+        """
         return self.__dlang
     
     @property
     def main_lang(self) -> Optional[Language]:
-        """An image of the `Language` class reflecting the uploaded file with the main translation."""
+        """An image of the `Language` class reflecting the uploaded file with the main translation.
+        
+        Returns:
+            Optional[Language]: An image of the `Language` class reflecting the uploaded file with the main translation.
+        """
         return self.__mlang
     
     @property
     def alangs(self):
-        """Additional languages, for example, translation of plugins."""
+        """Additional languages, for example, translation of plugins.
+        
+        Returns:
+            List[LanguageLoader]: Additional languages, for example, translation of plugins.
+        """
         return self.__alangs
     
     # ? Public Methods
