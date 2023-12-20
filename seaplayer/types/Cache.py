@@ -8,7 +8,13 @@ D = TypeVar("D")
 
 # ! Main Class
 class Cacher:
+    """The caching management class."""
     def __init__(self, cache_dirpath: str) -> None:
+        """The caching management class.
+        
+        Args:
+            cache_dirpath (str): The path to the directory with the cache.
+        """
         self.main_dirpath = os.path.abspath(cache_dirpath)
         self.vars_dirpath = os.path.join(self.main_dirpath, "vars")
         # * Create Directory
@@ -40,6 +46,16 @@ class Cacher:
     
     # ! Main Methods
     def var(self, name: str, default: D, *, group: str="main") -> D:
+        """Caching a variable, wraps the value of the variable in `property` and saves it when the value is changed, and the next time SeaPlayer is started, the value is loaded from the cache.
+        
+        Args:
+            name (str): The name of the cached variable.
+            default (D): The default value of the variable.
+            group (str, optional): A group of variables. Defaults to "main".
+        
+        Returns:
+            D: Returns `property`, but as part of convenience, typing has been done that says that the same type that was set is returned.
+        """
         def setter(s, value: D) -> None:
             self.write_var(value, name, group=group)
         def getter(s) -> D:

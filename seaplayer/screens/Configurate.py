@@ -98,10 +98,10 @@ class Configurate(Screen):
     # ! Update App Vars
     def sattr(self, attr_name: str, value: Any) -> None:
         exec(f"self.{attr_name}=value")
-
+    
     def gattr(self, attr_name: str) -> Any:
         return eval(f"self.{attr_name}")
-
+    
     async def _auac(self, attr_name: str, input: InputField, value: str) -> None:
         self.sattr(attr_name, value)
         self.app.update_bindings()
@@ -187,7 +187,7 @@ class Configurate(Screen):
             desc=desc+(f" [red]({self.ll.get('words.restart_required')})[/red]" if restart_required else ""),
             height=len(values)+4
         )
-
+    
     def create_configurator_integer(
         self,
         attr_name: str,

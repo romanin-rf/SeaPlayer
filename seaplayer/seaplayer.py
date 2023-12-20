@@ -100,8 +100,10 @@ class SeaPlayer(App):
     currect_sound_uuid: Optional[str] = None
     currect_sound: Optional[CodecBase] = None
     currect_volume = cache.var("currect_volume", 1.0)
+    """The current volume value (cached)."""
     last_playback_status: Optional[Literal[0, 1, 2]] = None
     playback_mode: int = cache.var("playback_mode", 0)
+    """The current playback mode (cached)."""
     playback_mode_blocked: bool = False
     last_handlered_values: List[str] = []
     started: bool = True
