@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.8.8"
+version = "0.8.9"
 description = "SeaPlayer is a player that works in the terminal."
 homepage = "https://romanin-rf.github.io/SeaPlayer"
 repository = "https://github.com/romanin-rf/SeaPlayer"

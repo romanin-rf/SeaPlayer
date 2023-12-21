@@ -520,14 +520,14 @@ class SeaPlayer(App):
                             try:
                                 sound: CodecBase = await codec.__aio_init__(value, **self.CODECS_KWARGS)
                             except Exception as e:
-                                self.exception(e)
                                 sound = None
+                                raise e
                         else:
                             try:
                                 sound: CodecBase = codec(value, **self.CODECS_KWARGS)
                             except Exception as e:
-                                self.exception(e)
                                 sound = None
+                                raise e
                         if sound is not None:
                             if not await self.music_list_view.music_list.aio_exists_sha1(sound):
                                 await self.music_list_view.aio_add_sound(sound)

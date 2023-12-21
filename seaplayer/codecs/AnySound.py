@@ -4,7 +4,7 @@ import aiofiles
 import subprocess
 from tempfile import mkstemp
 # > IO's
-from urlopen2 import URLFile
+from urlopen2 import URLFile, AsyncURLFile
 # > Sound Works
 from playsoundsimple import Sound
 from playsoundsimple.sound import FPType, getfp
@@ -70,31 +70,17 @@ class AnySound(Sound):
         return AnySound(npath, **{"is_temp": True, **kwargs})
     
     @staticmethod
-    def from_url(
-        url: str,
-        download_buffer_size: int=65536,
-        **kwargs
-    ):
+    def from_url(url: str, **kwargs):
         path = mkstemp(suffix=".bin")[1]
-        
-        with URLFile(url) as urlfile:
-            with open(path, "wb") as tempfile:
-                while len(data:=urlfile.read(download_buffer_size)) != 0:
-                    tempfile.write(data)
-        
+        with open(path, "wb") as tempfile:
+            with URLFile(url, tempfile) as urlfile:
+                urlfile.fulling()
         return AnySound(path, is_temp=True, **kwargs)
     
     @staticmethod
-    async def aio_from_url(
-        url: str,
-        download_buffer_size: int=65536,
-        **kwargs
-    ):
+    async def aio_from_url(url: str, **kwargs):
         path = mkstemp(suffix=".bin")[1]
-        
-        with URLFile(url) as urlfile:
-            async with aiofiles.open(path, "wb") as tempfile:
-                while len(data:=urlfile.read(download_buffer_size)) != 0:
-                    await tempfile.write(data)
-        
+        async with aiofiles.open(path, "wb") as tempfile:
+            async with AsyncURLFile(url, tempfile) as urlfile:
+                await urlfile.fulling()
         return AnySound(path, is_temp=True, **kwargs)

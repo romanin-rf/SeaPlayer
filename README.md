@@ -11,8 +11,8 @@ Supports the following audio file formats: `MP3`, `OGG`, `WAV`, `FLAC`, `MIDI`.
 Supports the following languages: `English`, `Русский`, `Українська`.
 
 ## Screenshots
-![MainScreen-v0 8 1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/84e1f498-beab-463b-ba2a-a8a109e607c0)
-![ConfigurateScreen-v0 8 1](https://github.com/romanin-rf/SeaPlayer/assets/60302782/c8f0fa20-b4b8-4858-ac4a-bb8ddb8c0a39)
+![Main Screen](https://github.com/romanin-rf/SeaPlayer/assets/60302782/84e1f498-beab-463b-ba2a-a8a109e607c0)
+![Configurate Screen](https://github.com/romanin-rf/SeaPlayer/assets/60302782/c8f0fa20-b4b8-4858-ac4a-bb8ddb8c0a39)
 
 ## Using
 ```shell
