@@ -21,7 +21,7 @@ from ..seaplayer import SeaPlayer
 
 # ! Types
 class PluginModuleType(ModuleType):
-    plugin_main: Type[PluginBase]
+    __plugin__: Type[PluginBase]
 
 INFO_FILE_PATH = str
 INIT_FILE_PATH = str
@@ -39,12 +39,31 @@ class PluginLoaderConfigModel(BaseModel):
 
 class PluginLoaderConfigManager:
     filepath: Path
+    """The path to the plugin configuration file."""
     config: PluginLoaderConfigModel
+    """Contains attributes from the plugin configuration file."""
     
     @staticmethod
-    def dump(path: str, data: PluginLoaderConfigModel) -> None: ...
+    def dump(path: str, data: PluginLoaderConfigModel) -> None:
+        """Overwriting configurations.
+        
+        Args:
+            path (str): The path to the plugin configuration file.
+            data (PluginLoaderConfigModel): Contains attributes from the plugin configuration file.
+        """
+        ...
     @staticmethod
-    def load(path: str, default_data: Dict[str, Any]) -> PluginLoaderConfigModel: ...
+    def load(path: str, default_data: Dict[str, Any]) -> PluginLoaderConfigModel:
+        """Loading configurations.
+        
+        Args:
+            path (str): The path to the plugin configuration file.
+            default_data (Dict[str, Any]): The standard values of the configuration file.
+        
+        Returns:
+            PluginLoaderConfigModel: Contains attributes from the plugin configuration file.
+        """
+        ...
     def refresh(self) -> None: ...
     def __init__(self, path: str) -> None: ...
     def exists_plugin(self, info: PluginInfo) -> bool: ...
@@ -61,11 +80,17 @@ class PluginLoaderConfigManager:
 # ! Plugin Loader Class
 class PluginLoader:
     app: SeaPlayer
+    """A link to the image of the `SeaPlayer` class."""
     plugins_dirpath: Path
+    """The path to the plugin folder."""
     plugins_config_path: Path
+    """The path to the plugin loader configuration file."""
     on_plugins: List[PluginBase]
+    """A list with initialized plugin classes."""
     off_plugins: List[PluginInfo]
+    """A list with disabled plugins (more precisely, with information about them)."""
     error_plugins: List[Tuple[str, str]]
+    """A list with plugins (more precisely, with the paths to them) that could not be loaded."""
     value_handlers: List[Callable[[str], List[str]]]
     
     def __init__(

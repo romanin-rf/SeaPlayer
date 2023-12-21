@@ -3,7 +3,7 @@ from rich.console import Console
 from textual.widgets import Input, Label
 from seaplayer.plug import PluginBase
 from seaplayer.objects import PopUpWindow, WaitButton
-from .vkpymusic import Service, TokenReceiverAsync
+from vkpymusic import Service, TokenReceiverAsync
 # > Typing
 from typing import Tuple
 # > Local Imports

@@ -1,5 +1,5 @@
 import asyncio
-from .vkpymusic import Service
+from vkpymusic import Service
 from seaplayer.codecs.URLS import URLSoundCodec
 from seaplayer.codecs.AnySound import AnySound
 # > Typing
