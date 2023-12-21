@@ -47,7 +47,6 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.details
   - pymdownx.snippets
-  - pymdownx.superfences
   - pymdownx.inlinehilite
   - markdown.extensions.attr_list
   - pymdownx.tabbed:
@@ -59,6 +58,11 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tasklist:
       custom_checkbox: true
   - toc:

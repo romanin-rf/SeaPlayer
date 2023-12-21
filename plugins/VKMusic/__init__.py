@@ -1,6 +1,6 @@
 import logging
-from rich.console import Console
 from textual.widgets import Input, Label
+from textual.containers import Center
 from seaplayer.plug import PluginBase
 from seaplayer.objects import PopUpWindow, WaitButton
 from vkpymusic import Service, TokenReceiverAsync
@@ -16,19 +16,15 @@ from .units import (
 # ! Logging Disable
 logging.disable()
 
-# ! Vars
-console = Console()
-
-# ! Plugin Value Hander
-def vkm_value_handler(value: str):
-    values = []
-    if (d:=pcheck(VKM_RANGE_PATTERN, value)) is not None:
-        for i in range(d['ssid'], d['esid']):
-            values.append(f"vkm://{d['uid']}/{i}")
-    return values
-
 # ! Plugin Class
 class VKMusic(PluginBase):
+    def vkm_value_handler(self, value: str):
+        values = []
+        if (d:=pcheck(VKM_RANGE_PATTERN, value)) is not None:
+            for i in range(d['ssid'], d['esid']):
+                values.append(f"vkm://{d['uid']}/{i}")
+        return values
+    
     def exist_token(self) -> bool:
         if (s:=Service.parse_config()) is not None:
             del s
@@ -36,14 +32,12 @@ class VKMusic(PluginBase):
         else:
             return False
     
-    def on_init(self) -> None:
-        self.configurated = self.exist_token()
-    
+    # ? For user requests methods
     async def __req_login_password(self) -> Tuple[str, str]:
         lppw = PopUpWindow(
             ilogin:=Input(placeholder="Login"),
             ipassword:=Input(placeholder="Password", password=True),
-            elpb:=WaitButton("Log In"),
+            Center(elpb:=WaitButton("Log In")),
             title="VKMusic Authentication"
         )
         await self.app.mount(lppw)
@@ -55,7 +49,7 @@ class VKMusic(PluginBase):
     async def __req_2fa(self) -> str:
         cpw = PopUpWindow(
             icode:=Input(placeholder="Code"),
-            ecb:=WaitButton("Enter"),
+            Center(ecb:=WaitButton("Enter")),
             title="VKMusic Authentication"
         )
         await self.app.mount(cpw)
@@ -68,7 +62,7 @@ class VKMusic(PluginBase):
         cpw = PopUpWindow(
             Label(f"[link={url}]{url}[/link]"),
             icapcha:=Input(placeholder="Capcha"),
-            ecb:=WaitButton("Enter"),
+            Center(ecb:=WaitButton("Enter")),
             title="VKMusic Authentication"
         )
         await self.app.mount(cpw)
@@ -104,8 +98,11 @@ class VKMusic(PluginBase):
         self.app.info(f"Service is worked: {repr(self.service)}")
         # ? Registration
         self.app.CODECS_KWARGS.update({"vkm_service": self.service})
-        self.add_value_handlers(vkm_value_handler)
+        self.add_value_handlers(self.vkm_value_handler)
         self.add_codecs(VKMCodec)
+    
+    def on_init(self) -> None:
+        self.configurated = self.exist_token()
     
     async def on_ready(self):
         self.app.run_worker(self.__init_service__, group=self.info.name_id)

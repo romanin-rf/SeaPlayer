@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.8.7"
+version = "0.8.8"
 description = "SeaPlayer is a player that works in the terminal."
 homepage = "https://romanin-rf.github.io/SeaPlayer"
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
-keywords = ["textual", "tui", "player", "seaplayer", "wav", "mp3", "ogg", "midi"]
+keywords = ["textual", "tui", "seaplayer", "player", "wav", "mp3", "ogg", "flac", "midi"]
 license = "MIT"
 readme = "README.md"
 classifiers = [
@@ -27,7 +27,7 @@ include = [
     "seaplayer/langs/uk-ukr.properties"
 ]
 [tool.poetry.urls]
-"Changelog" = "https://github.com/romanin-rf/SeaPlayer/blob/main/changelog.md"
+"Changelog" = "https://romanin-rf.github.io/SeaPlayer/changelog"
 
 [tool.poetry.scripts]
 seaplayer = "seaplayer.__main__:run"
