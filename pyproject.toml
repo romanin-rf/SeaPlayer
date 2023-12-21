@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "SeaPlayer"
-version = "0.8.7.post4"
+version = "0.8.7"
 description = "SeaPlayer is a player that works in the terminal."
-homepage = "https://romanin-rf.github.io/SeaPlayer/home"
+homepage = "https://romanin-rf.github.io/SeaPlayer"
 repository = "https://github.com/romanin-rf/SeaPlayer"
 authors = ["Romanin <semina054@gmail.com>"]
 keywords = ["textual", "tui", "player", "seaplayer", "wav", "mp3", "ogg", "midi"]
@@ -15,9 +15,7 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS"
 ]
-packages = [
-    { include = "src/seaplayer" }
-]
+packages = [{ include="seaplayer" }]
 include = [
     "seaplayer/assets/image-not-found.png",
     "seaplayer/css/configurate.tcss",

@@ -1,0 +1,90 @@
+site_name: SeaPlayer
+repo_url: https://github.com/romanin-rf/SeaPlayer
+nav:
+  - Home:
+    - index.md
+    - Welcome to SeaPlayer: index.md
+    - Plugin CLI: plugin-cli-home.md
+    - Plugin Development: plugin-dev-home.md
+  - API:
+    - api/index.md
+    - Welcome to SeaPlayer API: api/index.md
+    - SeaPlayer: api/seaplayer.md
+    - PluginLoader: api/pluginloader.md
+    - PluginBase: api/pluginbase.md
+    - Languages: api/languages.md
+    - Config: api/config.md
+    - Codecbase: api/codecbase.md
+    - Types: api/types.md
+    - Exceptions: api/exceptions.md
+  - Сhangelog: changelog.md
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  palette:
+    scheme: slate
+    primary: blue
+  features:
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - navigation.tabs
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.path
+    - navigation.indexes
+    - navigation.footer
+markdown_extensions:
+  - meta
+  - def_list
+  - footnotes
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.keys
+  - pymdownx.details
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - markdown.extensions.attr_list
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+      baselevel: 1
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      custom_templates: docs/_templates
+      handlers:
+        python:
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://textual.textualize.io/objects.inv
+            - https://rich.readthedocs.io/en/stable/objects.inv
+          options:
+            show_signature_annotations: false
+            separate_signature: true
+            merge_init_into_class: true
+            docstring_options:
+              ignore_init_summary: true
+            show_source: false
+          filters:
+            - "!^_"
+            - "^__init__$"
+  - exclude:
+      glob:
+        - "**/_template.md"
