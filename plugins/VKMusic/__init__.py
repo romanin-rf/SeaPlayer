@@ -5,12 +5,14 @@ from seaplayer.plug import PluginBase
 from seaplayer.objects import PopUpWindow, WaitButton
 from vkpymusic import Service, TokenReceiverAsync
 # > Typing
-from typing import Tuple
+from typing import Optional, Tuple, List
 # > Local Imports
 from .vkmcodec import VKMCodec
 from .units import (
-    pcheck,
-    VKM_RANGE_PATTERN
+    pget,
+    VKM_RANGE_SUID_PATTERN,
+    VKM_TEXT_PATTERN,
+    VKM_TEXT_RANGE_PATTERN,
 )
 
 # ! Logging Disable
@@ -18,11 +20,20 @@ logging.disable()
 
 # ! Plugin Class
 class VKMusic(PluginBase):
-    def vkm_value_handler(self, value: str):
+    def vkm_value_handler(self, value: str) -> List[str]:
         values = []
-        if (d:=pcheck(VKM_RANGE_PATTERN, value)) is not None:
-            for i in range(d['ssid'], d['esid']):
-                values.append(f"vkm://{d['uid']}/{i}")
+        if self.service is not None:
+            # "vkm://users/<uid:int>:<ssid:int>-<esid:int>"
+            if (d:=pget(VKM_RANGE_SUID_PATTERN, value)) is not None:
+                for sid in range(d['ssid'], d['esid']):
+                    values.append(f"vkm://users/{d['uid']}:{sid}") # > "vkm://users/<uid:int>:<sid:int>"
+            # "vkm://songs:<text>:<count:int>"
+            elif (d:=pget(VKM_TEXT_RANGE_PATTERN, value)) is not None:
+                for offset in range(d['count']):
+                    values.append(f"vkm://songs:{d['text']}:1:{offset}") # > "vkm://songs:<text>:<count:int>:<offset:int>"
+            # "vkm://songs:<text>"
+            elif (d:=pget(VKM_TEXT_PATTERN, value)) is not None:
+                values.append(f"vkm://songs:{d['text']}:1:0") # > "vkm://songs:<text>:<count:int>:<offset:int>"
         return values
     
     def exist_token(self) -> bool:
@@ -102,6 +113,7 @@ class VKMusic(PluginBase):
         self.add_codecs(VKMCodec)
     
     def on_init(self) -> None:
+        self.service: Optional[Service] = None
         self.configurated = self.exist_token()
     
     async def on_ready(self):

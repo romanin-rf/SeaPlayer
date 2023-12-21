@@ -1,18 +1,25 @@
 import asyncio
-from vkpymusic import Service
+from vkpymusic import Service, Song
 from seaplayer.codecs.URLS import URLSoundCodec
 from seaplayer.codecs.AnySound import AnySound
 # > Typing
-from typing import Optional, Tuple
+from typing import Optional, List
 # > Local Imports
-from .units import PATCHER, VKM_MAIN_PATTERN
+from .units import (
+    pget,
+    pchecks,
+    VKM_SUID_PATTERN,
+    VKM_TEXT_RANGE_OFFSET_PATTERN
+)
 
 # ! Methods
-def parse_vkm(url: str) -> Tuple[int, int]:
-    d = PATCHER.check(VKM_MAIN_PATTERN, url)
-    if not isinstance(d, dict):
-        raise RuntimeError("The values from the 'url' could not be parsed.")
-    return d.get("uid"), d.get("sid")
+def get_song(service: Service, value: str) -> Optional[Song]:
+    songs: List[Song] = []
+    if (d:=pget(VKM_SUID_PATTERN, value)) is not None: # "vkm://users/<uid:int>:<sid:int>"
+        songs += service.get_songs_by_userid(d['uid'], 1, d['sid'])
+    elif (d:=pget(VKM_TEXT_RANGE_OFFSET_PATTERN, value)) is not None: # "vkm://songs:<text>:<count:int>:<offset:int>"
+        songs += service.search_songs_by_text(d['text'], d['count'], d['offset'])
+    return songs[0] if len(songs) > 0 else None
 
 # ! Main Class
 class VKMCodec(URLSoundCodec):
@@ -21,30 +28,31 @@ class VKMCodec(URLSoundCodec):
     
     # ! Check Methods
     @staticmethod
-    def is_this_codec(url: str) -> bool:
-        return isinstance(PATCHER.check(VKM_MAIN_PATTERN, url), dict)
+    def is_this_codec(value: str) -> bool:
+        return pchecks(value, VKM_SUID_PATTERN, VKM_TEXT_RANGE_OFFSET_PATTERN)
     
     @staticmethod
-    async def aio_is_this_codec(url: str) -> bool:
-        return isinstance(PATCHER.check(VKM_MAIN_PATTERN, url), dict)
+    async def aio_is_this_codec(value: str) -> bool:
+        return pchecks(value, VKM_SUID_PATTERN, VKM_TEXT_RANGE_OFFSET_PATTERN)
     
     # ! Main Functions
     def __init__(
         self,
         url: str,
-        sound_device_id: Optional[int]=None,
         vkm_service: Optional[Service]=None,
+        sound_device_id: Optional[int]=None,
         aio_init: bool=False,
         **kwargs
     ) -> None:
         if vkm_service is None:
-            raise RuntimeError("The 'service' argument is None.")
-        uid, sid = parse_vkm(url)
-        self.song = vkm_service.get_songs_by_userid(uid, 1, sid)[0]
+            raise RuntimeError("The VKM service has not been initialized.")
+        self.song = get_song(vkm_service, url)
+        if self.song is None:
+            raise RuntimeError("The sound could not be retrieved.")
         self._title = (self.song.title if (len(self.song.title) > 0) else None) if isinstance(self.song.title, str) else None
         self._artist = (self.song.artist if (len(self.song.artist) > 0) else None) if isinstance(self.song.artist, str) else None
         super().__init__(self.song.url, sound_device_id, aio_init, **kwargs)
-        self.name = url
+        self.name = "<hidden>"
     
     @staticmethod
     async def __aio_init__(
@@ -53,8 +61,8 @@ class VKMCodec(URLSoundCodec):
         vkm_service: Optional[Service]=None,
         **kwargs
     ):
-        self = VKMCodec(url, sound_device_id, vkm_service, aio_init=True)
-        self._sound = await asyncio.to_thread(AnySound.from_url, self.song.url, device_id=sound_device_id)
+        self = VKMCodec(url, vkm_service=vkm_service, sound_device_id=sound_device_id, aio_init=True)
+        self._sound = await asyncio.to_thread(AnySound.from_url, self.song.url, device_id=sound_device_id, **kwargs)
         return self
     
     # ! Properys
