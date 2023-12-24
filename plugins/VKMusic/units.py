@@ -5,11 +5,14 @@ from typing import Optional, Dict, Any
 # ! VBML Objects
 PATCHER = Patcher()
 
-VKM_SUID_PATTERN =                  Pattern("vkm://users/<uid:int>:<sid:int>")              # ! vkmcodec
-VKM_RANGE_SUID_PATTERN =            Pattern("vkm://users/<uid:int>:<ssid:int>-<esid:int>")  # > vkm_value_handler
-VKM_TEXT_PATTERN =                  Pattern("vkm://songs:<text>")                           # > vkm_value_handler
-VKM_TEXT_RANGE_PATTERN =            Pattern("vkm://songs:<text>:<count:int>")               # > vkm_value_handler
-VKM_TEXT_RANGE_OFFSET_PATTERN =     Pattern("vkm://songs:<text>:<count:int>:<offset:int>")  # ! vkmcodec
+VKM_SUID_PATTERN =                  Pattern("vkm://by/users?uid=<uid:int>&sid=<sid:int>")           # !
+VKM_RANGE_SUID_PATTERN =            Pattern("vkm://by/users?uid=<uid:int>?r=<ssid:int>-<esid:int>") # >
+VKM_TEXT_PATTERN =                  Pattern("vkm://by/text?t=<text>")                               # >
+VKM_TEXT_RANGE_PATTERN =            Pattern("vkm://by/text?t=<text>&c=<count:int>")                 # >
+VKM_TEXT_RANGE_OFFSET_PATTERN =     Pattern("vkm://by/text?t=<text>&c=<count:int>&o=<offset:int>")  # !
+
+VKM_SUID_FORMAT =                   "vkm://by/users?uid={uid}&sid={sid}"
+VKM_TEXT_RANGE_OFFSET_FORMAT =      "vkm://by/text?t={text}&c={count}&o={offset}"
 
 # ! For VBML methods
 def pget(pattern: Pattern, text: str) -> Optional[Dict[str, Any]]:

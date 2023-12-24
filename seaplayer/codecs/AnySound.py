@@ -35,13 +35,11 @@ class AnySound(Sound):
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
         await process.wait()
-        
         if is_temp:
             try:
                 os.remove(path)
             except:
                 pass
-        
         return AnySound(npath, **{"is_temp": True, **kwargs})
     
     @staticmethod
@@ -55,18 +53,15 @@ class AnySound(Sound):
         if path is None:
             raise FileTypeError(fp)
         npath = mkstemp(suffix=".wav")[1]
-        
         subprocess.call(
             [FLUID_SYNTH_PATH, "-ni", sound_fonts_path, path, "-F", npath, "-q"],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
-        
         if is_temp:
             try:
                 os.remove(path)
             except:
                 pass
-        
         return AnySound(npath, **{"is_temp": True, **kwargs})
     
     @staticmethod

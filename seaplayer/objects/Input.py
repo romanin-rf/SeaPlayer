@@ -1,5 +1,6 @@
 from textual.widgets import Input
 # > Typing
+from typing_extensions import deprecated
 from typing import Optional, Tuple, Callable, Awaitable, Any
 
 # ! InputFiles functions
@@ -8,6 +9,7 @@ async def submit(input: Input, value: Any) -> None: ...
 def update_placeholder() -> Optional[str]: ...
 
 # ! InputField class
+@deprecated("It is planned to remove this class.")
 class InputField(Input):
     def __init__(
         self,

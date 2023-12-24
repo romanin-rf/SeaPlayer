@@ -102,7 +102,10 @@ class PluginLoader:
         **kwargs
     ) -> None:
         ...
+    # ! Magic Methods
+    def __getitem__(self, key: str) -> Optional[PluginBase]: ...
     
+    # ! Plugin Loader Methods
     @staticmethod
     async def aio_search_plugins_paths() -> AsyncGenerator[Tuple[INIT_FILE_PATH, INFO_FILE_PATH, Optional[DEPS_FILE_PATH]]]: ...
     @staticmethod

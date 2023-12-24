@@ -2,6 +2,7 @@
 
 | Version | Date | Tag | Changelog |
 | ------- | ---- | --- | --------- |
+| [v0.8.10](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.10) | 24.12.2023 | **STABLE** | - Added new functions: `functions.awrap`<br>- Added new types: `seaplayer.types.Enviroment`<br>- Updated plugin `VKMusic` to **v0.5.0**<br>- Updated plugin `RichDiscordStatus` to **v0.2.2**<br>- Refactoting `Playback Update Loop`<br>- Refactoring `Textual Actions`<br>- Refactoring `seaplayer.tcss`<br>- Refactoring `seaplayer.objects.MusicList` to `seaplayer.objects.PlayList`<br>- Renamed variable `SeaPlayerConfig.log_menu_enabled` to `SeaPlayerConfig.logging`<br>- Removed types: `seaplayer.types.MusicList`<br>- Deprecated `seaplayer.objects.InputField` |
 | [v0.8.9](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.9) | 21.12.2023 | **HOTFIX** | - Fixed is `TypeError` in `AnySound.from_url`<br>- Update `VKMusic` plugin to **v0.4.0** |
 | [v0.8.8](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.8) | 21.12.2023 | **HOTFIX** | - Fixed critical error: **TypeError: @deprecated decorator with non-None category must be applied to a class or callable, not <staticmethod object>** |
 | [v0.8.7](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.7) | 21.12.2023 | **DEPRECATED** | - Added comments for documentation (not fully)<br>- Added API documentation (not fully)<br>- Removed `secrets`<br>- Fixed documentation |

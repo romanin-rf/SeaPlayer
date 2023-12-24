@@ -40,14 +40,14 @@ class PluginBase:
         self.app.install_screen(screen, name)
     
     def add_codecs(self, *codecs: Type[CodecBase]) -> None:
-        self.app.CODECS += [ *codecs ]
+        self.app.env['seaplayer']['codecs'] += list(codecs)
     
     def add_value_handlers(self, *handlers: Callable[[str], List[str]]) -> None:
         self.pl.value_handlers += list(handlers)
     
     # ! Dev Functions
     def on_bindings(self) -> Generator[Binding, Any, None]:
-        yield None
+        yield
     
     def on_init(self):
         pass

@@ -15,9 +15,11 @@ from .units import (
 # ! Methods
 def get_song(service: Service, value: str) -> Optional[Song]:
     songs: List[Song] = []
-    if (d:=pget(VKM_SUID_PATTERN, value)) is not None: # "vkm://users/<uid:int>:<sid:int>"
+    # ! "vkm://by/users?uid=<uid:int>&sid=<sid:int>"
+    if (d:=pget(VKM_SUID_PATTERN, value)) is not None:
         songs += service.get_songs_by_userid(d['uid'], 1, d['sid'])
-    elif (d:=pget(VKM_TEXT_RANGE_OFFSET_PATTERN, value)) is not None: # "vkm://songs:<text>:<count:int>:<offset:int>"
+    # ! "vkm://by/text?t=<text>&c=<count:int>&o=<offset:int>"
+    elif (d:=pget(VKM_TEXT_RANGE_OFFSET_PATTERN, value)) is not None:
         songs += service.search_songs_by_text(d['text'], d['count'], d['offset'])
     return songs[0] if len(songs) > 0 else None
 
@@ -25,6 +27,7 @@ def get_song(service: Service, value: str) -> Optional[Song]:
 class VKMCodec(URLSoundCodec):
     codec_name = "VKM"
     codec_priority = 5.999
+    hidden_name = True
     
     # ! Check Methods
     @staticmethod
@@ -52,7 +55,7 @@ class VKMCodec(URLSoundCodec):
         self._title = (self.song.title if (len(self.song.title) > 0) else None) if isinstance(self.song.title, str) else None
         self._artist = (self.song.artist if (len(self.song.artist) > 0) else None) if isinstance(self.song.artist, str) else None
         super().__init__(self.song.url, sound_device_id, aio_init, **kwargs)
-        self.name = "<hidden>"
+        self.name = ""
     
     @staticmethod
     async def __aio_init__(

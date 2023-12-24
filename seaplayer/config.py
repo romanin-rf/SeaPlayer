@@ -21,7 +21,7 @@ DEFAULT_CONFIG_DATA: Dict[str, Any] = {
     "keys.rewind_back": "/",
     "keys.volume_up": "+",
     "keys.volume_down": "-",
-    "debag.log_menu_enable": False
+    "debag.logging": False
 }
 """Default configuration values."""
 
@@ -236,12 +236,12 @@ class SeaPlayerConfig:
     
     # ! Debag
     @property
-    def log_menu_enable(self) -> bool:
+    def logging(self) -> bool:
         """Enabling and disabling logging.
         
         Returns:
             On or off.
         """
-        return self.get("debag.log_menu_enable")
-    @log_menu_enable.setter
-    def log_menu_enable(self, value: bool): self.set("debag.log_menu_enable", value)
+        return self.get("debag.logging")
+    @logging.setter
+    def logging(self, value: bool): self.set("debag.logging", value)

@@ -6,12 +6,25 @@ from io import BytesIO
 from PIL import Image
 # > Typing
 from typing_extensions import deprecated
-from typing import Literal, Tuple, Optional, Iterable, TypeVar, AsyncGenerator, Any
+from typing import (
+    TypeVar,
+    Coroutine,
+    Awaitable,
+    Callable,
+    AsyncGenerator,
+    Literal,
+    Optional,
+    Iterable,
+    Union,
+    Tuple,
+    Any
+)
 # > Local Imports
 from .codeсbase import CodecBase
 
-# ! Types
+# ! Types Vars
 T = TypeVar("T")
+RT = TypeVar("RT")
 
 # ! Async Functions
 async def aiter(it: Iterable[T]) -> AsyncGenerator[T, Any]:
@@ -65,3 +78,15 @@ def get_sound_basename(sound: CodecBase) -> str:
 def image_from_bytes(data: Optional[bytes]) -> Optional[Image.Image]:
     if data is not None:
         return Image.open(BytesIO(data))
+
+# ! Wrappers
+def awrap(
+    method: Union[
+        Callable[..., Awaitable[RT]], 
+        Callable[..., Coroutine[Any, Any, RT]]
+    ],
+    *args, **kwargs
+) -> Callable[[], Coroutine[Any, Any, RT]]:
+    async def wrapped():
+        return await method(*args, **kwargs)
+    return wrapped

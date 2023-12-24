@@ -330,14 +330,14 @@ class Configurate(Screen):
                 False
             )
             yield self.create_configurator_literal(
-                "app.config.log_menu_enable",
+                "app.config.logging",
                 [
                     (True, self.ll.get("words.on")),
                     (False, self.ll.get("words.off"))
                 ],
                 self.ll.get("configurate.debug"),
-                self.ll.get("configurate.debug.log_menu_enable"),
-                self.ll.get("configurate.debug.log_menu_enable.desc"),
+                self.ll.get("configurate.debug.logging"),
+                self.ll.get("configurate.debug.logging.desc"),
                 False
             )
             # ! Keys
