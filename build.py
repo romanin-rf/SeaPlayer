@@ -4,6 +4,7 @@ import platform
 from pathlib import Path
 from typing import Dict, List
 
+# ! OS Checking
 if platform.system() == "Windows":
     ds = ";"
 elif platform.system() == "Linux":
@@ -11,6 +12,7 @@ elif platform.system() == "Linux":
 else:
     raise RuntimeError("Your operating system is not supported.")
 
+# ! Vars
 LOCALDIR = os.getcwd()
 TRASH_FILES = [ "build", "SeaPlayer.spec" ]
 DATA = {
@@ -35,7 +37,7 @@ DATA = {
     "seaplayer/objects/Image.py": "seaplayer/objects/",
     "seaplayer/objects/Input.py": "seaplayer/objects/",
     "seaplayer/objects/Log.py": "seaplayer/objects/",
-    "seaplayer/objects/MusicList.py": "seaplayer/objects/",
+    "seaplayer/objects/PlayList.py": "seaplayer/objects/",
     "seaplayer/objects/Notification.py": "seaplayer/objects/",
     "seaplayer/objects/ProgressBar.py": "seaplayer/objects/",
     "seaplayer/objects/Radio.py": "seaplayer/objects/",
@@ -44,8 +46,8 @@ DATA = {
     "seaplayer/types": "seaplayer/types/",
     "seaplayer/types/__init__.py": "seaplayer/types/",
     "seaplayer/types/Convert.py": "seaplayer/types/",
-    "seaplayer/types/MusicList.py": "seaplayer/types/",
     "seaplayer/types/Cache.py": "seaplayer/types/",
+    "seaplayer/types/Environment.py": "seaplayer/types/",
     # * 1.3) Codecs
     "seaplayer/codecs": "seaplayer/codecs/",
     "seaplayer/codecs/__init__.py": "seaplayer/codecs/",
@@ -82,12 +84,14 @@ DATA = {
     "seaplayer/assets/image-not-found.png": "seaplayer/assets/"
 }
 
+# ! Main Methods
 def localize(path: str) -> str:
     return os.path.join(LOCALDIR, path.replace('/', os.sep).replace('\\', os.sep))
 
 def add_datas(data: Dict[str, str]) -> List[str]:
     return [f"--add-data \"{localize(path)}{ds}{data[path]}\"" for path in data]
 
+# ! Runtime Vars
 COMMAND_LINE = [
     "pyinstaller", "--noconfirm", "--console", "--clean", "--onefile",
     f"--icon \"{localize('icons/icon.ico')}\"",
@@ -96,9 +100,11 @@ COMMAND_LINE = [
 ]
 COMMAND = " ".join(COMMAND_LINE)
 
+# ! Starting
 print(COMMAND, end="\n\n")
 os.system(COMMAND)
 
+# ! Clearing runtime trash
 for i in TRASH_FILES:
     path = Path(localize(i))
     try:

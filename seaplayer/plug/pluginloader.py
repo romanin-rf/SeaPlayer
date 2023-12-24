@@ -150,29 +150,30 @@ class PluginLoader:
         app,
         plugins_dirpath: Optional[Union[str, Path]]=None,
         plugins_config_path: Optional[Union[str, Path]]=None,
-        *args,
-        **kwargs
     ) -> None:
         self.app = app
         self.plugins_dirpath = Path(os.path.abspath(plugins_dirpath or PLUGINS_DIRPATH))
         self.plugins_config_path = Path(os.path.abspath(plugins_config_path or PLUGINS_CONFIG_PATH))
-        
         # * Create plugins directory
         os.makedirs(self.plugins_dirpath, 0o755, True)
-        
         # * Config Initializing
         self.config = PluginLoaderConfigManager(self.plugins_config_path)
-        
         # * Vars
         self.on_plugins: List[PluginBase] = []
         self.off_plugins: List[PluginInfo] = []
         self.error_plugins: List[Tuple[str, str]] = []
         # * Plugin Vars
         self.value_handlers: List[Callable[[str], List[str]]] = []
-        
         # * Logging
         self.app.info("---")
     
+    # ! Magic Methods
+    def __getitem__(self, key: str) -> Optional[PluginBase]:
+        for plugin in self.on_plugins:
+            if key == plugin.info.name_id:
+                return plugin
+    
+    # ! Spetific Methods
     @staticmethod
     async def aio_search_plugins_paths():
         init_search, info_search, deps_search =  \

@@ -5,17 +5,20 @@
     align-vertical: middle;
 }
 
-.screen-box {
+/* Player Box */
+.player-box {
     border: solid cornflowerblue;
     width: 1fr;
     height: 100%;
 }
 
-.test-box-border {
-    border: solid cadetblue;
+.player-selected-label {
+    width: 1fr;
+    height: 1;
+    align: center middle;
+    text-align: center;
 }
 
-/* ! Play Screen */
 .player-visual-panel {
     border: solid cadetblue;
     height: 1fr;
@@ -34,18 +37,13 @@
     width: 1fr;
 }
 
-.music-selected-label {
+/* Playlist Box */
+.playlist-box {
+    border: solid cornflowerblue;
     width: 1fr;
-    height: 1;
-    align: center middle;
-    text-align: center;
+    height: 100%;
 }
 
-/* Playlist */
-.music-list-screen-add-box {
-    height: 3;
-}
-
-.music-list-screen-add-input {
+.playlist-add-sound-input {
     width: 1fr;
 }

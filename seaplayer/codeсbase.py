@@ -1,3 +1,5 @@
+import os
+import validators
 from typing import Optional
 
 # ! Functions
@@ -16,6 +18,8 @@ class CodecBase:
     # * Info
     name: str
     """File path (optional file path)."""
+    hidden_name: bool=False
+    """Hide the `name` when displayed in the SeaPlayer."""
     duration: float
     """The duration of the sound in seconds."""
     channels: int
@@ -66,6 +70,18 @@ class CodecBase:
                 )
             )
     
+    def __namerepr__(self) -> str:
+        """The name that is displayed for the place `self.name`.
+        
+        Returns:
+            str: Value `self.name` the displayed in SeaPlayer.
+        """
+        if self.hidden_name:
+            return ""
+        if self.name is not None:
+            return self.name
+        return f'<memory>'
+    
     def __sha1__(self, buffer_size: int) -> str:
         """Calculating the hash of the file.
         
@@ -76,6 +92,7 @@ class CodecBase:
             str: SHA256 in string format.
         """
         ...
+    
     async def __aio_sha1__(self, buffer_size: int) -> str:
         """Calculating the hash of the file.
         
@@ -116,15 +133,19 @@ class CodecBase:
     def play(self) -> None:
         """Start playing the sound."""
         ...
+    
     def stop(self) -> None:
         """Stop playing the sound."""
         ...
+    
     def pause(self) -> None:
         """Put it on pause."""
         ...
+    
     def unpause(self) -> None:
         """Take it off the pause."""
         ...
+    
     def get_volume(self) -> float:
         """Getting the current volume as a percentage.
         
@@ -132,6 +153,7 @@ class CodecBase:
             float: Volume percentage (0.01 == 1%).
         """
         return 1.0
+    
     def set_volume(self, value: float) -> None:
         """Setting the volume value as a percentage.
         
@@ -139,6 +161,7 @@ class CodecBase:
             value (float): Volume percentage (0.01 == 1%).
         """
         ...
+    
     def get_pos(self) -> float:
         """Getting the audio playback position in seconds.
         
@@ -146,6 +169,7 @@ class CodecBase:
             float: The position of the audio playback in seconds.
         """
         return 0.0
+    
     def set_pos(self, value: float) -> None:
         """Setting the audio playback position in seconds.
         

@@ -2,7 +2,8 @@
 
 | Version | Date | Tag | Changelog |
 | ------- | ---- | --- | --------- |
-| [v0.8.9](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.9) | 21.12.2023 | **HOTFIX** | - Fixed is `TypeError` in `AnySound.from_url`<br>- Update `VKMusic` plugin to v0.4.0 |
+| [v0.8.10](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.10) | 24.12.2023 | **STABLE** | - Added new functions: `functions.awrap`<br>- Added new types: `seaplayer.types.Enviroment`<br>- Updated plugin `VKMusic` to **v0.5.0**<br>- Updated plugin `RichDiscordStatus` to **v0.2.2**<br>- Refactoting `Playback Update Loop`<br>- Refactoring `Textual Actions`<br>- Refactoring `seaplayer.tcss`<br>- Refactoring `seaplayer.objects.MusicList` to `seaplayer.objects.PlayList`<br>- Renamed variable `SeaPlayerConfig.log_menu_enabled` to `SeaPlayerConfig.logging`<br>- Removed types: `seaplayer.types.MusicList`<br>- Deprecated `seaplayer.objects.InputField` |
+| [v0.8.9](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.9) | 21.12.2023 | **HOTFIX** | - Fixed is `TypeError` in `AnySound.from_url`<br>- Update `VKMusic` plugin to **v0.4.0** |
 | [v0.8.8](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.8) | 21.12.2023 | **HOTFIX** | - Fixed critical error: **TypeError: @deprecated decorator with non-None category must be applied to a class or callable, not <staticmethod object>** |
 | [v0.8.7](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.7) | 21.12.2023 | **DEPRECATED** | - Added comments for documentation (not fully)<br>- Added API documentation (not fully)<br>- Removed `secrets`<br>- Fixed documentation |
 | [v0.8.6](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.8.6) | 17.12.2023 | **STABLE** | - Added new methods for `seaplayer.plug.pluginloader.PluginLoaderConfigManager`: **remove_plugin** & **remove_plugin_by_name_id**<br>- Added new command for `seaplug`: **unload**<br>- Added version message for `seaplug`<br>- Fixed typing for: `seaplayer.plug.pluginloader.PluginLoader.search_plugins_paths` & `seaplayer.plug.pluginloader.PluginLoader.aio_search_plugins_paths`<br>- Replaced option `--recreate` with `--overwrite` in `seaplayer.plug.cli.cli.creating`<br>- Replaced option `--rewrite` with `--overwrite` in `seaplayer.plug.cli.cli.loading` |
@@ -18,3 +19,4 @@
 | [v0.7.2](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.7.2) | 29.11.2023 | **DEPRECATED** | - Added small optimizations |
 | [v0.7.1](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.7.1.post1) | 28.11.2023 | **DEPRECATED** | - Optimization due to more transplanting to a newer version of `playsoundsimple` |
 | [v0.7.0](https://github.com/romanin-rf/SeaPlayer/releases/tag/v0.7.0) | 28.11.2023 | **DEPRECATED** | - Added installation of modules from a file `requirements.txt` in the folder of any plugin, if there is one<br>- Added more intuitive logging |
+

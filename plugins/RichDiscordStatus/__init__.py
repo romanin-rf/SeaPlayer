@@ -10,7 +10,7 @@ nest_asyncio.apply()
 
 # ! Main Class
 class RichDiscordStatus(PluginBase):
-    def get_status(self):
+    async def get_status(self):
         data = {
             "start": self.start_time,
             "large_image": "icon",
@@ -42,7 +42,8 @@ class RichDiscordStatus(PluginBase):
                 rpc = Presence("1178379471124955217")
                 rpc.connect()
                 while self.running:
-                    rpc.update(**self.get_status())
+                    data = await self.get_status()
+                    rpc.update(**data)
                     await asyncio.sleep(1)
             except (DiscordNotFound, PipeClosed, ResponseTimeout):
                 await asyncio.sleep(3)
@@ -55,7 +56,7 @@ class RichDiscordStatus(PluginBase):
     
     async def on_compose(self):
         self.running = True
-        self.thread = self.app.run_worker(
+        self.worker = self.app.run_worker(
             self.__status__,
             "Rich Discord Status",
             "seaplayer.plugins.discord.status",
@@ -64,7 +65,7 @@ class RichDiscordStatus(PluginBase):
     
     async def on_quit(self) -> None:
         self.running = False
-        await self.thread.wait()
+        await self.worker.wait()
 
 # ! Registration Plugin Class
 __plugin__ = RichDiscordStatus
