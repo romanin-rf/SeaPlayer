@@ -107,13 +107,16 @@ class SeaPlayer(App):
     
     # ! Template Configuration
     currect_sound: Optional[CodecBase] = None
+    """The currently selected sound."""
     currect_sound_index: Optional[int] = None
+    """The index of the currently selected sound."""
     currect_volume: float = cache.var("currect_volume", 1.0)
     """The current volume value (cached)."""
     last_playback_status: Optional[Literal[0, 1, 2]] = None
     playback_mode: int = cache.var("playback_mode", 0)
     """The current playback mode (cached)."""
     block_select: bool = False
+    block_playback_control: bool = False
     last_handlered_values: List[str] = []
     started: bool = True
     
@@ -301,6 +304,11 @@ class SeaPlayer(App):
     
     # ! Update Selected Image
     async def aio_update_select_image(self, sound: Optional[CodecBase]) -> None:
+        """Forced image update.
+        
+        Args:
+            sound (Optional[CodecBase]): The current sound.
+        """
         image = None
         if sound is not None:
             if sound.icon_data is not None:
@@ -309,6 +317,7 @@ class SeaPlayer(App):
     
     # ! Update Currect Sound
     async def aio_update_currect_sound(self) -> None:
+        """Updating local variables of the current sound."""
         self.currect_sound = self.playlist_view.currect_sound
         self.currect_sound_index = self.playlist_view.currect_sound_index
         if self.currect_sound is not None:
@@ -348,20 +357,24 @@ class SeaPlayer(App):
                     if self.playback_mode != 0:
                         status = await aio_check_status_code(sound)
                         if (self.last_playback_status == 1) and (status == 0):
-                            if self.playback_mode == 1:
-                                self.currect_sound.play()
-                                await self.aio_update_select_label(sound)
-                                self.last_playback_status = 0
-                            elif self.playback_mode == 2:
-                                self.block_select = True
-                                await self.playlist_view.aio_select_next_sound()
-                                await self.aio_update_currect_sound()
-                                if self.currect_sound is not None:
+                            if not self.block_playback_control:
+                                self.info(f"The status of the current sound has changed to: {repr(status)}.")
+                                if self.playback_mode == 1:
                                     self.currect_sound.play()
-                                await self.aio_update_select_label(self.currect_sound)
-                                await self.aio_update_select_image(self.currect_sound)
-                                self.last_playback_status = 0
-                                self.block_select = False
+                                    await self.aio_update_select_label(sound)
+                                    self.last_playback_status = 0
+                                    self.info(f"Replay this sound: {repr(self.currect_sound)}.")
+                                elif self.playback_mode == 2:
+                                    self.block_select = True
+                                    await self.playlist_view.aio_select_next_sound()
+                                    await self.aio_update_currect_sound()
+                                    if self.currect_sound is not None:
+                                        self.currect_sound.play()
+                                    await self.aio_update_select_label(self.currect_sound)
+                                    await self.aio_update_select_image(self.currect_sound)
+                                    self.last_playback_status = 0
+                                    self.block_select = False
+                                    self.info(f"Play next sound: {repr(self.currect_sound)}.")
             await asyncio.sleep(0.1)
     
     # ! Mounting Function
@@ -556,22 +569,28 @@ class SeaPlayer(App):
     # ! Worker Functions
     async def pl_select(self) -> None:
         if self.playlist_view.currect_sound_index != self.currect_sound_index:
+            
             if self.currect_sound is not None:
                 self.currect_sound.stop()
             await self.aio_update_currect_sound()
             await self.aio_update_select_label(self.currect_sound)
             await self.aio_update_select_image(self.currect_sound)
+            self.last_playback_status = await aio_check_status_code(self.currect_sound)
+        self.block_playback_control = False
     
     # ! Playlist Actions
     @on(ListView.Selected, ".playlist-view")
     async def pl_select_worker(self) -> None:
         if not self.block_select:
+            self.block_playback_control = True
             self.run_worker(
                 self.pl_select,
                 name="Playlist Select",
                 group="seaplayer-temp",
                 description="Update: status, images and so on."
             )
+        else:
+            self.info("The sound selection is blocked.")
     
     # ! Input Actions
     @on(Input.Submitted, "#addsoundinput")
