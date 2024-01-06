@@ -1,5 +1,4 @@
 import os
-import validators
 from typing import Optional
 
 # ! Functions
@@ -81,6 +80,22 @@ class CodecBase:
         if self.name is not None:
             return self.name
         return f'<memory>'
+    
+    def __headrepr__(self) -> str:
+        """The display name in the SeaPlayer.
+        
+        Returns:
+            str: Value `self.title` + `self.artist` the displayed in SeaPlayer.
+        """
+        if self.hidden_name:
+            if (self.title is not None):
+                if self.artist is not None:
+                    return f"{self.artist} - {self.title}"
+                return self.title
+            return "<hidden>"
+        if self.name is not None:
+            return os.path.basename(self.name)
+        return self.__namerepr__()
     
     def __sha1__(self, buffer_size: int) -> str:
         """Calculating the hash of the file.
